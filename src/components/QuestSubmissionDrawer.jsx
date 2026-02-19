@@ -46,6 +46,17 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
 
     await base44.entities.Quest.create({ ...formData, difficulty_class: dc, status: 'pending' });
 
+    // Send email alerts to all hosts with notifications enabled
+    const hosts = await base44.entities.HostSettings.filter({ notifications_enabled: true });
+    await Promise.all(hosts.map(host =>
+      base44.integrations.Core.SendEmail({
+        to: host.email,
+        from_name: 'The Hyper-fixation Main Event',
+        subject: `⚔️ New Quest Posted: "${formData.title}"`,
+        body: `A new Side Quest has been posted to the board!\n\n📜 Quest: ${formData.title}\n🧙 Adventurer: ${formData.quest_giver}\n🎯 Segment: ${formData.segment}\n🎲 DC: ${dc}\n\n"${formData.description}"\n\nHead to the Quest Board to review it!\n\n— The Hyper-fixation Main Event 🦈⚔️`,
+      })
+    ));
+
     setFormData({ quest_giver: '', title: '', description: '', segment: '' });
     setRolledDC(null);
     setIsSubmitting(false);
