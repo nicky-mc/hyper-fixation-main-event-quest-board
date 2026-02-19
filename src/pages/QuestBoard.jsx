@@ -304,6 +304,7 @@ export default function QuestBoard() {
       </div>
 
       <QuestSubmissionDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onQuestSubmitted={loadQuests} />
+      <HostSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 }
