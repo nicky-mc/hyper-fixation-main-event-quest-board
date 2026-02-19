@@ -47,8 +47,14 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import QuestBoard from './pages/QuestBoard';
 
-export const pagesConfig = {
-	Pages: {}
+
+export const PAGES = {
+    "QuestBoard": QuestBoard,
 }
 
+export const pagesConfig = {
+    mainPage: "QuestBoard",
+    Pages: PAGES,
+};
