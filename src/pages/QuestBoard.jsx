@@ -100,7 +100,20 @@ export default function QuestBoard() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
-        {/* ── HEADER ── */}
+        {/* ── TOP BAR ── */}
+        <div className="flex justify-end gap-2 mb-4">
+          <NotificationBell />
+          <motion.button
+            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}
+            onClick={() => setSettingsOpen(true)}
+            className="p-2.5 rounded-xl border-2 border-purple-700/40 bg-purple-900/30 text-purple-400 hover:border-purple-500 hover:text-purple-300 transition-all"
+            title="Host notification settings"
+          >
+            <Settings className="w-5 h-5" />
+          </motion.button>
+        </div>
+
+      {/* ── HEADER ── */}
         <motion.header initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10 sm:mb-14">
 
           {/* Top badge row */}
