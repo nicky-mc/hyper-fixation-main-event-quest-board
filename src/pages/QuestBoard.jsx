@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Plus, Scroll, Crown, Swords, Loader2, Fish, Radio, Star } from 'lucide-react';
+import { Plus, Scroll, Crown, Swords, Loader2, Fish, Radio, Star, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import QuestCard from '@/components/QuestCard';
 import QuestSubmissionDrawer from '@/components/QuestSubmissionDrawer';
+import NotificationBell from '@/components/NotificationBell';
+import HostSettingsModal from '@/components/HostSettingsModal';
 
 // Floating particle component for atmosphere
 function Particle({ style }) {
@@ -36,6 +38,7 @@ export default function QuestBoard() {
   const [selectedQuestId, setSelectedQuestId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [rollingId, setRollingId] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const loadQuests = async () => {
     const data = await base44.entities.Quest.list('-created_date', 8);
