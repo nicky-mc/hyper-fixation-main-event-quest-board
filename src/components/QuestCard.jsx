@@ -1,6 +1,7 @@
 import { Sword, Shield, Scroll, Star, Flame, Zap, Radio, Skull, Fish, Telescope, BookOpen, Dices, Trophy, Anchor, Ghost, Tv, RotateCcw, Users, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 const segmentConfig = {
   'The Gimmick Check':            { icon: Zap,        color: 'from-amber-600 to-yellow-500',    label: 'Identity & Character Arcs' },
@@ -25,24 +26,125 @@ const segmentConfig = {
 
 const fallback = { icon: Scroll, color: 'from-stone-600 to-stone-500', label: 'Side Quest' };
 
+// Warp-speed streaks overlay
+function WarpEffect() {
+  return (
+    <motion.div
+      className="absolute inset-0 z-20 overflow-hidden rounded-xl pointer-events-none"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: [0, 1, 1, 0] }}
+      transition={{ duration: 0.8, times: [0, 0.1, 0.7, 1] }}
+    >
+      {Array.from({ length: 18 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute top-1/2 left-1/2 h-px bg-gradient-to-r from-transparent via-cyan-400 to-white"
+          style={{ originX: 0, originY: 0, rotate: `${(i / 18) * 360}deg`, width: `${40 + Math.random() * 80}%` }}
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: [0, 1, 0], opacity: [0, 1, 0] }}
+          transition={{ duration: 0.5, delay: i * 0.015 }}
+        />
+      ))}
+      {/* Scan flash */}
+      <motion.div
+        className="absolute inset-0 bg-cyan-400/20 rounded-xl"
+        animate={{ opacity: [0, 0.8, 0] }}
+        transition={{ duration: 0.4 }}
+      />
+    </motion.div>
+  );
+}
+
+// WWE taunt flash
+function TauntEffect() {
+  return (
+    <AnimatePresence>
+      <motion.div className="absolute inset-0 z-20 pointer-events-none rounded-xl overflow-hidden">
+        {/* Spotlight sweep */}
+        <motion.div
+          className="absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse 60% 80% at 50% -20%, rgba(255,200,0,0.35) 0%, transparent 70%)' }}
+          animate={{ opacity: [0, 1, 0.6, 0], y: ['-100%', '0%', '10%', '100%'] }}
+          transition={{ duration: 0.9, ease: 'easeInOut' }}
+        />
+        {/* Side flash bars */}
+        {[-1, 1].map(dir => (
+          <motion.div
+            key={dir}
+            className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-amber-400/0 to-amber-400/20"
+            style={{ left: dir === -1 ? 0 : undefined, right: dir === 1 ? 0 : undefined }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          />
+        ))}
+        {/* Gold ring burst */}
+        <motion.div
+          className="absolute inset-0 rounded-xl border-4 border-amber-400"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: [0.8, 1.05, 1], opacity: [0, 1, 0] }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        />
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 export default function QuestCard({ quest, isSelected, isRolling, index }) {
   const cfg = segmentConfig[quest.segment] || fallback;
   const SegmentIcon = cfg.icon;
 
+  const [showWarp, setShowWarp] = useState(false);
+  const [showTaunt, setShowTaunt] = useState(false);
+  const [settled, setSettled] = useState(false);
+
+  useEffect(() => {
+    if (isSelected) {
+      setSettled(false);
+      setShowWarp(true);
+      setTimeout(() => {
+        setShowWarp(false);
+        setShowTaunt(true);
+        setTimeout(() => {
+          setShowTaunt(false);
+          setSettled(true);
+        }, 900);
+      }, 800);
+    } else {
+      setSettled(false);
+      setShowWarp(false);
+      setShowTaunt(false);
+    }
+  }, [isSelected]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: isSelected && settled ? 1.04 : 1,
+        rotate: isSelected && settled ? [-1, 1, -0.5, 0] : 0,
+      }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
       className={cn("relative group cursor-pointer transition-all duration-500", isSelected && "z-10")}
     >
-      {/* Gold glow when selected */}
-      {isSelected && (
+      {/* Gold glow when selected + settled */}
+      {isSelected && settled && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: [0.6, 1, 0.6] }}
           transition={{ duration: 1.5, repeat: Infinity }}
           className="absolute -inset-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 rounded-xl blur-lg"
+        />
+      )}
+
+      {/* Wrestling spotlight during taunt */}
+      {isSelected && !settled && (
+        <motion.div
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 0.25, repeat: Infinity }}
+          className="absolute -inset-3 rounded-2xl blur-xl"
+          style={{ background: 'radial-gradient(ellipse, rgba(251,191,36,0.5) 0%, transparent 70%)' }}
         />
       )}
 
@@ -63,6 +165,10 @@ export default function QuestCard({ quest, isSelected, isRolling, index }) {
           ? "border-amber-400 shadow-2xl shadow-amber-500/40"
           : "border-purple-900/50 hover:border-purple-600/70",
       )}>
+        {/* Effects overlays */}
+        {showWarp && <WarpEffect />}
+        {showTaunt && <TauntEffect />}
+
         {/* Starfield texture */}
         <div className="absolute inset-0 opacity-20 pointer-events-none"
           style={{
@@ -70,7 +176,7 @@ export default function QuestCard({ quest, isSelected, isRolling, index }) {
             backgroundSize: '30px 30px',
           }}
         />
-        {/* Blood splatter/horror vignette */}
+        {/* Horror vignette */}
         <div className="absolute inset-0 bg-gradient-to-b from-red-950/10 via-transparent to-purple-950/20 pointer-events-none" />
 
         {/* Segment Banner */}
@@ -81,6 +187,13 @@ export default function QuestCard({ quest, isSelected, isRolling, index }) {
           </div>
           <p className="text-[9px] text-white/60 mt-0.5 truncate">{cfg.label}</p>
         </div>
+
+        {/* Quest image/GIF if present */}
+        {quest.image_url && (
+          <div className="w-full h-32 overflow-hidden border-b border-purple-900/40">
+            <img src={quest.image_url} alt="quest visual" className="w-full h-full object-cover" />
+          </div>
+        )}
 
         {/* Body */}
         <div className="relative p-5 space-y-3">
@@ -131,10 +244,11 @@ export default function QuestCard({ quest, isSelected, isRolling, index }) {
         </div>
 
         {/* Selected stamp */}
-        {isSelected && (
+        {isSelected && settled && (
           <motion.div
             initial={{ opacity: 0, scale: 0, rotate: -15 }}
             animate={{ opacity: 1, scale: 1, rotate: -12 }}
+            transition={{ type: 'spring', damping: 10, stiffness: 200 }}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
           >
             <div className="bg-amber-400 text-stone-900 px-4 py-2 rounded border-4 border-amber-600 font-black text-sm shadow-2xl uppercase tracking-wider">
