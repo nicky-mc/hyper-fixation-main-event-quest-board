@@ -97,6 +97,7 @@ export default function QuestCard({ quest, isSelected, isRolling, index }) {
   const [showWarp, setShowWarp] = useState(false);
   const [showTaunt, setShowTaunt] = useState(false);
   const [settled, setSettled] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
 
   useEffect(() => {
     if (isSelected) {
