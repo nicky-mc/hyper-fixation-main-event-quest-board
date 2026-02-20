@@ -75,9 +75,11 @@ export default function QuestComments({ questId }) {
                 </div>
                 <div className="flex-1 min-w-0 bg-purple-950/40 border border-purple-900/30 rounded-lg px-3 py-2">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="text-xs font-bold text-purple-300" style={{ fontFamily: "'Caveat', cursive" }}>
+                    <Link to={createPageUrl('AdventurerProfile') + '?name=' + encodeURIComponent(c.author_name)}
+                      className="text-xs font-bold text-purple-300 hover:text-purple-100 hover:underline transition-colors"
+                      style={{ fontFamily: "'Caveat', cursive" }}>
                       {c.author_name}
-                    </span>
+                    </Link>
                     <span className="text-[9px] text-slate-600">{formatTime(c.created_date)}</span>
                   </div>
                   <p className="text-xs text-slate-300 mt-0.5 leading-relaxed break-words">{c.content}</p>
