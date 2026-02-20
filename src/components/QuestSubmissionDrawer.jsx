@@ -83,6 +83,8 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
     ));
 
     setFormData({ quest_giver: '', title: '', description: '', segment: '' });
+    setImageFile(null);
+    setImagePreview(null);
     setRolledDC(null);
     setIsSubmitting(false);
     onQuestSubmitted?.();
