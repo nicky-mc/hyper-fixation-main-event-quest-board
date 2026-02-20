@@ -3,6 +3,8 @@ import { MessageCircle, Send, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function QuestComments({ questId }) {
   const [comments, setComments] = useState([]);
