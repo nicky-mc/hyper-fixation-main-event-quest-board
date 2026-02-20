@@ -159,6 +159,27 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
                     required />
                 </div>
 
+                {/* Image / GIF Upload */}
+                <div className="space-y-2">
+                  <Label className="text-purple-300 text-sm font-medium">Quest Image / GIF <span className="text-purple-600 text-xs">(optional)</span></Label>
+                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                  {imagePreview ? (
+                    <div className="relative rounded-xl overflow-hidden border-2 border-purple-700/50 group">
+                      <img src={imagePreview} alt="preview" className="w-full max-h-48 object-cover" />
+                      <button type="button" onClick={removeImage}
+                        className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1 hover:bg-red-600/80 transition-colors">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => fileInputRef.current?.click()}
+                      className="w-full flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-dashed border-purple-800/50 text-purple-500 hover:border-purple-500 hover:text-purple-300 transition-colors bg-[#0d0820]/40">
+                      <ImagePlus className="w-5 h-5" />
+                      <span className="text-sm">Upload an image or GIF</span>
+                    </button>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <Label className="text-purple-300 text-sm font-medium">Target Segment</Label>
                   <Select value={formData.segment} onValueChange={(v) => setFormData({ ...formData, segment: v })} required>
