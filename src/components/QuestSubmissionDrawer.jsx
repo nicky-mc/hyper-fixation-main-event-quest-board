@@ -34,6 +34,10 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
   const [formData, setFormData] = useState({ quest_giver: '', title: '', description: '', segment: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rolledDC, setRolledDC] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
