@@ -39,6 +39,19 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef(null);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.quest_giver || !formData.title || !formData.description || !formData.segment) return;
@@ -48,7 +61,15 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
     setRolledDC(dc);
     await new Promise(r => setTimeout(r, 900));
 
-    await base44.entities.Quest.create({ ...formData, difficulty_class: dc, status: 'pending' });
+    let image_url = undefined;
+    if (imageFile) {
+      setUploadingImage(true);
+      const result = await base44.integrations.Core.UploadFile({ file: imageFile });
+      image_url = result.file_url;
+      setUploadingImage(false);
+    }
+
+    await base44.entities.Quest.create({ ...formData, difficulty_class: dc, status: 'pending', ...(image_url && { image_url }) });
 
     // Send email alerts to all hosts with notifications enabled
     const hosts = await base44.entities.HostSettings.filter({ notifications_enabled: true });
