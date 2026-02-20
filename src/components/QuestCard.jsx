@@ -251,13 +251,42 @@ export default function QuestCard({ quest, isSelected, isRolling, index }) {
             initial={{ opacity: 0, scale: 0, rotate: -15 }}
             animate={{ opacity: 1, scale: 1, rotate: -12 }}
             transition={{ type: 'spring', damping: 10, stiffness: 200 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            className="absolute top-16 right-4 pointer-events-none"
           >
-            <div className="bg-amber-400 text-stone-900 px-4 py-2 rounded border-4 border-amber-600 font-black text-sm shadow-2xl uppercase tracking-wider">
+            <div className="bg-amber-400 text-stone-900 px-3 py-1 rounded border-4 border-amber-600 font-black text-xs shadow-2xl uppercase tracking-wider">
               ⚔️ ON AIR!
             </div>
           </motion.div>
         )}
+
+        {/* Comments toggle button */}
+        <button
+          onClick={(e) => { e.stopPropagation(); setCommentsOpen(o => !o); }}
+          className="w-full flex items-center justify-between px-5 py-2.5 text-xs text-purple-500 hover:text-purple-300 hover:bg-purple-900/20 transition-colors border-t border-purple-900/40"
+        >
+          <span className="flex items-center gap-1.5">
+            <MessageCircle className="w-3.5 h-3.5" />
+            Discussion
+          </span>
+          <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", commentsOpen && "rotate-180")} />
+        </button>
+
+        {/* Comments panel */}
+        <AnimatePresence>
+          {commentsOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden"
+            >
+              <div className="px-5 pb-5">
+                <QuestComments questId={quest.id} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
