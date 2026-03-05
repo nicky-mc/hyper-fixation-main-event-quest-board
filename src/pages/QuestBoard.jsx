@@ -278,7 +278,7 @@ export default function QuestBoard() {
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-            {quests.map((quest, i) => (
+            {displayedQuests.map((quest, i) => (
               <QuestCard key={quest.id} quest={quest} index={i}
                 isSelected={selectedQuestId === quest.id && !isRolling}
                 isRolling={isRolling && rollingId === quest.id}
