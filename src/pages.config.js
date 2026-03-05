@@ -51,6 +51,7 @@ import AdventurerProfile from './pages/AdventurerProfile';
 import QuestBoard from './pages/QuestBoard';
 import Messages from './pages/Messages';
 import NewsFeed from './pages/NewsFeed';
+import MyAdventurer from './pages/MyAdventurer';
 import __Layout from './Layout.jsx';
 
 
@@ -59,6 +60,7 @@ export const PAGES = {
     "QuestBoard": QuestBoard,
     "Messages": Messages,
     "NewsFeed": NewsFeed,
+    "MyAdventurer": MyAdventurer,
 }
 
 export const pagesConfig = {
