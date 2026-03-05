@@ -44,12 +44,31 @@ export default function QuestBoard() {
   const [user, setUser] = useState(null);
 
   const loadQuests = async () => {
-    const data = await base44.entities.Quest.list('-created_date', 8);
+    const data = await base44.entities.Quest.list('-created_date', 50);
     setQuests(data);
     setLoading(false);
   };
 
-  useEffect(() => { loadQuests(); }, []);
+  const loadVoteCounts = async (questList) => {
+    const allVotes = await base44.entities.QuestVote.list();
+    const counts = {};
+    allVotes.forEach(v => { counts[v.quest_id] = (counts[v.quest_id] || 0) + 1; });
+    setVoteCounts(counts);
+  };
+
+  useEffect(() => {
+    loadQuests();
+    base44.auth.me().then(u => setUser(u)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (quests.length > 0) loadVoteCounts(quests);
+  }, [quests]);
+
+  // Re-sort when vote counts change if sort is active
+  const displayedQuests = sortByVotes
+    ? [...quests].sort((a, b) => (voteCounts[b.id] || 0) - (voteCounts[a.id] || 0))
+    : quests;
 
   const rollForInitiative = async () => {
     if (quests.length === 0 || isRolling) return;
