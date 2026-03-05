@@ -233,6 +233,7 @@ export default function QuestCard({ quest, isSelected, isRolling, index }) {
           {/* Vote + Quest Giver row */}
           <div className="flex items-center gap-2 pt-2 border-t border-purple-900/40">
             <VoteButton questId={quest.id} isSelected={isSelected} />
+            <SaveQuestButton questId={quest.id} />
             <div className={cn(
               "w-7 h-7 rounded-full flex items-center justify-center border text-xs font-black",
               "bg-gradient-to-br from-purple-800 to-indigo-900 border-purple-600/50 text-purple-200"
