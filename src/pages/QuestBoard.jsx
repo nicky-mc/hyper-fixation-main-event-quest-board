@@ -39,6 +39,9 @@ export default function QuestBoard() {
   const [loading, setLoading] = useState(true);
   const [rollingId, setRollingId] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [sortByVotes, setSortByVotes] = useState(false);
+  const [voteCounts, setVoteCounts] = useState({});
+  const [user, setUser] = useState(null);
 
   const loadQuests = async () => {
     const data = await base44.entities.Quest.list('-created_date', 8);
