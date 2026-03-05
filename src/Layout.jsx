@@ -38,7 +38,7 @@ export default function Layout({ children, currentPageName }) {
     { label: 'Quest Board', page: 'QuestBoard', icon: Swords },
     { label: 'News Feed', page: 'NewsFeed', icon: Rss },
     { label: 'Messages', page: 'Messages', icon: MessageCircle, badge: unreadCount },
-    { label: 'Profile', page: 'AdventurerProfile', icon: User, extra: user ? `?name=${encodeURIComponent(user.full_name || user.email)}` : '' },
+    { label: 'My Adventurer', page: 'MyAdventurer', icon: User },
   ];
 
   const handleLogin = () => base44.auth.redirectToLogin(window.location.pathname);
