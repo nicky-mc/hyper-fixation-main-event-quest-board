@@ -49,6 +49,7 @@
  */
 import AdventurerProfile from './pages/AdventurerProfile';
 import QuestBoard from './pages/QuestBoard';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -59,4 +60,5 @@ export const PAGES = {
 export const pagesConfig = {
     mainPage: "QuestBoard",
     Pages: PAGES,
+    Layout: __Layout,
 };
