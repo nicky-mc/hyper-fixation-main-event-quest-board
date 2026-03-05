@@ -239,6 +239,22 @@ export default function QuestBoard() {
           >
             <Plus className="w-5 h-5 mr-2" /> Post a Quest 🦈
           </Button>
+
+          {user?.role === 'admin' && (
+            <motion.button
+              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+              onClick={() => setSortByVotes(s => !s)}
+              className={cn(
+                "flex items-center gap-2 px-5 py-3 rounded-xl border-2 font-bold text-sm transition-all",
+                sortByVotes
+                  ? "bg-amber-500/20 border-amber-500/60 text-amber-300"
+                  : "bg-purple-900/30 border-purple-700/40 text-purple-400 hover:border-purple-500"
+              )}
+            >
+              <ArrowUpDown className="w-4 h-4" />
+              {sortByVotes ? "Sorted by Votes" : "Sort by Votes"}
+            </motion.button>
+          )}
         </motion.div>
 
         {/* ── QUEST GRID ── */}
