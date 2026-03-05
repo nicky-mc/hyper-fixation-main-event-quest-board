@@ -47,13 +47,13 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import QuestBoard from './pages/QuestBoard';
 import AdventurerProfile from './pages/AdventurerProfile';
+import QuestBoard from './pages/QuestBoard';
 
 
 export const PAGES = {
-    "QuestBoard": QuestBoard,
     "AdventurerProfile": AdventurerProfile,
+    "QuestBoard": QuestBoard,
 }
 
 export const pagesConfig = {

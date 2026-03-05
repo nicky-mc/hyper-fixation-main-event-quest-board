@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import QuestComments from '@/components/QuestComments';
+import VoteButton from '@/components/VoteButton';
 
 const segmentConfig = {
   'The Gimmick Check':            { icon: Zap,        color: 'from-amber-600 to-yellow-500',    label: 'Identity & Character Arcs' },
