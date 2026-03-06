@@ -401,5 +401,4 @@ export default function QuestBoard() {
   );
 }
 
-// helper used in this file
 function cn(...classes) { return classes.filter(Boolean).join(' '); }
