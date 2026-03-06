@@ -69,7 +69,17 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
       setUploadingImage(false);
     }
 
-    await base44.entities.Quest.create({ ...formData, difficulty_class: dc, status: 'pending', ...(image_url && { image_url }) });
+    const quest = await base44.entities.Quest.create({ ...formData, difficulty_class: dc, status: 'pending', ...(image_url && { image_url }) });
+
+    // Log to Activity Stream
+    await base44.entities.Activity.create({
+      type: 'quest_submitted',
+      user_name: formData.quest_giver,
+      quest_id: quest.id,
+      quest_title: formData.title,
+      content: formData.description,
+      ...(image_url && { media_url: image_url, media_type: 'image' }),
+    });
 
     // Send email alerts to all hosts with notifications enabled
     const hosts = await base44.entities.HostSettings.filter({ notifications_enabled: true });
