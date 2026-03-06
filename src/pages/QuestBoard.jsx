@@ -286,7 +286,20 @@ export default function QuestBoard() {
           <QuestCategoryFilter active={activeCategory} onChange={setActiveCategory} counts={categoryCounts} />
         )}
 
-        {/* ── QUEST GRID ── */}
+        {/* ── ACTIVITY STREAM SIDEBAR + QUEST GRID ── */}
+        <div className="flex flex-col lg:flex-row gap-6">
+
+          {/* Activity Stream - sidebar on desktop, top section on mobile */}
+          <div className="lg:w-80 xl:w-96 shrink-0">
+            <div className="lg:sticky lg:top-20 rounded-xl border border-purple-900/40 bg-white/[0.02] p-4 max-h-[80vh] flex flex-col">
+              <ActivityStream />
+            </div>
+          </div>
+
+          {/* Quest Grid */}
+          <div className="flex-1 min-w-0">
+
+        {/* ── QUEST GRID (inner) ── */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <Radio className="w-12 h-12 text-purple-500 animate-pulse" />
