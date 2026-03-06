@@ -38,6 +38,18 @@ export default function VoteButton({ questId, isSelected }) {
       if (myVote) await base44.entities.QuestVote.delete(myVote.id);
     } else {
       await base44.entities.QuestVote.create({ quest_id: questId, voter_email: userEmail });
+      // Log to Activity Stream
+      try {
+        const u = await base44.auth.me();
+        const quests = await base44.entities.Quest.filter({ id: questId });
+        await base44.entities.Activity.create({
+          type: 'quest_voted',
+          user_name: u?.full_name || userEmail,
+          user_email: userEmail,
+          quest_id: questId,
+          quest_title: quests[0]?.title || '',
+        });
+      } catch (_) {}
     }
     setLoading(false);
   };
