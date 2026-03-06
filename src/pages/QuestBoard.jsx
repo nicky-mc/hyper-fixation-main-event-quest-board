@@ -10,6 +10,7 @@ import HostSettingsModal from '@/components/HostSettingsModal';
 import QuestCategoryFilter, { CATEGORIES, filterQuestsByCategory } from '@/components/QuestCategoryFilter';
 import QuestWorldMap from '@/components/QuestWorldMap';
 import RKOButton from '@/components/RKOButton';
+import ActivityStream from '@/components/ActivityStream';
 
 // Floating particle component for atmosphere
 function Particle({ style }) {
