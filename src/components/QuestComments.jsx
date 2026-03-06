@@ -34,6 +34,17 @@ export default function QuestComments({ questId }) {
     if (!authorName.trim() || !content.trim()) return;
     setSubmitting(true);
     await base44.entities.QuestComment.create({ quest_id: questId, author_name: authorName.trim(), content: content.trim() });
+    // Log to Activity Stream
+    try {
+      const quests = await base44.entities.Quest.filter({ id: questId });
+      await base44.entities.Activity.create({
+        type: 'comment_added',
+        user_name: authorName.trim(),
+        quest_id: questId,
+        quest_title: quests[0]?.title || '',
+        content: content.trim(),
+      });
+    } catch (_) {}
     setContent('');
     setSubmitting(false);
   };
