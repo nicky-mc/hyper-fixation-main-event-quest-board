@@ -280,6 +280,11 @@ export default function QuestBoard() {
           <RKOButton userIsAdmin={user?.role === 'admin'} />
         </motion.div>
 
+        {/* ── CATEGORY FILTER ── */}
+        {!loading && quests.length > 0 && (
+          <QuestCategoryFilter active={activeCategory} onChange={setActiveCategory} counts={categoryCounts} />
+        )}
+
         {/* ── QUEST GRID ── */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
