@@ -70,10 +70,17 @@ export default function QuestBoard() {
     if (quests.length > 0) loadVoteCounts(quests);
   }, [quests]);
 
-  // Re-sort when vote counts change if sort is active
+  // Category counts for filter badges
+  const categoryCounts = { total: quests.length };
+  CATEGORIES.forEach(cat => {
+    if (cat.id !== 'all') categoryCounts[cat.id] = filterQuestsByCategory(quests, cat.id).length;
+  });
+
+  // Filter then sort
+  const filteredQuests = filterQuestsByCategory(quests, activeCategory);
   const displayedQuests = sortByVotes
-    ? [...quests].sort((a, b) => (voteCounts[b.id] || 0) - (voteCounts[a.id] || 0))
-    : quests;
+    ? [...filteredQuests].sort((a, b) => (voteCounts[b.id] || 0) - (voteCounts[a.id] || 0))
+    : filteredQuests;
 
   const rollForInitiative = async () => {
     if (quests.length === 0 || isRolling) return;
