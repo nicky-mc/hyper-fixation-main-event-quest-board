@@ -267,6 +267,17 @@ export default function QuestBoard() {
               {sortByVotes ? "Sorted by Votes" : "Sort by Votes"}
             </motion.button>
           )}
+
+          {/* World Map button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            onClick={() => setMapOpen(true)}
+            className="flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-cyan-800/50 bg-cyan-950/30 text-cyan-400 hover:border-cyan-600/70 font-bold text-sm transition-all"
+          >
+            <Map className="w-4 h-4" /> Quest Map
+          </motion.button>
+
+          <RKOButton userIsAdmin={user?.role === 'admin'} />
         </motion.div>
 
         {/* ── QUEST GRID ── */}
