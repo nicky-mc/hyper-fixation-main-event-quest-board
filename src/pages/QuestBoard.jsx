@@ -371,6 +371,9 @@ export default function QuestBoard() {
 
       <QuestSubmissionDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onQuestSubmitted={loadQuests} />
       <HostSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <AnimatePresence>
+        {mapOpen && <QuestWorldMap quests={quests} onClose={() => setMapOpen(false)} />}
+      </AnimatePresence>
     </div>
   );
 }
