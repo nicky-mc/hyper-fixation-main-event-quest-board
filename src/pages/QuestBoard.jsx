@@ -45,6 +45,8 @@ export default function QuestBoard() {
   const [sortByVotes, setSortByVotes] = useState(false);
   const [voteCounts, setVoteCounts] = useState({});
   const [user, setUser] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [mapOpen, setMapOpen] = useState(false);
 
   const loadQuests = async () => {
     const data = await base44.entities.Quest.list('-created_date', 50);
