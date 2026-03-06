@@ -335,6 +335,9 @@ export default function QuestBoard() {
           </div>
         )}
 
+          </div>{/* end flex-1 quest grid */}
+        </div>{/* end flex layout */}
+
         {/* ── SELECTED ANNOUNCEMENT ── */}
         <AnimatePresence>
           {selectedQuestId && !isRolling && (
