@@ -48,19 +48,19 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import AdventurerProfile from './pages/AdventurerProfile';
-import QuestBoard from './pages/QuestBoard';
 import Messages from './pages/Messages';
-import NewsFeed from './pages/NewsFeed';
 import MyAdventurer from './pages/MyAdventurer';
+import NewsFeed from './pages/NewsFeed';
+import QuestBoard from './pages/QuestBoard';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AdventurerProfile": AdventurerProfile,
-    "QuestBoard": QuestBoard,
     "Messages": Messages,
-    "NewsFeed": NewsFeed,
     "MyAdventurer": MyAdventurer,
+    "NewsFeed": NewsFeed,
+    "QuestBoard": QuestBoard,
 }
 
 export const pagesConfig = {

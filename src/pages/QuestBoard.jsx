@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Scroll, Crown, Swords, Loader2, Fish, Radio, Star, Settings, ArrowUpDown } from 'lucide-react';
+import { Plus, Scroll, Crown, Swords, Loader2, Fish, Radio, Star, Settings, ArrowUpDown, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,6 +7,9 @@ import QuestCard from '@/components/QuestCard';
 import QuestSubmissionDrawer from '@/components/QuestSubmissionDrawer';
 import NotificationBell from '@/components/NotificationBell';
 import HostSettingsModal from '@/components/HostSettingsModal';
+import QuestCategoryFilter, { CATEGORIES, filterQuestsByCategory } from '@/components/QuestCategoryFilter';
+import QuestWorldMap from '@/components/QuestWorldMap';
+import RKOButton from '@/components/RKOButton';
 
 // Floating particle component for atmosphere
 function Particle({ style }) {
