@@ -304,6 +304,12 @@ export default function QuestBoard() {
               No quests posted yet. Even the sharks are waiting. Be the first!
             </p>
           </motion.div>
+        ) : displayedQuests.length === 0 ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-3xl text-purple-300/50 mb-2" style={{ fontFamily: "'Caveat', cursive" }}>No quests in this zone yet...</p>
+            <p className="text-slate-600 text-sm">Try a different category or post one!</p>
+          </motion.div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
             {displayedQuests.map((quest, i) => (
