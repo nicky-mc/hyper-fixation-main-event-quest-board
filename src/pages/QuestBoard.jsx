@@ -390,7 +390,7 @@ export default function QuestBoard() {
             ⚔️ THE HYPER-FIXATION MAIN EVENT · CO-OP MODE ACTIVE · 🦈 SHARKS DETECTED 🦈
           </span>
         </div>
-      </div>
+      </div>{/* end max-w-7xl */}
 
       <QuestSubmissionDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onQuestSubmitted={loadQuests} />
       <HostSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
