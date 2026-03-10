@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 
 // Zone definitions with fantasy location names tied to segment topics
 const ZONES = [
@@ -85,7 +85,7 @@ export default function QuestWorldMap({ quests, onClose }) {
     }
   });
 
-  const [hoveredZone, setHoveredZone] = React.useState(null);
+  const [hoveredZone, setHoveredZone] = useState(null);
   const zoneMap = Object.fromEntries(ZONES.map(z => [z.id, z]));
 
   return (
