@@ -121,6 +121,8 @@ export default function ActivityStream() {
     const unsub = base44.entities.Activity.subscribe((event) => {
       if (event.type === 'create') {
         setActivities(prev => [event.data, ...prev].slice(0, 50));
+      } else if (event.type === 'delete') {
+        setActivities(prev => prev.filter(a => a.id !== event.id));
       }
     });
     return unsub;

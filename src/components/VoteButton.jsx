@@ -36,6 +36,11 @@ export default function VoteButton({ questId, isSelected }) {
     if (hasVoted) {
       const myVote = votes.find(v => v.voter_email === userEmail);
       if (myVote) await base44.entities.QuestVote.delete(myVote.id);
+      // Remove the corresponding activity entry
+      try {
+        const acts = await base44.entities.Activity.filter({ type: 'quest_voted', quest_id: questId, user_email: userEmail });
+        await Promise.all(acts.map(a => base44.entities.Activity.delete(a.id)));
+      } catch (_) {}
     } else {
       await base44.entities.QuestVote.create({ quest_id: questId, voter_email: userEmail });
       // Log to Activity Stream
