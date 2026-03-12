@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Rss, Plus, Send, Loader2, Trash2, ImageIcon, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,7 +13,7 @@ export default function NewsFeed() {
   const [imageUrl, setImageUrl] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const fileInputRef = { current: null };
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -32,6 +32,13 @@ export default function NewsFeed() {
     setLoading(false);
   };
 
+  const handleFileUpload = async (file) => {
+    setUploading(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setImageUrl(file_url);
+    setUploading(false);
+  };
+
   const submitPost = async () => {
     if (!content.trim() || posting || !user) return;
     setPosting(true);
@@ -39,7 +46,7 @@ export default function NewsFeed() {
       author_name: user.full_name || user.email,
       author_email: user.email,
       content: content.trim(),
-      image_url: imageUrl.trim() || undefined,
+      image_url: imageUrl || undefined,
     });
     setContent('');
     setImageUrl('');
@@ -96,17 +103,31 @@ export default function NewsFeed() {
                 rows={4}
                 className="w-full bg-purple-950/30 border border-purple-800/40 rounded-lg px-3 py-2 text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:border-purple-500 resize-none"
               />
-              <input
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-                placeholder="Image URL (optional)"
-                className="w-full bg-purple-950/30 border border-purple-800/40 rounded-lg px-3 py-2 text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:border-purple-500"
-              />
-              {imageUrl && (
-                <img src={imageUrl} alt="preview" className="rounded-lg max-h-40 object-cover w-full" />
+
+              {/* Image upload */}
+              {imageUrl ? (
+                <div className="relative">
+                  <img src={imageUrl} alt="preview" className="rounded-lg max-h-48 object-cover w-full" />
+                  <button onClick={() => setImageUrl('')}
+                    className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:bg-black/80 transition-colors">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="flex items-center gap-2 w-full px-3 py-2 rounded-lg border border-dashed border-purple-800/60 text-sm text-purple-500 hover:border-purple-600 hover:text-purple-300 transition-all"
+                >
+                  {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
+                  {uploading ? 'Uploading…' : 'Attach an image or GIF'}
+                </button>
               )}
+              <input ref={fileInputRef} type="file" accept="image/*,image/gif,video/mp4"
+                className="hidden" onChange={e => e.target.files?.[0] && handleFileUpload(e.target.files[0])} />
+
               <div className="flex justify-end gap-2">
-                <button onClick={() => setShowForm(false)} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-300">Cancel</button>
+                <button onClick={() => { setShowForm(false); setImageUrl(''); }} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-300">Cancel</button>
                 <button onClick={submitPost} disabled={posting || !content.trim()}
                   className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-purple-700 hover:bg-purple-600 text-white text-sm font-semibold disabled:opacity-40 transition-all">
                   {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />} Post
@@ -133,7 +154,6 @@ export default function NewsFeed() {
             {posts.map(post => (
               <motion.div key={post.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 className="rounded-2xl border border-purple-900/40 bg-[#0d0d1a] overflow-hidden">
-                {/* Author row */}
                 <div className="px-5 py-3 flex items-center justify-between border-b border-purple-900/30">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-white text-xs font-black">
@@ -151,7 +171,6 @@ export default function NewsFeed() {
                     </button>
                   )}
                 </div>
-                {/* Content */}
                 <div className="px-5 py-4">
                   <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{post.content}</p>
                   {post.image_url && (

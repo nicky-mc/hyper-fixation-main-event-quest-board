@@ -49,6 +49,7 @@ export default function QuestBoard() {
   const [user, setUser] = useState(null);
   const [activeCategory, setActiveCategory] = useState('all');
   const [mapOpen, setMapOpen] = useState(false);
+  const [modalQuest, setModalQuest] = useState(null);
 
   const isAdmin = user?.role === 'admin';
 
@@ -356,6 +357,7 @@ export default function QuestBoard() {
                 isRolling={isRolling && rollingId === quest.id}
                 currentUser={user}
                 onDeleted={loadQuests}
+                onOpen={setModalQuest}
               />
             ))}
           </div>
@@ -422,6 +424,11 @@ export default function QuestBoard() {
       <HostSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <AnimatePresence>
         {mapOpen && <QuestWorldMap quests={quests} onClose={() => setMapOpen(false)} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {modalQuest && (
+          <QuestDetailModal quest={modalQuest} onClose={() => setModalQuest(null)} currentUser={user} onDeleted={loadQuests} />
+        )}
       </AnimatePresence>
     </div>
   );
