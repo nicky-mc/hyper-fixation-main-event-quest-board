@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Sword, Scroll, Bookmark, CheckCircle2, Clock, Star, Trash2, ChevronRight, MessageCircle, Crown, Shield, Zap, Trophy, Flame } from 'lucide-react';
+import { Loader2, Sword, Scroll, Bookmark, CheckCircle2, Clock, Star, Trash2, ChevronRight, MessageCircle, Crown, Shield, Zap, Trophy, Flame, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
