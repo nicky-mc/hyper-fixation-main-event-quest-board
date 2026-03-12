@@ -157,15 +157,16 @@ export default function NewsFeed() {
                 className="rounded-2xl border border-purple-900/40 bg-[#0d0d1a] overflow-hidden">
                 {/* Author row */}
                 <div className="px-5 py-3 flex items-center justify-between border-b border-purple-900/30">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-white text-xs font-black">
-                      {post.author_name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-purple-200">{post.author_name}</p>
-                      <p className="text-[10px] text-slate-600">{formatTime(post.created_date)}</p>
-                    </div>
+                  <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(post.author_name)}`}
+                  className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-white text-xs font-black">
+                    {post.author_name.charAt(0).toUpperCase()}
                   </div>
+                  <div>
+                    <p className="text-sm font-semibold text-purple-200">{post.author_name}</p>
+                    <p className="text-[10px] text-slate-600">{formatTime(post.created_date)}</p>
+                  </div>
+                  </Link>
                   {user && (user.email === post.author_email || user.role === 'admin') && (
                     <button onClick={() => deletePost(post.id)}
                       className="p-1.5 text-slate-600 hover:text-red-400 transition-colors rounded">
