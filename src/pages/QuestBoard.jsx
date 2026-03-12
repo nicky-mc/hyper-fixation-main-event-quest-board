@@ -181,17 +181,33 @@ export default function QuestBoard() {
             </span>
           </div>
 
+          {/* Logo */}
+          <div className="flex justify-center mb-4">
+            <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg"
+              alt="The Hyper-Fixation Main Event"
+              className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover"
+              style={{ border: '2px solid rgba(251,191,36,0.5)', boxShadow: '0 0 40px rgba(251,191,36,0.3), 0 0 80px rgba(239,68,68,0.15)' }} />
+          </div>
+
           {/* Main title */}
           <div className="relative inline-block">
-            <motion.img
-              src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg"
-              alt="The Hyper-Fixation Main Event"
-              animate={{ filter: ['drop-shadow(0 0 12px rgba(251,191,36,0.3))', 'drop-shadow(0 0 28px rgba(251,191,36,0.6))', 'drop-shadow(0 0 12px rgba(251,191,36,0.3))'] }}
+            <motion.h1
+              animate={{ textShadow: ['0 0 30px rgba(251,191,36,0.3)', '0 0 70px rgba(251,191,36,0.55)', '0 0 30px rgba(251,191,36,0.3)'] }}
               transition={{ duration: 3.5, repeat: Infinity }}
-              className="w-40 h-40 sm:w-52 sm:h-52 rounded-full mx-auto object-cover"
-              style={{ border: '3px solid rgba(251,191,36,0.4)', boxShadow: '0 0 40px rgba(251,191,36,0.2)' }}
-            />
-            <p className="font-semibold text-purple-300/70 mt-3 tracking-[0.3em] uppercase"
+              className="font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 leading-tight"
+              style={{ fontSize: 'clamp(1.8rem, 6vw, 4rem)', fontFamily: "'Orbitron', sans-serif", letterSpacing: '0.04em' }}
+            >
+              THE HYPER-FIXATION
+            </motion.h1>
+            <div className="flex items-center justify-center gap-3 mt-2">
+              <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
+              <span className="font-bold tracking-[0.3em] uppercase text-sm"
+                style={{ fontFamily: "'Orbitron', sans-serif", color: '#ef4444', textShadow: '0 0 12px rgba(239,68,68,0.5)', fontSize: '0.65rem' }}>
+                ⚔ MAIN EVENT ⚔
+              </span>
+              <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
+            </div>
+            <p className="font-semibold text-purple-300/70 mt-1 tracking-[0.3em] uppercase"
               style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.85rem' }}>
               Quest Board
             </p>
