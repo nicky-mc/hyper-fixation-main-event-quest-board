@@ -183,8 +183,14 @@ export default function MyAdventurer() {
 
               {/* Avatar circle with level badge */}
               <div className="relative shrink-0">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 border-4 border-purple-500/60 flex items-center justify-center text-4xl font-black text-white shadow-2xl shadow-purple-900/50">
-                  {name.charAt(0).toUpperCase()}
+                <div className="w-24 h-24 rounded-full border-4 border-purple-500/60 overflow-hidden shadow-2xl shadow-purple-900/50">
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt={name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 flex items-center justify-center text-4xl font-black text-white">
+                      {name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <motion.div
                   animate={{ boxShadow: ['0 0 8px rgba(251,191,36,0.4)', '0 0 20px rgba(251,191,36,0.8)', '0 0 8px rgba(251,191,36,0.4)'] }}
