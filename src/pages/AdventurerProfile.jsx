@@ -386,8 +386,8 @@ export default function AdventurerProfile() {
                 <div className="flex items-center mt-4 border-t border-purple-900/30 pt-3 divide-x divide-purple-900/30">
                   <StatPill label="Quests" value={myQuests.length} color="text-red-400" />
                   <StatPill label="Comments" value={comments.length} color="text-cyan-400" />
-                  <StatPill label="Followers" value={followerCount} color="text-amber-400" />
-                  <StatPill label="Following" value={followingCount} color="text-purple-400" />
+                  <StatPill label="Friends" value={followerCount + followingCount} color="text-amber-400" />
+                  <StatPill label="Quests" value={myQuests.length} color="text-purple-400" />
                 </div>
               </div>
             </motion.div>
