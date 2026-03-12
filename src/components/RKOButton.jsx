@@ -41,7 +41,7 @@ export default function RKOButton({ userIsAdmin }) {
         whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
         whileTap={{ scale: 0.9 }}
         onClick={trigger}
-        className="relative flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-orange-600/60 font-black text-sm text-orange-300 overflow-hidden"
+        className="relative h-14 flex items-center gap-2 px-5 rounded-xl border-2 border-orange-600/60 font-black text-sm text-orange-300 overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, rgba(154,52,18,0.4), rgba(120,53,15,0.2))',
           boxShadow: '0 0 20px rgba(234,88,12,0.2)',
