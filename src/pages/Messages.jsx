@@ -76,7 +76,31 @@ export default function Messages() {
 
   const loadData = async (prof) => {
     const isAdmin = prof.role === 'admin';
-    const msgs = await base44.entities.Message.list('-created_date', 500);
+    let msgs = await base44.entities.Message.list('-created_date', 500);
+    
+    // Migrate old messages with email fields to new ID-based format
+    msgs = await Promise.all(msgs.map(async (m) => {
+      if (!m.sender_id && m.sender_email) {
+        const senderProf = (await base44.entities.AdventurerProfile.filter({ email: m.sender_email }))[0];
+        const recipProf = (await base44.entities.AdventurerProfile.filter({ email: m.recipient_email }))[0];
+        if (senderProf && recipProf) {
+          return base44.entities.Message.update(m.id, {
+            sender_id: senderProf.id,
+            sender_name: senderProf.adventurer_name,
+            recipient_id: recipProf.id,
+            recipient_name: recipProf.adventurer_name,
+          }).then(() => ({
+            ...m,
+            sender_id: senderProf.id,
+            sender_name: senderProf.adventurer_name,
+            recipient_id: recipProf.id,
+            recipient_name: recipProf.adventurer_name,
+          }));
+        }
+      }
+      return m;
+    }));
+    
     setMessages(msgs);
 
     // Mark my unread messages as read
