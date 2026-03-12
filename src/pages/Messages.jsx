@@ -134,11 +134,19 @@ export default function Messages() {
     ));
   };
 
+  const isAdmin = user?.role === 'admin';
   const conversation = selectedUser
-    ? messages.filter(m =>
-        (m.sender_email === user.email && m.recipient_email === selectedUser.email) ||
-        (m.sender_email === selectedUser.email && m.recipient_email === user.email)
-      ).slice().reverse()
+    ? messages.filter(m => {
+        const involves = (email) => m.sender_email === email || m.recipient_email === email;
+        if (isAdmin && !involves(user.email)) {
+          // Admin viewing a thread they're not part of — show full thread involving selectedUser
+          return involves(selectedUser.email);
+        }
+        return (
+          (m.sender_email === user.email && m.recipient_email === selectedUser.email) ||
+          (m.sender_email === selectedUser.email && m.recipient_email === user.email)
+        );
+      }).slice().reverse()
     : [];
 
   const getUnread = (email) =>
