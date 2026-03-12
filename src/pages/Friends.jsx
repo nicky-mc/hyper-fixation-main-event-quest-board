@@ -323,10 +323,10 @@ export default function Friends() {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {friendProfiles.map((fp, i) => (
-                      <FriendCard key={fp._friendship.id} profile={fp} mutual={getMutualCount(fp.adventurer_name)}
-                        onMessage={() => window.location.href = createPageUrl('Messages')}
-                        onRemove={() => removeFriend(fp)} />
-                    ))}
+                       <FriendCard key={fp._friendship.id} profile={fp} mutual={getMutualCount(fp.id)}
+                         onMessage={() => window.location.href = createPageUrl('Messages')}
+                         onRemove={() => removeFriend(fp)} />
+                     ))}
                   </div>
                 )}
               </div>
