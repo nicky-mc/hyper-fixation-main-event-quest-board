@@ -1,4 +1,4 @@
-import { MessageCircle, Trash2 } from 'lucide-react';
+import { MessageCircle, Trash2, Sword, Shield, Scroll, Star, Flame, Zap, Radio, Skull, Fish, Telescope, BookOpen, Dices, Trophy, Anchor, Ghost, Tv, RotateCcw, Users, Heart } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,7 +6,28 @@ import { useState, useEffect } from 'react';
 import VoteButton from '@/components/VoteButton';
 import SaveQuestButton from '@/components/SaveQuestButton';
 import QuestDetailModal from '@/components/QuestDetailModal';
-import { segmentConfig, fallback } from '@/lib/questSegments';
+
+const segmentConfig = {
+  'The Gimmick Check':            { icon: Zap,        color: 'from-amber-600 to-yellow-500',    label: 'Identity & Character Arcs' },
+  'Patch Notes':                  { icon: Radio,      color: 'from-cyan-700 to-teal-500',       label: 'Life Updates & Milestones' },
+  'World Building':               { icon: Telescope,  color: 'from-indigo-700 to-violet-500',   label: 'Trope Analysis' },
+  'Roll for Initiative':          { icon: Dices,      color: 'from-red-700 to-orange-500',      label: 'Real Life Challenges' },
+  'The Tavern Entry':             { icon: Trophy,     color: 'from-amber-800 to-yellow-600',    label: 'Show Opener' },
+  'The Main Quest':               { icon: Sword,      color: 'from-red-800 to-red-500',         label: 'Primary Topic' },
+  'Heart of the Story':           { icon: Heart,      color: 'from-rose-700 to-pink-500',       label: 'Personal Connection' },
+  'The Loot Drop':                { icon: Star,       color: 'from-emerald-700 to-teal-500',    label: 'Listener Mail & Sign-Off' },
+  'The Respec':                   { icon: RotateCcw,  color: 'from-purple-700 to-violet-500',   label: 'Changed Our Minds' },
+  'Glitches in the Holodeck':     { icon: Tv,         color: 'from-blue-700 to-cyan-500',       label: 'Star Trek / Sci-Fi Chaos' },
+  'Critical Fails & Jump Scares': { icon: Skull,      color: 'from-stone-700 to-red-900',       label: 'Horror & Nat 1 Moments' },
+  'The Hyper-fixation Main Event':{ icon: Flame,      color: 'from-orange-700 to-amber-500',    label: 'Apex Obsession Mode' },
+  'The Dark Match':               { icon: Ghost,      color: 'from-slate-700 to-stone-500',     label: 'Underrated Picks' },
+  'Heel Turn':                    { icon: Shield,     color: 'from-rose-800 to-red-600',        label: 'Controversial Takes' },
+  'The Co-Op Club':               { icon: Users,      color: 'from-lime-700 to-green-500',      label: 'Community Activity' },
+  'Character Sheets':             { icon: BookOpen,   color: 'from-fuchsia-700 to-purple-500',  label: 'Alignment Votes' },
+  'Shark Week Special':           { icon: Fish,       color: 'from-blue-800 to-indigo-600',     label: '🦈 Watch Out!' },
+  "Captain's Log":                { icon: Anchor,     color: 'from-sky-700 to-blue-600',        label: 'Stardate Report' },
+};
+const fallback = { icon: Scroll, color: 'from-stone-600 to-stone-500', label: 'Side Quest' };
 
 // Warp-speed streaks overlay
 function WarpEffect() {
