@@ -17,7 +17,18 @@ function MediaPreview({ url, type }) {
   return <img src={url} alt="" className="mt-2 rounded-lg max-h-44 object-cover w-full" />;
 }
 
-function PostItem({ post, user, onDelete }) {
+function Avatar({ name, url, size = 7 }) {
+  return url ? (
+    <img src={url} alt={name} className={`w-${size} h-${size} rounded-full object-cover shrink-0 border border-purple-600/30`} />
+  ) : (
+    <div className={`w-${size} h-${size} rounded-full bg-gradient-to-br from-purple-700 to-indigo-900 border border-purple-600/40 flex items-center justify-center text-[11px] font-black text-purple-200 shrink-0`}>
+      {(name || '?').charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+function PostItem({ post, user, onDelete, profiles }) {
+  const profile = profiles?.[post.author_name];
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
@@ -27,11 +38,13 @@ function PostItem({ post, user, onDelete }) {
     >
       <div className="px-4 py-2.5 flex items-center justify-between border-b border-purple-900/30">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-700 to-indigo-900 border border-purple-600/40 flex items-center justify-center text-[11px] font-black text-purple-200 shrink-0">
-            {(post.author_name || '?').charAt(0).toUpperCase()}
-          </div>
+          <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(post.author_name || '')}`}>
+            <Avatar name={post.author_name} url={profile?.avatar_url} />
+          </Link>
           <div>
-            <p className="text-xs font-bold text-purple-200">{post.author_name}</p>
+            <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(post.author_name || '')}`}>
+              <p className="text-xs font-bold text-purple-200 hover:text-purple-100">{post.author_name}</p>
+            </Link>
             <p className="text-[9px] text-slate-600">
               {post.created_date ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true }) : 'just now'}
             </p>
