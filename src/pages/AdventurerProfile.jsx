@@ -65,6 +65,9 @@ export default function AdventurerProfile() {
   const [activeTab, setActiveTab] = useState('quests');
   const avatarRef = useRef(null);
   const coverRef = useRef(null);
+  const [viewingImage, setViewingImage] = useState(null);
+  const [editingCoverPosition, setEditingCoverPosition] = useState(false);
+  const [coverDisplay, setCoverDisplay] = useState({ position: { x: 50, y: 50 }, zoom: 100 });
 
   useEffect(() => {
     base44.auth.me().then(u => setCurrentUser(u)).catch(() => {});
