@@ -6,17 +6,33 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 export default function AdventurersDirectory() {
-  const [profiles, setProfiles] = useState([]);
-  const [query, setQuery]       = useState('');
-  const [loading, setLoading]   = useState(true);
+  const [adventurers, setAdventurers] = useState([]);
+  const [query, setQuery]             = useState('');
+  const [loading, setLoading]         = useState(true);
 
   useEffect(() => {
-    base44.entities.AdventurerProfile.list('adventurer_name', 200)
-      .then(d => { setProfiles(d); setLoading(false); });
+    Promise.all([
+      base44.entities.User.list('full_name', 200),
+      base44.entities.AdventurerProfile.list('adventurer_name', 200),
+    ]).then(([users, profiles]) => {
+      // Build a map of profiles keyed by adventurer_name
+      const profileMap = {};
+      profiles.forEach(p => { profileMap[p.adventurer_name] = p; });
+
+      // Merge: one entry per user, enriched with profile data if it exists
+      const merged = users.map(u => {
+        const name = u.full_name || u.email;
+        const prof = profileMap[name] || {};
+        return { id: u.id, name, email: u.email, avatar_url: prof.avatar_url, location: prof.location, favorite_segment: prof.favorite_segment };
+      });
+
+      setAdventurers(merged);
+      setLoading(false);
+    });
   }, []);
 
-  const filtered = profiles.filter(p =>
-    !query || p.adventurer_name?.toLowerCase().includes(query.toLowerCase()) ||
+  const filtered = adventurers.filter(p =>
+    !query || p.name?.toLowerCase().includes(query.toLowerCase()) ||
     p.location?.toLowerCase().includes(query.toLowerCase())
   );
 
