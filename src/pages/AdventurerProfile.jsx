@@ -116,27 +116,44 @@ export default function AdventurerProfile() {
   const loadFriendship = async () => {
     if (!currentUser) return;
     const myName = currentUser.full_name || currentUser.email;
-    const records = await base44.entities.Friendship.filter({ follower_email: currentUser.email, following_name: adventurerName });
-    setFriendshipRecord(records[0] || null);
+    // Check both directions
+    const [sent, received] = await Promise.all([
+      base44.entities.Friendship.filter({ requester_email: currentUser.email, recipient_name: adventurerName }),
+      base44.entities.Friendship.filter({ recipient_email: currentUser.email, requester_name: adventurerName }),
+    ]);
+    setFriendshipRecord(sent[0] || received[0] || null);
   };
 
-  const toggleFollow = async () => {
+  const handleFriendAction = async () => {
     if (!currentUser) { base44.auth.redirectToLogin(window.location.pathname); return; }
     const myName = currentUser.full_name || currentUser.email;
     if (myName === adventurerName) return;
     setFriendTogglingLoading(true);
-    if (friendshipRecord) {
-      await base44.entities.Friendship.delete(friendshipRecord.id);
-      setFriendshipRecord(null);
-      setFollowerCount(c => c - 1);
-    } else {
+
+    if (!friendshipRecord) {
+      // Send request
       const rec = await base44.entities.Friendship.create({
-        follower_name: myName,
-        follower_email: currentUser.email,
-        following_name: adventurerName,
+        requester_email: currentUser.email,
+        requester_name: myName,
+        recipient_name: adventurerName,
+        recipient_email: '',
+        status: 'pending',
       });
       setFriendshipRecord(rec);
+    } else if (friendshipRecord.status === 'pending' && friendshipRecord.requester_email === currentUser.email) {
+      // Cancel sent request
+      await base44.entities.Friendship.delete(friendshipRecord.id);
+      setFriendshipRecord(null);
+    } else if (friendshipRecord.status === 'pending' && friendshipRecord.requester_email !== currentUser.email) {
+      // Accept incoming request
+      const updated = await base44.entities.Friendship.update(friendshipRecord.id, { status: 'accepted' });
+      setFriendshipRecord(updated);
       setFollowerCount(c => c + 1);
+    } else if (friendshipRecord.status === 'accepted') {
+      // Unfriend
+      await base44.entities.Friendship.delete(friendshipRecord.id);
+      setFriendshipRecord(null);
+      setFollowerCount(c => Math.max(0, c - 1));
     }
     setFriendTogglingLoading(false);
   };
