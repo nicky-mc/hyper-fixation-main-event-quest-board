@@ -210,12 +210,17 @@ export default function AdventurerProfile() {
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
+  const HOST_EMAILS = ['admin']; // role check — admin role = hostess
   const avatarUrl = profile?.avatar_url;
   const coverUrl = profile?.cover_url;
-  const charClass = getCharacterClass(comments.length);
+  const isProfileAdmin = profileUserRole === 'admin';
+  const isCurrentUserAdmin = currentUser?.role === 'admin';
+  const charClass = getCharacterClass(comments.length, isProfileAdmin);
   const CharIcon = charClass.icon;
   const myName = currentUser ? (currentUser.full_name || currentUser.email) : null;
   const isOwnProfile = myName === adventurerName;
+  const isFriend = friendshipRecord?.status === 'accepted';
+  const canMessage = !isOwnProfile && isFriend;
 
   const tabs = [
     { id: 'quests', label: 'Quests', icon: Sword, count: myQuests.length },
