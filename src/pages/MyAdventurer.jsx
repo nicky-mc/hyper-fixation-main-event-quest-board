@@ -97,14 +97,16 @@ export default function MyAdventurer() {
 
   const loadAll = async (u) => {
     const name = u.full_name || u.email;
-    const [quests, comms, saved] = await Promise.all([
+    const [quests, comms, saved, profiles] = await Promise.all([
       base44.entities.Quest.list('-created_date', 200),
       base44.entities.QuestComment.filter({ author_name: name }),
       base44.entities.SavedQuest.filter({ saver_email: u.email }),
+      base44.entities.AdventurerProfile.filter({ adventurer_name: name }),
     ]);
     setAllQuests(quests);
     setComments(comms);
     setSavedRecords(saved);
+    setProfile(profiles[0] || null);
     setLoading(false);
   };
 
