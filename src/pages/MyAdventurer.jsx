@@ -225,15 +225,15 @@ export default function MyAdventurer() {
                   <span className={cn("text-sm font-bold", charClass.color)}>{charClass.title}</span>
                 </div>
                 <p className="text-[10px] text-purple-600 font-mono uppercase tracking-widest mt-0.5">
-                  Level {level} · {xp} Total XP
+                 Level {level} · {isAdmin ? '∞ MAX XP' : `${xp} Total XP`}
                 </p>
 
                 {/* XP progress bar */}
                 <div className="mt-3 max-w-xs mx-auto sm:mx-0">
-                  <div className="flex justify-between text-[9px] text-slate-600 mb-1">
-                    <span>Progress to Level {level + 1}</span>
-                    <span>{xpInLevel} / 200 XP</span>
-                  </div>
+                 <div className="flex justify-between text-[9px] text-slate-600 mb-1">
+                   <span>{isAdmin ? 'MAX LEVEL REACHED' : `Progress to Level ${level + 1}`}</span>
+                   <span>{isAdmin ? '∞ / ∞ XP' : `${xpInLevel} / 200 XP`}</span>
+                 </div>
                   <div className="h-2.5 bg-purple-950/60 rounded-full border border-purple-800/30 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
