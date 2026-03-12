@@ -38,7 +38,6 @@ const NAV_ITEMS = [
 ];
 
 export default function Layout({ children, currentPageName }) {
-  const { profile, loading: syncLoading } = useAdventurerSync();
   const [user, setUser]             = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,24 +46,24 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     base44.auth.me().then(u => {
       setUser(u);
-      if (u && profile) loadUnread(profile.id);
+      if (u) loadUnread(u.email);
     }).catch(() => {});
-  }, [profile]);
+  }, []);
 
-  const loadUnread = async (adventurerId) => {
-    const msgs = await base44.entities.Message.filter({ recipient_id: adventurerId, read: false });
+  const loadUnread = async (profileId) => {
+    const msgs = await base44.entities.Message.filter({ recipient_id: profileId, read: false });
     setUnreadCount(msgs.length);
   };
 
   useEffect(() => {
-    if (!user) return;
+    if (!profile) return;
     const unsub = base44.entities.Message.subscribe((event) => {
-      if (event.type === 'create' && event.data?.recipient_email === user.email) {
+      if (event.type === 'create' && event.data?.recipient_id === profile.id) {
         setUnreadCount(c => c + 1);
       }
     });
     return unsub;
-  }, [user]);
+  }, [profile]);
 
   const handleLogin  = () => base44.auth.redirectToLogin(window.location.pathname);
   const handleLogout = () => base44.auth.logout('/');
@@ -198,6 +197,7 @@ export default function Layout({ children, currentPageName }) {
   );
 
   return (
+    <AdventurerContext.Provider value={profile}>
     <div className="min-h-screen flex relative"
       style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
 
