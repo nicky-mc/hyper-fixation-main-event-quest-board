@@ -59,28 +59,34 @@ export default function Messages() {
   }, []);
 
   const loadData = async (u) => {
-    const msgs = await base44.entities.Message.list('-created_date', 200);
+    const isAdmin = u.role === 'admin';
+    const msgs = await base44.entities.Message.list('-created_date', 500);
     setMessages(msgs);
+
+    // Mark my unread messages as read
     const unread = msgs.filter(m => m.recipient_email === u.email && !m.read);
     unread.forEach(m => base44.entities.Message.update(m.id, { read: true }));
 
-    let others = [];
-    try {
-      const users = await base44.entities.User.list();
-      others = users.filter(x => x.email !== u.email);
-    } catch {
-      const partnerMap = {};
-      msgs.forEach(m => {
-        if (m.sender_email !== u.email) {
-          partnerMap[m.sender_email] = { id: m.sender_email, email: m.sender_email, full_name: m.sender_name };
+    // Derive conversation partners from messages (works for all users, admins see everyone)
+    const partnerMap = {};
+    msgs.forEach(m => {
+      // For normal users: only their own conversations
+      // For admins: all threads — build both sides
+      const addPartner = (email, name) => {
+        if (email && email !== u.email && !partnerMap[email]) {
+          partnerMap[email] = { id: email, email, full_name: name || email };
         }
-        if (m.recipient_email !== u.email) {
-          partnerMap[m.recipient_email] = partnerMap[m.recipient_email] || { id: m.recipient_email, email: m.recipient_email, full_name: m.recipient_email };
-        }
-      });
-      others = Object.values(partnerMap);
-    }
-    setAllUsers(others);
+      };
+      if (isAdmin) {
+        addPartner(m.sender_email, m.sender_name);
+        addPartner(m.recipient_email, m.recipient_email);
+      } else {
+        if (m.sender_email === u.email) addPartner(m.recipient_email, m.recipient_email);
+        if (m.recipient_email === u.email) addPartner(m.sender_email, m.sender_name);
+      }
+    });
+
+    setAllUsers(Object.values(partnerMap));
     setLoading(false);
   };
 
