@@ -195,7 +195,7 @@ export default function ActivityStream() {
           <p className="text-center text-xs text-slate-600 py-6">No posts yet — be the first!</p>
         ) : (
           <AnimatePresence initial={false}>
-            {posts.map(p => <PostItem key={p.id} post={p} user={user} onDelete={deletePost} />)}
+            {posts.map(p => <PostItem key={p.id} post={p} user={user} onDelete={deletePost} profiles={profiles} />)}
           </AnimatePresence>
         )}
       </div>
