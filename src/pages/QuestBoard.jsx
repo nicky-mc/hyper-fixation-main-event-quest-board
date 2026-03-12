@@ -51,7 +51,8 @@ export default function QuestBoard() {
   const [mapOpen, setMapOpen] = useState(false);
   const [modalQuest, setModalQuest] = useState(null);
 
-  const isAdmin = user?.role === 'admin';
+  const ADMIN_EMAILS = ['charlotte_cowles@yahoo.co.uk', 'nicky.mortoza-cowles@techeducators.co.uk'];
+  const isAdmin = user?.role === 'admin' || ADMIN_EMAILS.includes(user?.email);
 
   const loadQuests = async () => {
     const data = await base44.entities.Quest.list('-created_date', 100);
