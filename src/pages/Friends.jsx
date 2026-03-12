@@ -244,7 +244,7 @@ export default function Friends() {
     </div>
   );
 
-  if (!user) return (
+  if (!profile) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 text-slate-500">
       <Users className="w-10 h-10" />
       <p className="text-sm">Please log in to view friends.</p>
