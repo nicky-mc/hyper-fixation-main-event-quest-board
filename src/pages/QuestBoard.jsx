@@ -90,6 +90,7 @@ export default function QuestBoard() {
     : filteredQuests;
 
   const rollForInitiative = async () => {
+    if (!isAdmin) return;
     if (pendingQuests.length === 0 || isRolling) return;
     setIsRolling(true);
     setSelectedQuestId(null);
