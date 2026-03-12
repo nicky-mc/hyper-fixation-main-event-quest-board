@@ -81,6 +81,7 @@ function EmptyState({ icon: Icon, text }) {
 
 export default function MyAdventurer() {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [allQuests, setAllQuests] = useState([]);
   const [comments, setComments] = useState([]);
   const [savedRecords, setSavedRecords] = useState([]);
