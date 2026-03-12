@@ -71,7 +71,7 @@ export default function Layout({ children, currentPageName }) {
         className="flex items-center gap-3 px-3 py-4 mb-2 group shrink-0">
         <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 transition-all duration-500 group-hover:scale-110"
           style={{
-            border: '1px solid rgba(251,191,36,0.5)',
+            border: '1px solid rgba(251,191,36,0.4)',
             boxShadow: '0 0 16px rgba(251,191,36,0.25)',
           }}>
           <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
@@ -262,9 +262,9 @@ export default function Layout({ children, currentPageName }) {
         <div className="h-0.5 absolute inset-x-0 top-0"
           style={{ background: 'linear-gradient(90deg, transparent, #dc2626, #fbbf24, #dc2626, transparent)' }} />
         <Link to={createPageUrl('QuestBoard')} className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #7f1d1d, #4c1d95)', border: '1px solid rgba(251,191,36,0.35)' }}>
-            <span className="text-amber-400 text-xs font-black">⚔</span>
+          <div className="w-7 h-7 rounded-full overflow-hidden"
+            style={{ border: '1px solid rgba(251,191,36,0.35)' }}>
+            <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-black text-base text-amber-400" style={{ fontFamily: "'Orbitron', sans-serif" }}>HME</span>
         </Link>
