@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -6,7 +6,11 @@ import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays,
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import MessageToast from '@/components/MessageToast';
-import { useAdventurerSync, AdventurerContext } from '@/components/useAdventurerSync';
+import { useAdventurerSync } from '@/components/useAdventurerSync';
+
+// Global adventurer context
+export const AdventurerContext = createContext(null);
+export const useAdventurer = () => useContext(AdventurerContext);
 
 function SwordsIcon({ className }) {
   return (
@@ -34,7 +38,6 @@ const NAV_ITEMS = [
 ];
 
 export default function Layout({ children, currentPageName }) {
-  const { profile, loading: syncLoading } = useAdventurerSync();
   const [user, setUser]             = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -43,12 +46,12 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     base44.auth.me().then(u => {
       setUser(u);
-      if (u && profile) loadUnread(profile.id);
+      if (u) loadUnread(u.email);
     }).catch(() => {});
-  }, [profile]);
+  }, []);
 
-  const loadUnread = async (adventurerId) => {
-    const msgs = await base44.entities.Message.filter({ recipient_id: adventurerId, read: false });
+  const loadUnread = async (profileId) => {
+    const msgs = await base44.entities.Message.filter({ recipient_id: profileId, read: false });
     setUnreadCount(msgs.length);
   };
 
@@ -195,8 +198,8 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <AdventurerContext.Provider value={profile}>
-    <div className="min-h-screen flex relative"
-      style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
+      <div className="min-h-screen flex relative"
+        style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
 
       {/* Deep Space Nebula overlays */}
       <div className="fixed inset-0 pointer-events-none z-0">
