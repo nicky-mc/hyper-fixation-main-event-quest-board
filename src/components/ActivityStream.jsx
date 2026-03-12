@@ -1,15 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Send, Camera, X, Trash2 } from 'lucide-react';
+import { Loader2, Send, Camera, X, Trash2, Music, Video, Image } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
+
+function MediaPreview({ url, type }) {
+  if (!url) return null;
+  if (type === 'video') return (
+    <video src={url} controls className="mt-2 rounded-lg w-full max-h-48 object-contain bg-black/40" />
+  );
+  if (type === 'audio') return (
+    <audio src={url} controls className="mt-2 w-full rounded-lg" />
+  );
+  return <img src={url} alt="" className="mt-2 rounded-lg max-h-44 object-cover w-full" />;
+}
 
 function PostItem({ post, user, onDelete }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
       className="rounded-xl border border-purple-900/40 bg-[#0d0d1a] overflow-hidden"
@@ -20,7 +29,7 @@ function PostItem({ post, user, onDelete }) {
             {(post.author_name || '?').charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="text-xs font-bold text-purple-200" style={{ fontFamily: "'Caveat', cursive" }}>{post.author_name}</p>
+            <p className="text-xs font-bold text-purple-200">{post.author_name}</p>
             <p className="text-[9px] text-slate-600">
               {post.created_date ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true }) : 'just now'}
             </p>
@@ -34,29 +43,29 @@ function PostItem({ post, user, onDelete }) {
       </div>
       <div className="px-4 py-3">
         <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">{post.content}</p>
-        {post.image_url && (
-          <img src={post.image_url} alt="" className="mt-2 rounded-lg max-h-40 object-cover w-full" />
-        )}
+        <MediaPreview url={post.image_url} type={post.media_type} />
       </div>
     </motion.div>
   );
 }
 
 export default function ActivityStream() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-  const [content, setContent] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [posts, setPosts]       = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [user, setUser]         = useState(null);
+  const [content, setContent]   = useState('');
+  const [mediaUrl, setMediaUrl] = useState('');
+  const [mediaType, setMediaType] = useState('image');
   const [uploading, setUploading] = useState(false);
-  const [posting, setPosting] = useState(false);
-  const fileInputRef = useRef(null);
+  const [posting, setPosting]   = useState(false);
+  const imageRef = useRef(null);
+  const videoRef = useRef(null);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
     loadPosts();
-
-    const unsub = base44.entities.NewsPost.subscribe((event) => {
+    const unsub = base44.entities.NewsPost.subscribe(event => {
       if (event.type === 'create') setPosts(p => [event.data, ...p]);
       if (event.type === 'delete') setPosts(p => p.filter(x => x.id !== event.id));
     });
@@ -64,19 +73,19 @@ export default function ActivityStream() {
   }, []);
 
   const loadPosts = async () => {
-    const data = await base44.entities.NewsPost.list('-created_date', 50);
+    const data = await base44.entities.NewsPost.list('-created_date', 60);
     setPosts(data);
     setLoading(false);
   };
 
-  const handleFileUpload = async (e) => {
+  const handleUpload = async (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
     const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setImageUrl(file_url);
+    setMediaUrl(file_url);
+    setMediaType(type);
     setUploading(false);
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const submitPost = async (e) => {
@@ -87,10 +96,11 @@ export default function ActivityStream() {
       author_name: user.full_name || user.email,
       author_email: user.email,
       content: content.trim(),
-      image_url: imageUrl || undefined,
+      image_url: mediaUrl || undefined,
+      media_type: mediaUrl ? mediaType : undefined,
     });
     setContent('');
-    setImageUrl('');
+    setMediaUrl('');
     setPosting(false);
   };
 
@@ -100,40 +110,56 @@ export default function ActivityStream() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Post form */}
       {user ? (
         <form onSubmit={submitPost} className="mb-3 space-y-2 p-3 rounded-xl border border-purple-900/40 bg-white/[0.02] shrink-0">
           <p className="text-[10px] text-purple-600">Posting as <span className="text-purple-400 font-bold">{user.full_name || user.email}</span></p>
-          <div className="flex gap-2 items-start">
-            <textarea
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              placeholder="Share something with the community..."
-              maxLength={400}
-              rows={2}
-              className="flex-1 px-3 py-2 rounded-lg bg-[#0d0820]/70 border border-purple-800/40 text-purple-100 placeholder:text-slate-600 text-xs focus:outline-none focus:border-purple-500 resize-none"
-            />
-            <div className="flex flex-col gap-1.5">
-              <input ref={fileInputRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleFileUpload} />
-              <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                className="p-2 rounded-lg border border-purple-800/40 bg-purple-900/20 text-purple-500 hover:text-purple-300 hover:border-purple-600/60 transition-all disabled:opacity-50">
-                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-              </button>
-              <button type="submit" disabled={posting || !content.trim()}
-                className="p-2 rounded-lg bg-purple-700 hover:bg-purple-600 text-white border border-purple-500/40 transition-all disabled:opacity-40">
-                {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-          {imageUrl && (
-            <div className="relative rounded-lg overflow-hidden border border-purple-700/30 max-h-28">
-              <img src={imageUrl} alt="preview" className="w-full max-h-28 object-cover" />
-              <button type="button" onClick={() => setImageUrl('')}
+          <textarea
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            placeholder="Share something with the crew..."
+            maxLength={500} rows={2}
+            className="w-full px-3 py-2 rounded-lg bg-[#0d0820]/70 border border-purple-800/40 text-purple-100 placeholder:text-slate-600 text-xs focus:outline-none focus:border-purple-500 resize-none"
+          />
+
+          {/* Media preview */}
+          {mediaUrl && (
+            <div className="relative rounded-lg overflow-hidden border border-purple-700/30">
+              <MediaPreview url={mediaUrl} type={mediaType} />
+              <button type="button" onClick={() => setMediaUrl('')}
                 className="absolute top-1 right-1 bg-black/70 text-white rounded-full p-0.5 hover:bg-red-600/80">
                 <X className="w-3 h-3" />
               </button>
             </div>
           )}
+
+          {/* Upload buttons + send */}
+          <div className="flex items-center gap-1.5">
+            <input ref={imageRef} type="file" accept="image/*" className="hidden" onChange={e => handleUpload(e, 'image')} />
+            <input ref={videoRef} type="file" accept="video/*" className="hidden" onChange={e => handleUpload(e, 'video')} />
+            <input ref={audioRef} type="file" accept="audio/*" className="hidden" onChange={e => handleUpload(e, 'audio')} />
+            {uploading ? (
+              <Loader2 className="w-4 h-4 text-purple-500 animate-spin" />
+            ) : (
+              <>
+                <button type="button" onClick={() => imageRef.current?.click()} title="Upload image"
+                  className="p-1.5 rounded-lg border border-purple-800/40 bg-purple-900/20 text-purple-500 hover:text-purple-300 transition-all">
+                  <Image className="w-3.5 h-3.5" />
+                </button>
+                <button type="button" onClick={() => videoRef.current?.click()} title="Upload video"
+                  className="p-1.5 rounded-lg border border-purple-800/40 bg-purple-900/20 text-purple-500 hover:text-purple-300 transition-all">
+                  <Video className="w-3.5 h-3.5" />
+                </button>
+                <button type="button" onClick={() => audioRef.current?.click()} title="Upload audio"
+                  className="p-1.5 rounded-lg border border-purple-800/40 bg-purple-900/20 text-purple-500 hover:text-purple-300 transition-all">
+                  <Music className="w-3.5 h-3.5" />
+                </button>
+              </>
+            )}
+            <button type="submit" disabled={posting || !content.trim()}
+              className="ml-auto p-1.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white border border-purple-500/40 transition-all disabled:opacity-40">
+              {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            </button>
+          </div>
         </form>
       ) : (
         <div className="mb-3 p-3 rounded-xl border border-purple-900/40 bg-white/[0.02] text-center text-xs text-slate-600">
@@ -141,12 +167,9 @@ export default function ActivityStream() {
         </div>
       )}
 
-      {/* Feed */}
       <div className="flex-1 overflow-y-auto space-y-2 pr-0.5">
         {loading ? (
-          <div className="flex justify-center py-6">
-            <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
-          </div>
+          <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 text-purple-600 animate-spin" /></div>
         ) : posts.length === 0 ? (
           <p className="text-center text-xs text-slate-600 py-6">No posts yet — be the first!</p>
         ) : (
