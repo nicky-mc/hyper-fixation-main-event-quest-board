@@ -475,7 +475,13 @@ export default function AdventurerProfile() {
                 )}
 
                 {/* LORE DROPS TAB */}
-                {activeTab === 'lore' && (
+                {activeTab === 'lore' && !isOwnProfile && !isFriend && (
+                  <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-600 border border-purple-900/30 rounded-xl">
+                    <Shield className="w-10 h-10 opacity-20" />
+                    <p className="text-sm font-semibold text-slate-500">Add as friend to see more.</p>
+                  </div>
+                )}
+                {activeTab === 'lore' && (isOwnProfile || isFriend) && (
                   <div className="space-y-2">
                     {comments.length === 0 ? (
                       <div className="py-12 text-center text-slate-600 border border-purple-900/30 rounded-xl flex flex-col items-center gap-2">
