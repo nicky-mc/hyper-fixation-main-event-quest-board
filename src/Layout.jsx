@@ -310,7 +310,7 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       <MessageToast currentPageName={currentPageName} />
-    </div>
+      </div>
     </AdventurerContext.Provider>
   );
 }
