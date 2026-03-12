@@ -373,21 +373,27 @@ export default function Friends() {
                   />
                 </div>
 
-                {allUsers.length === 0 ? (
-                  <div className="text-center py-12 text-slate-600 text-sm">
-                    <p>User search requires admin access. Visit adventurer profiles to add friends!</p>
-                  </div>
-                ) : searchResults.length === 0 ? (
+                {searchResults.length === 0 ? (
                   <div className="text-center py-12 text-slate-600 text-sm">No adventurers found.</div>
                 ) : (
                   <div className="space-y-3">
-                    {searchResults.map(u2 => {
-                      const profile = allProfiles.find(p => p.adventurer_name === (u2.full_name || u2.email));
+                    {searchResults.map(p => {
+                      const fs = friendships.find(f =>
+                        (f.requester_email === user?.email && f.recipient_name === p.adventurer_name) ||
+                        (f.recipient_email === user?.email && f.requester_name === p.adventurer_name)
+                      );
+                      const status = !fs ? 'none' : fs.status === 'accepted' ? 'friends' : 'pending';
                       return (
-                        <SearchCard key={u2.email}
-                          profile={{ ...u2, avatar_url: profile?.avatar_url, location: profile?.location }}
-                          friendStatus={getFriendStatus(u2.email)}
-                          onAdd={() => sendRequest(u2)} />
+                        <SearchCard key={p.id}
+                          profile={{ full_name: p.adventurer_name, email: p.created_by, avatar_url: p.avatar_url, location: p.location }}
+                          friendStatus={status}
+                          onAdd={() => base44.entities.Friendship.create({
+                            requester_email: user.email,
+                            requester_name: myName,
+                            recipient_name: p.adventurer_name,
+                            recipient_email: p.created_by || '',
+                            status: 'pending',
+                          })} />
                       );
                     })}
                   </div>
