@@ -55,6 +55,7 @@ export default function AdventurerProfile() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [profileUserRole, setProfileUserRole] = useState(null); // role of the profile owner
   const [friendshipRecord, setFriendshipRecord] = useState(null); // record where I requested or was requested
   const [friendTogglingLoading, setFriendTogglingLoading] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
