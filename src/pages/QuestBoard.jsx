@@ -90,7 +90,7 @@ export default function QuestBoard() {
     : filteredQuests;
 
   const rollForInitiative = async () => {
-    if (quests.length === 0 || isRolling) return;
+    if (pendingQuests.length === 0 || isRolling) return;
     setIsRolling(true);
     setSelectedQuestId(null);
 
@@ -99,17 +99,23 @@ export default function QuestBoard() {
     let elapsed = 0;
 
     const timer = setInterval(() => {
-      const ri = Math.floor(Math.random() * quests.length);
-      setRollingId(quests[ri].id);
+      const ri = Math.floor(Math.random() * pendingQuests.length);
+      setRollingId(pendingQuests[ri].id);
       elapsed += flickerInterval;
       if (elapsed >= rollDuration) {
         clearInterval(timer);
-        const fi = Math.floor(Math.random() * quests.length);
-        const selected = quests[fi];
+        const fi = Math.floor(Math.random() * pendingQuests.length);
+        const selected = pendingQuests[fi];
         setRollingId(null);
         setSelectedQuestId(selected.id);
         setIsRolling(false);
-        base44.entities.Quest.update(selected.id, { status: 'selected' });
+        // Mark as completed (removes from board) and post to News Feed
+        base44.entities.Quest.update(selected.id, { status: 'completed' });
+        base44.entities.NewsPost.create({
+          author_name: 'The Quest Board',
+          author_email: 'questboard@hme.app',
+          content: `⚔️ **CHOSEN SIDE QUEST** ⚔️\n\n"${selected.title}" has been selected for the next episode!\n\n📜 ${selected.description}\n\n🎯 Segment: ${selected.segment} · 🎲 DC: ${selected.difficulty_class}\n🧙 Submitted by: ${selected.quest_giver}\n\n🦈 Nicky & Charlotte are on the case!`,
+        });
       }
     }, flickerInterval);
   };
