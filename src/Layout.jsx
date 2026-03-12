@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import MessageToast from '@/components/MessageToast';
 
 function SwordsIcon({ className }) {
   return (
