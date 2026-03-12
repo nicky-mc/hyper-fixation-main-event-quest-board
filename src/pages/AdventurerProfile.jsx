@@ -104,13 +104,18 @@ export default function AdventurerProfile() {
       setQuests(map);
     }
 
-    // friend counts (accepted only)
-    const [asRecipient, asRequester] = await Promise.all([
+    // friend counts (accepted only) + profile user role
+    const [asRecipient, asRequester, allUsers] = await Promise.all([
       base44.entities.Friendship.filter({ recipient_name: adventurerName, status: 'accepted' }),
       base44.entities.Friendship.filter({ requester_name: adventurerName, status: 'accepted' }),
+      base44.entities.User.list('full_name', 500),
     ]);
     setFollowerCount(asRecipient.length);
     setFollowingCount(asRequester.length);
+
+    // Check if profile owner is admin (hostess)
+    const profileUser = allUsers.find(u => (u.full_name || u.email) === adventurerName);
+    setProfileUserRole(profileUser?.role || 'user');
 
     setLoading(false);
   };
