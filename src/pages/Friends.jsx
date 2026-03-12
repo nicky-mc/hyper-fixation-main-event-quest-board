@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useAdventurer } from '@/components/useAdventurerSync';
 import { Loader2, UserPlus, UserCheck, Clock, MessageCircle, Search, Users, CheckCircle2, X, UserX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useAdventurer } from '@/layout';
 
 function Avatar({ name, src, size = 'lg', online }) {
   const sizes = { sm: 'w-9 h-9 text-sm', md: 'w-12 h-12 text-base', lg: 'w-16 h-16 text-xl' };
@@ -23,15 +23,15 @@ function Avatar({ name, src, size = 'lg', online }) {
   );
 }
 
-function FriendCard({ profile, onMessage, onRemove }) {
+function FriendCard({ profile, mutual, onMessage, onRemove }) {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center gap-3 p-5 rounded-2xl transition-all group"
       style={{ background: 'rgba(15,8,35,0.7)', border: '1px solid rgba(139,92,246,0.2)', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
-      <Avatar name={profile.adventurer_name} src={profile.avatar_url} size="lg" online={Math.random() > 0.5} />
+      <Avatar name={profile.adventurer_name || profile.name} src={profile.avatar_url} size="lg" online={Math.random() > 0.5} />
       <div className="text-center min-w-0 w-full">
-        <p className="font-bold text-purple-100 truncate text-sm">{profile.adventurer_name}</p>
-        {profile.location && <p className="text-[10px] text-slate-500">{profile.location}</p>}
+        <p className="font-bold text-purple-100 truncate text-sm">{profile.adventurer_name || profile.name}</p>
+        {mutual > 0 && <p className="text-[10px] text-slate-500 mt-0.5">{mutual} mutual friend{mutual !== 1 ? 's' : ''}</p>}
       </div>
       <div className="flex gap-2 w-full">
         <button onClick={onMessage}
@@ -80,7 +80,7 @@ function RequestCard({ req, onAccept, onDecline }) {
 }
 
 function SearchCard({ profile, friendStatus, onAdd }) {
-  const [status, setStatus] = useState(friendStatus);
+  const [status, setStatus] = useState(friendStatus); // 'none' | 'pending' | 'friends'
   const [loading, setLoading] = useState(false);
 
   const handleAdd = async () => {
@@ -94,9 +94,9 @@ function SearchCard({ profile, friendStatus, onAdd }) {
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
       className="flex items-center gap-3 p-4 rounded-2xl transition-all"
       style={{ background: 'rgba(15,8,35,0.7)', border: '1px solid rgba(139,92,246,0.2)' }}>
-      <Avatar name={profile.adventurer_name} src={profile.avatar_url} size="md" />
+      <Avatar name={profile.full_name || profile.email} src={profile.avatar_url} size="md" />
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-purple-100 text-sm truncate">{profile.adventurer_name}</p>
+        <p className="font-bold text-purple-100 text-sm truncate">{profile.full_name || profile.email}</p>
         {profile.location && <p className="text-[10px] text-slate-500">{profile.location}</p>}
       </div>
       {status === 'friends' ? (
@@ -128,63 +128,67 @@ const TABS = [
 ];
 
 export default function Friends() {
-  const profile = useAdventurer();
+  const [user, setUser] = useState(null);
   const [tab, setTab] = useState('friends');
   const [loading, setLoading] = useState(true);
 
-  const [friends, setFriends] = useState([]);
-  const [friendProfiles, setFriendProfiles] = useState([]);
-  const [pending, setPending] = useState([]);
+  const [friends, setFriends] = useState([]);          // accepted friendship records
+  const [friendProfiles, setFriendProfiles] = useState([]); // merged with AdventurerProfile
+  const [pending, setPending] = useState([]);           // incoming pending requests
+  const [allUsers, setAllUsers] = useState([]);
   const [allProfiles, setAllProfiles] = useState([]);
-  const [friendships, setFriendships] = useState([]);
+  const [friendships, setFriendships] = useState([]);   // all my friendships (both directions)
 
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    if (!profile) return;
-    loadAll(profile);
-  }, [profile]);
+    base44.auth.me().then(u => {
+      setUser(u);
+      if (u) loadAll(u);
+    }).catch(() => setLoading(false));
+  }, []);
 
-  const loadAll = async (currentProfile) => {
-    try {
-      setLoading(true);
-      const isAdmin = currentProfile.role === 'admin';
-      const [sentFs, receivedFs, profiles, allPending] = await Promise.all([
-        base44.entities.Friendship.filter({ requester_id: currentProfile.id }),
-        base44.entities.Friendship.filter({ recipient_id: currentProfile.id }),
-        base44.entities.AdventurerProfile.list('-created_date', 200),
-        isAdmin ? base44.entities.Friendship.filter({ status: 'pending' }) : Promise.resolve([]),
-      ]);
+  const loadAll = async (u) => {
+    setLoading(true);
+    const name = u.full_name || u.email;
 
-      const all = [...sentFs, ...receivedFs];
-      setFriendships(all);
+    const isAdmin = u.role === 'admin';
+    const [sentFs, receivedFs, profiles, allPending] = await Promise.all([
+      base44.entities.Friendship.filter({ requester_email: u.email }),
+      base44.entities.Friendship.filter({ recipient_email: u.email }),
+      base44.entities.AdventurerProfile.list('-created_date', 200),
+      isAdmin ? base44.entities.Friendship.filter({ status: 'pending' }) : Promise.resolve([]),
+    ]);
 
-      const accepted = all.filter(f => f.status === 'accepted');
-      const incomingPending = isAdmin ? allPending : receivedFs.filter(f => f.status === 'pending');
+    const all = [...sentFs, ...receivedFs];
+    setFriendships(all);
 
-      setFriends(accepted);
-      setPending(incomingPending);
-      setAllProfiles(profiles);
+    const accepted = all.filter(f => f.status === 'accepted');
+    // Admins see ALL pending requests platform-wide for moderation
+    const incomingPending = isAdmin ? allPending : receivedFs.filter(f => f.status === 'pending');
 
-      // Build friend profile cards
-      const profileMap = {};
-      profiles.forEach(p => { profileMap[p.id] = p; });
+    setFriends(accepted);
+    setPending(incomingPending);
+    setAllProfiles(profiles);
 
-      const friendCards = accepted.map(f => {
-        const friendId = f.requester_id === currentProfile.id ? f.recipient_id : f.requester_id;
-        return { ...(profileMap[friendId] || { id: friendId, adventurer_name: 'Unknown' }), _friendship: f };
-      });
-      setFriendProfiles(friendCards);
-      setLoading(false);
-    } catch (err) {
-      console.error('Load error:', err);
-      setLoading(false);
-    }
+    // Build friend profile cards
+    const profileMap = {};
+    profiles.forEach(p => { profileMap[p.adventurer_name] = p; });
+
+    const friendCards = accepted.map(f => {
+      const friendName = f.requester_email === u.email ? f.recipient_name : f.requester_name;
+      return { ...(profileMap[friendName] || { adventurer_name: friendName }), _friendship: f };
+    });
+    setFriendProfiles(friendCards);
+
+    // No User.list() needed — search is powered by AdventurerProfile
+
+    setLoading(false);
   };
 
   const acceptRequest = async (req) => {
     await base44.entities.Friendship.update(req.id, { status: 'accepted' });
-    await loadAll(profile);
+    await loadAll(user);
   };
 
   const declineRequest = async (req) => {
@@ -197,28 +201,40 @@ export default function Friends() {
     setFriendProfiles(prev => prev.filter(f => f._friendship.id !== friendship._friendship.id));
   };
 
-  const sendRequest = async (targetProfile) => {
+  const sendRequest = async (targetUser) => {
+    const name = user.full_name || user.email;
     await base44.entities.Friendship.create({
-      requester_id: profile.id,
-      requester_name: profile.adventurer_name,
-      recipient_id: targetProfile.id,
-      recipient_name: targetProfile.adventurer_name,
+      requester_email: user.email,
+      requester_name: name,
+      recipient_name: targetUser.full_name || targetUser.email,
+      recipient_email: targetUser.email,
       status: 'pending',
     });
   };
 
-  const getFriendStatus = (targetId) => {
+  const getFriendStatus = (targetEmail) => {
     const f = friendships.find(fs =>
-      (fs.requester_id === profile?.id && fs.recipient_id === targetId) ||
-      (fs.recipient_id === profile?.id && fs.requester_id === targetId)
+      (fs.requester_email === user?.email && fs.recipient_email === targetEmail) ||
+      (fs.recipient_email === user?.email && fs.requester_email === targetEmail)
     );
     if (!f) return 'none';
     if (f.status === 'accepted') return 'friends';
     return 'pending';
   };
 
+  const getMutualCount = (friendName) => {
+    const myFriendNames = friendProfiles.map(f => f.adventurer_name);
+    // Simple approximation — count shared connections
+    return 0; // Would need deeper query; placeholder
+  };
+
+  const profileMap = {};
+  allProfiles.forEach(p => { profileMap[p.adventurer_name] = p; });
+
+  // Search results powered by AdventurerProfile (accessible to all authenticated users)
+  const myName = user?.full_name || user?.email;
   const searchResults = allProfiles
-    .filter(p => p.id !== profile?.id)
+    .filter(p => p.adventurer_name !== myName) // exclude self
     .filter(p => {
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase();
@@ -227,8 +243,8 @@ export default function Friends() {
              (p.email || '').toLowerCase().includes(q);
     })
     .sort((a, b) => {
-      const aStatus = getFriendStatus(a.id);
-      const bStatus = getFriendStatus(b.id);
+      const aStatus = getFriendStatus(a.email);
+      const bStatus = getFriendStatus(b.email);
       if (aStatus === 'none' && bStatus !== 'none') return -1;
       if (aStatus !== 'none' && bStatus === 'none') return 1;
       return 0;
@@ -242,7 +258,7 @@ export default function Friends() {
     </div>
   );
 
-  if (!profile) return (
+  if (!user) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 text-slate-500">
       <Users className="w-10 h-10" />
       <p className="text-sm">Please log in to view friends.</p>
@@ -263,6 +279,7 @@ export default function Friends() {
           ⚔️ Adventurer Network
         </h1>
 
+        {/* Sticky Tab Bar */}
         <div className="sticky top-0 z-30 mb-6 pt-1 pb-3"
           style={{ background: 'linear-gradient(180deg, #050510 80%, transparent 100%)' }}>
           <div className="flex gap-1 p-1 rounded-2xl"
@@ -298,6 +315,7 @@ export default function Friends() {
         <AnimatePresence mode="wait">
           <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
 
+            {/* ── ALL FRIENDS ── */}
             {tab === 'friends' && (
               <div>
                 {friendProfiles.length === 0 ? (
@@ -318,8 +336,8 @@ export default function Friends() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {friendProfiles.map((fp) => (
-                      <FriendCard key={fp._friendship.id} profile={fp}
+                    {friendProfiles.map((fp, i) => (
+                      <FriendCard key={fp._friendship.id} profile={fp} mutual={getMutualCount(fp.adventurer_name)}
                         onMessage={() => window.location.href = createPageUrl('Messages')}
                         onRemove={() => removeFriend(fp)} />
                     ))}
@@ -328,6 +346,7 @@ export default function Friends() {
               </div>
             )}
 
+            {/* ── PENDING REQUESTS ── */}
             {tab === 'pending' && (
               <div className="space-y-3 max-w-2xl mx-auto">
                 {pending.length === 0 ? (
@@ -347,6 +366,7 @@ export default function Friends() {
               </div>
             )}
 
+            {/* ── SEARCH ── */}
             {tab === 'search' && (
               <div className="max-w-2xl mx-auto">
                 <div className="relative mb-5">
@@ -354,7 +374,7 @@ export default function Friends() {
                   <input
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    placeholder="Search by name, email, or location..."
+                    placeholder="Search by name or email..."
                     autoFocus
                     className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all"
                     style={{ background: 'rgba(15,8,35,0.8)', border: '1px solid rgba(139,92,246,0.25)', fontFamily: "'Inter', system-ui" }}
@@ -369,9 +389,9 @@ export default function Friends() {
                   <div className="space-y-3">
                     {searchResults.map(p => (
                       <SearchCard key={p.id}
-                        profile={p}
-                        friendStatus={getFriendStatus(p.id)}
-                        onAdd={() => sendRequest(p)} />
+                        profile={{ full_name: p.adventurer_name, email: p.email || '', avatar_url: p.avatar_url, location: p.location }}
+                        friendStatus={getFriendStatus(p.email)}
+                        onAdd={() => sendRequest({ full_name: p.adventurer_name, email: p.email || '' })} />
                     ))}
                   </div>
                 )}
