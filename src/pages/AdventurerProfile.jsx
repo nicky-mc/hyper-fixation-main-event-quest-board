@@ -205,7 +205,6 @@ export default function AdventurerProfile() {
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
-  const HOST_EMAILS = ['admin']; // role check — admin role = hostess
   const avatarUrl = profile?.avatar_url;
   const coverUrl = profile?.cover_url;
   const isProfileAdmin = profileUserRole === 'admin';
@@ -215,7 +214,30 @@ export default function AdventurerProfile() {
   const myName = currentUser ? (currentUser.full_name || currentUser.email) : null;
   const isOwnProfile = myName === adventurerName;
   const isFriend = friendshipRecord?.status === 'accepted';
-  const canMessage = !isOwnProfile && isFriend;
+  // Admins bypass friend gate
+  const canSeePrivate = isOwnProfile || isFriend || isCurrentUserAdmin;
+  const canMessage = !isOwnProfile && (isFriend || isCurrentUserAdmin);
+
+  const handleAdminBan = async () => {
+    if (!profile) return;
+    if (!window.confirm(`Ban / suspend ${adventurerName}? This will mark their profile.`)) return;
+    await base44.entities.AdventurerProfile.update(profile.id, { role: 'banned' });
+    await loadAll();
+  };
+
+  const handleAdminPromote = async () => {
+    if (!profile) return;
+    if (!window.confirm(`Promote ${adventurerName} to Admin?`)) return;
+    await base44.entities.AdventurerProfile.update(profile.id, { role: 'admin' });
+    await loadAll();
+  };
+
+  const handleAdminDemote = async () => {
+    if (!profile) return;
+    if (!window.confirm(`Demote ${adventurerName} to regular User?`)) return;
+    await base44.entities.AdventurerProfile.update(profile.id, { role: 'user' });
+    await loadAll();
+  };
 
   const tabs = [
     { id: 'quests', label: 'Quests', icon: Sword, count: myQuests.length },
