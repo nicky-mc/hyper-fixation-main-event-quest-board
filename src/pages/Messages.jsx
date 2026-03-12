@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Send, Loader2, MessageCircle, ArrowLeft, Smile, Paperclip, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useAdventurer } from '@/layout';
 
 function Avatar({ name, src, size = 'md' }) {
   const sizes = { sm: 'w-8 h-8 text-xs', md: 'w-10 h-10 text-sm', lg: 'w-12 h-12 text-base' };
