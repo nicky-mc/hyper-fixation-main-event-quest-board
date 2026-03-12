@@ -5,6 +5,8 @@ import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import ImageViewerModal from '@/components/ImageViewerModal';
+import CoverPositionEditor from '@/components/CoverPositionEditor';
 
 const SEGMENTS = [
   'The Gimmick Check','Patch Notes','World Building','Roll for Initiative','The Tavern Entry',
