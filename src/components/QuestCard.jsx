@@ -7,8 +7,6 @@ import QuestComments from '@/components/QuestComments';
 import VoteButton from '@/components/VoteButton';
 import SaveQuestButton from '@/components/SaveQuestButton';
 
-const ADMIN_EMAILS = ['charlotte_cowles@yahoo.co.uk', 'nicky.mortoza-cowles@techeducators.co.uk'];
-
 const segmentConfig = {
   'The Gimmick Check':            { icon: Zap,        color: 'from-amber-600 to-yellow-500',    label: 'Identity & Character Arcs' },
   'Patch Notes':                  { icon: Radio,      color: 'from-cyan-700 to-teal-500',       label: 'Life Updates & Milestones' },
@@ -27,11 +25,12 @@ const segmentConfig = {
   'The Co-Op Club':               { icon: Users,      color: 'from-lime-700 to-green-500',      label: 'Community Activity' },
   'Character Sheets':             { icon: BookOpen,   color: 'from-fuchsia-700 to-purple-500',  label: 'Alignment Votes' },
   'Shark Week Special':           { icon: Fish,       color: 'from-blue-800 to-indigo-600',     label: '🦈 Watch Out!' },
-  "Captain's Log":                { icon: Anchor,     color: 'from-sky-700 to-blue-600',        label: 'Stardate Report' },
+  'Captain\'s Log':               { icon: Anchor,     color: 'from-sky-700 to-blue-600',        label: 'Stardate Report' },
 };
 
 const fallback = { icon: Scroll, color: 'from-stone-600 to-stone-500', label: 'Side Quest' };
 
+// Warp-speed streaks overlay
 function WarpEffect() {
   return (
     <motion.div
@@ -50,6 +49,7 @@ function WarpEffect() {
           transition={{ duration: 0.5, delay: i * 0.015 }}
         />
       ))}
+      {/* Scan flash */}
       <motion.div
         className="absolute inset-0 bg-cyan-400/20 rounded-xl"
         animate={{ opacity: [0, 0.8, 0] }}
@@ -59,16 +59,19 @@ function WarpEffect() {
   );
 }
 
+// WWE taunt flash
 function TauntEffect() {
   return (
     <AnimatePresence>
       <motion.div className="absolute inset-0 z-20 pointer-events-none rounded-xl overflow-hidden">
+        {/* Spotlight sweep */}
         <motion.div
           className="absolute inset-0"
           style={{ background: 'radial-gradient(ellipse 60% 80% at 50% -20%, rgba(255,200,0,0.35) 0%, transparent 70%)' }}
           animate={{ opacity: [0, 1, 0.6, 0], y: ['-100%', '0%', '10%', '100%'] }}
           transition={{ duration: 0.9, ease: 'easeInOut' }}
         />
+        {/* Side flash bars */}
         {[-1, 1].map(dir => (
           <motion.div
             key={dir}
@@ -78,6 +81,7 @@ function TauntEffect() {
             transition={{ duration: 0.5, delay: 0.1 }}
           />
         ))}
+        {/* Gold ring burst */}
         <motion.div
           className="absolute inset-0 rounded-xl border-4 border-amber-400"
           initial={{ scale: 0.8, opacity: 0 }}
@@ -89,7 +93,7 @@ function TauntEffect() {
   );
 }
 
-export default function QuestCard({ quest, isSelected, isRolling, index, currentUser, onDeleted, onOpen }) {
+export default function QuestCard({ quest, isSelected, isRolling, index, currentUser, onDeleted }) {
   const cfg = segmentConfig[quest.segment] || fallback;
   const SegmentIcon = cfg.icon;
 
@@ -98,11 +102,7 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
   const [settled, setSettled] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
 
-  const canEdit = currentUser && (
-    currentUser.role === 'admin' ||
-    ADMIN_EMAILS.includes(currentUser.email) ||
-    currentUser.email === quest.created_by
-  );
+  const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.email === quest.created_by);
 
   const handleDelete = async (e) => {
     e.stopPropagation();
@@ -141,9 +141,8 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
       }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
       className={cn("relative group cursor-pointer transition-all duration-500", isSelected && "z-10")}
-      onClick={() => onOpen?.(quest)}
     >
-      {/* Gold glow when selected */}
+      {/* Gold glow when selected + settled */}
       {isSelected && settled && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -152,6 +151,8 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
           className="absolute -inset-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 rounded-xl blur-lg"
         />
       )}
+
+      {/* Wrestling spotlight during taunt */}
       {isSelected && !settled && (
         <motion.div
           animate={{ opacity: [0.3, 0.8, 0.3] }}
@@ -160,6 +161,8 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
           style={{ background: 'radial-gradient(ellipse, rgba(251,191,36,0.5) 0%, transparent 70%)' }}
         />
       )}
+
+      {/* Rolling flicker glow */}
       {isRolling && (
         <motion.div
           animate={{ opacity: [0.2, 0.9, 0.2], scale: [1, 1.08, 1] }}
@@ -176,11 +179,18 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
           ? "border-amber-400 shadow-2xl shadow-amber-500/40"
           : "border-purple-900/50 hover:border-purple-600/70",
       )}>
+        {/* Effects overlays */}
         {showWarp && <WarpEffect />}
         {showTaunt && <TauntEffect />}
 
+        {/* Starfield texture */}
         <div className="absolute inset-0 opacity-20 pointer-events-none"
-          style={{ backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)`, backgroundSize: '30px 30px' }} />
+          style={{
+            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)`,
+            backgroundSize: '30px 30px',
+          }}
+        />
+        {/* Horror vignette */}
         <div className="absolute inset-0 bg-gradient-to-b from-red-950/10 via-transparent to-purple-950/20 pointer-events-none" />
 
         {/* Segment Banner */}
@@ -192,14 +202,16 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
           <p className="text-[9px] text-white/60 mt-0.5 truncate">{cfg.label}</p>
         </div>
 
+        {/* Quest image/GIF if present */}
         {quest.image_url && (
           <div className="w-full h-32 overflow-hidden border-b border-purple-900/40">
             <img src={quest.image_url} alt="quest visual" className="w-full h-full object-cover" />
           </div>
         )}
 
-        {/* Body - clicking this opens modal */}
+        {/* Body */}
         <div className="relative p-5 space-y-3">
+          {/* DC Badge */}
           <div className="absolute top-3 right-3">
             <div className={cn(
               "w-12 h-12 rounded-full flex flex-col items-center justify-center",
@@ -215,6 +227,7 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
             </div>
           </div>
 
+          {/* Title */}
           <h3 className={cn(
             "text-xl font-bold pr-14 leading-tight transition-colors",
             isSelected ? "text-amber-300" : "text-purple-100"
@@ -222,29 +235,13 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
             {quest.title}
           </h3>
 
+          {/* Description */}
           <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
             {quest.description}
           </p>
-        </div>
 
-        {/* Selected stamp */}
-        {isSelected && settled && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0, rotate: -15 }}
-            animate={{ opacity: 1, scale: 1, rotate: -12 }}
-            transition={{ type: 'spring', damping: 10, stiffness: 200 }}
-            className="absolute top-16 right-4 pointer-events-none"
-          >
-            <div className="bg-amber-400 text-stone-900 px-3 py-1 rounded border-4 border-amber-600 font-black text-xs shadow-2xl uppercase tracking-wider">
-              ⚔️ ON AIR!
-            </div>
-          </motion.div>
-        )}
-
-        {/* Bottom interactive section — stop propagation so clicking here doesn't open modal */}
-        <div onClick={e => e.stopPropagation()}>
           {/* Vote + Quest Giver row */}
-          <div className="flex items-center gap-2 px-5 pb-3 border-t border-purple-900/40 pt-3">
+          <div className="flex items-center gap-2 pt-2 border-t border-purple-900/40">
             <VoteButton questId={quest.id} isSelected={isSelected} />
             <SaveQuestButton questId={quest.id} />
             <div className={cn(
@@ -266,36 +263,50 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
               </button>
             )}
           </div>
-
-          {/* Comments toggle */}
-          <button
-            onClick={(e) => { e.stopPropagation(); setCommentsOpen(o => !o); }}
-            className="w-full flex items-center justify-between px-5 py-2.5 text-xs text-purple-500 hover:text-purple-300 hover:bg-purple-900/20 transition-colors border-t border-purple-900/40"
-          >
-            <span className="flex items-center gap-1.5">
-              <MessageCircle className="w-3.5 h-3.5" />
-              Discussion
-            </span>
-            <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", commentsOpen && "rotate-180")} />
-          </button>
-
-          {/* Comments panel */}
-          <AnimatePresence>
-            {commentsOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
-                <div className="px-5 pb-5">
-                  <QuestComments questId={quest.id} />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
+
+        {/* Selected stamp */}
+        {isSelected && settled && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0, rotate: -15 }}
+            animate={{ opacity: 1, scale: 1, rotate: -12 }}
+            transition={{ type: 'spring', damping: 10, stiffness: 200 }}
+            className="absolute top-16 right-4 pointer-events-none"
+          >
+            <div className="bg-amber-400 text-stone-900 px-3 py-1 rounded border-4 border-amber-600 font-black text-xs shadow-2xl uppercase tracking-wider">
+              ⚔️ ON AIR!
+            </div>
+          </motion.div>
+        )}
+
+        {/* Comments toggle button */}
+        <button
+          onClick={(e) => { e.stopPropagation(); setCommentsOpen(o => !o); }}
+          className="w-full flex items-center justify-between px-5 py-2.5 text-xs text-purple-500 hover:text-purple-300 hover:bg-purple-900/20 transition-colors border-t border-purple-900/40"
+        >
+          <span className="flex items-center gap-1.5">
+            <MessageCircle className="w-3.5 h-3.5" />
+            Discussion
+          </span>
+          <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", commentsOpen && "rotate-180")} />
+        </button>
+
+        {/* Comments panel */}
+        <AnimatePresence>
+          {commentsOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden"
+            >
+              <div className="px-5 pb-5">
+                <QuestComments questId={quest.id} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );

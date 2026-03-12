@@ -11,7 +11,6 @@ import QuestCategoryFilter, { CATEGORIES, filterQuestsByCategory } from '@/compo
 import QuestWorldMap from '@/components/QuestWorldMap';
 import RKOButton from '@/components/RKOButton';
 import ActivityStream from '@/components/ActivityStream';
-import QuestDetailModal from '@/components/QuestDetailModal';
 
 // Floating particle component for atmosphere
 function Particle({ style }) {
@@ -49,10 +48,8 @@ export default function QuestBoard() {
   const [user, setUser] = useState(null);
   const [activeCategory, setActiveCategory] = useState('all');
   const [mapOpen, setMapOpen] = useState(false);
-  const [modalQuest, setModalQuest] = useState(null);
 
-  const ADMIN_EMAILS = ['charlotte_cowles@yahoo.co.uk', 'nicky.mortoza-cowles@techeducators.co.uk'];
-  const isAdmin = user?.role === 'admin' || ADMIN_EMAILS.includes(user?.email);
+  const isAdmin = user?.role === 'admin';
 
   const loadQuests = async () => {
     const data = await base44.entities.Quest.list('-created_date', 100);
@@ -358,7 +355,6 @@ export default function QuestBoard() {
                 isRolling={isRolling && rollingId === quest.id}
                 currentUser={user}
                 onDeleted={loadQuests}
-                onOpen={setModalQuest}
               />
             ))}
           </div>
@@ -425,11 +421,6 @@ export default function QuestBoard() {
       <HostSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <AnimatePresence>
         {mapOpen && <QuestWorldMap quests={quests} onClose={() => setMapOpen(false)} />}
-      </AnimatePresence>
-      <AnimatePresence>
-        {modalQuest && (
-          <QuestDetailModal quest={modalQuest} onClose={() => setModalQuest(null)} currentUser={user} onDeleted={loadQuests} />
-        )}
       </AnimatePresence>
     </div>
   );
