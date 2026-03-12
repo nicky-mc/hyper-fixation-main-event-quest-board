@@ -73,7 +73,9 @@ export default function Messages() {
 
     // Mark my unread messages as read
     const unread = msgs.filter(m => m.recipient_id === prof.id && !m.read);
-    unread.forEach(m => base44.entities.Message.update(m.id, { read: true }));
+    for (const m of unread) {
+      await base44.entities.Message.update(m.id, { read: true });
+    }
 
     // Derive conversation partners from messages (works for all users, admins see everyone)
     const partnerMap = {};
@@ -93,7 +95,6 @@ export default function Messages() {
     });
 
     setAllUsers(Object.values(partnerMap));
-    setLoading(false);
   };
 
   useEffect(() => {
