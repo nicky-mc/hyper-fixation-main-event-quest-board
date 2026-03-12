@@ -560,7 +560,7 @@ export default function AdventurerProfile() {
                     <p className="text-sm font-semibold text-slate-500">Add as friend to see more.</p>
                   </div>
                 )}
-                {activeTab === 'about' && (isOwnProfile || isFriend) && (
+                {activeTab === 'about' && canSeePrivate && (
                   <div className="space-y-4">
                     <div className="rounded-xl border border-purple-900/30 bg-purple-950/20 p-5 space-y-4">
                       <h3 className="text-lg font-black text-amber-300" style={{ fontFamily: "'Caveat', cursive" }}>Character Sheet</h3>
