@@ -312,5 +312,6 @@ export default function Layout({ children, currentPageName }) {
 
       <MessageToast currentPageName={currentPageName} />
     </div>
+    </AdventurerContext.Provider>
   );
 }
