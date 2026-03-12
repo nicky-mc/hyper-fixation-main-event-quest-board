@@ -3,6 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import VoteButton from '@/components/VoteButton';
 import SaveQuestButton from '@/components/SaveQuestButton';
 import QuestDetailModal from '@/components/QuestDetailModal';
