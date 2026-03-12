@@ -39,7 +39,7 @@ function formatTime(iso) {
 }
 
 export default function Messages() {
-  const [user, setUser] = useState(null);
+  const profile = useAdventurer();
   const [allUsers, setAllUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -53,11 +53,8 @@ export default function Messages() {
   const textareaRef = useRef(null);
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      setUser(u);
-      if (u) loadData(u);
-    }).catch(() => setLoading(false));
-  }, []);
+    if (profile) loadData(profile);
+  }, [profile]);
 
   const loadData = async (u) => {
     const isAdmin = u.role === 'admin';
