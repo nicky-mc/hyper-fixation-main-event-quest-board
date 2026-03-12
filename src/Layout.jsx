@@ -71,7 +71,7 @@ export default function Layout({ children, currentPageName }) {
         className="flex items-center gap-3 px-3 py-4 mb-2 group shrink-0">
         <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 transition-all duration-500 group-hover:scale-110"
           style={{
-            border: '1px solid rgba(251,191,36,0.4)',
+            border: '1px solid rgba(251,191,36,0.5)',
             boxShadow: '0 0 16px rgba(251,191,36,0.25)',
           }}>
           <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
