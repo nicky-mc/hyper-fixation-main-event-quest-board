@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useAdventurer } from '@/layout';
+import { useAdventurer } from '@/components/useAdventurerSync';
 import { Loader2, UserPlus, UserCheck, Clock, MessageCircle, Search, Users, CheckCircle2, X, UserX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
