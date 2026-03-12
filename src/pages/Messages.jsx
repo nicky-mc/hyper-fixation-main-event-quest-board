@@ -275,7 +275,11 @@ export default function Messages() {
           <Avatar name={selectedUser.full_name || selectedUser.email} size="md" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-purple-100 truncate">{selectedUser.full_name || selectedUser.email}</p>
-            <p className="text-[10px] text-green-400">Online</p>
+            {isAdmin && !conversation.some(m => m.sender_email === user.email || m.recipient_email === user.email) ? (
+              <p className="text-[10px] text-amber-400 flex items-center gap-1">👁 Admin moderation view</p>
+            ) : (
+              <p className="text-[10px] text-green-400">Online</p>
+            )}
           </div>
         </div>
       ) : (
