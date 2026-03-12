@@ -56,31 +56,29 @@ export default function Messages() {
     if (profile) loadData(profile);
   }, [profile]);
 
-  const loadData = async (u) => {
-    const isAdmin = u.role === 'admin';
+  const loadData = async (prof) => {
+    const isAdmin = prof.role === 'admin';
     const msgs = await base44.entities.Message.list('-created_date', 500);
     setMessages(msgs);
 
     // Mark my unread messages as read
-    const unread = msgs.filter(m => m.recipient_email === u.email && !m.read);
+    const unread = msgs.filter(m => m.recipient_id === prof.id && !m.read);
     unread.forEach(m => base44.entities.Message.update(m.id, { read: true }));
 
     // Derive conversation partners from messages (works for all users, admins see everyone)
     const partnerMap = {};
     msgs.forEach(m => {
-      // For normal users: only their own conversations
-      // For admins: all threads — build both sides
-      const addPartner = (email, name) => {
-        if (email && email !== u.email && !partnerMap[email]) {
-          partnerMap[email] = { id: email, email, full_name: name || email };
+      const addPartner = (partId, name) => {
+        if (partId && partId !== prof.id && !partnerMap[partId]) {
+          partnerMap[partId] = { id: partId, full_name: name || partId };
         }
       };
       if (isAdmin) {
-        addPartner(m.sender_email, m.sender_name);
-        addPartner(m.recipient_email, m.recipient_email);
+        addPartner(m.sender_id, m.sender_name);
+        addPartner(m.recipient_id, m.recipient_name || m.recipient_id);
       } else {
-        if (m.sender_email === u.email) addPartner(m.recipient_email, m.recipient_email);
-        if (m.recipient_email === u.email) addPartner(m.sender_email, m.sender_name);
+        if (m.sender_id === prof.id) addPartner(m.recipient_id, m.recipient_name);
+        if (m.recipient_id === prof.id) addPartner(m.sender_id, m.sender_name);
       }
     });
 
