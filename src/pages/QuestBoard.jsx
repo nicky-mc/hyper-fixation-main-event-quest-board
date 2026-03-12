@@ -73,6 +73,8 @@ export default function QuestBoard() {
     if (quests.length > 0) loadVoteCounts(quests);
   }, [quests]);
 
+  const isAdmin = user?.role === 'admin';
+
   // Only show pending quests on the board
   const pendingQuests = quests.filter(q => q.status === 'pending');
 
