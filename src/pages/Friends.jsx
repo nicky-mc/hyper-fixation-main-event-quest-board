@@ -181,7 +181,7 @@ export default function Friends() {
 
   const acceptRequest = async (req) => {
     await base44.entities.Friendship.update(req.id, { status: 'accepted' });
-    await loadAll(user);
+    await loadAll(profile);
   };
 
   const declineRequest = async (req) => {
@@ -194,21 +194,20 @@ export default function Friends() {
     setFriendProfiles(prev => prev.filter(f => f._friendship.id !== friendship._friendship.id));
   };
 
-  const sendRequest = async (targetUser) => {
-    const name = user.full_name || user.email;
+  const sendRequest = async (targetProfile) => {
     await base44.entities.Friendship.create({
-      requester_email: user.email,
-      requester_name: name,
-      recipient_name: targetUser.full_name || targetUser.email,
-      recipient_email: targetUser.email,
+      requester_id: profile.id,
+      requester_name: profile.adventurer_name,
+      recipient_id: targetProfile.id,
+      recipient_name: targetProfile.adventurer_name,
       status: 'pending',
     });
   };
 
-  const getFriendStatus = (targetEmail) => {
+  const getFriendStatus = (targetId) => {
     const f = friendships.find(fs =>
-      (fs.requester_email === user?.email && fs.recipient_email === targetEmail) ||
-      (fs.recipient_email === user?.email && fs.requester_email === targetEmail)
+      (fs.requester_id === profile?.id && fs.recipient_id === targetId) ||
+      (fs.recipient_id === profile?.id && fs.requester_id === targetId)
     );
     if (!f) return 'none';
     if (f.status === 'accepted') return 'friends';
