@@ -45,6 +45,7 @@ export default function QuestBoard() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sortByVotes, setSortByVotes] = useState(false);
   const [voteCounts, setVoteCounts] = useState({});
+  const [commentCounts, setCommentCounts] = useState({});
   const [user, setUser] = useState(null);
   const [activeCategory, setActiveCategory] = useState('all');
   const [mapOpen, setMapOpen] = useState(false);
@@ -64,13 +65,23 @@ export default function QuestBoard() {
     setVoteCounts(counts);
   };
 
+  const loadCommentCounts = async () => {
+    const allComments = await base44.entities.QuestComment.list();
+    const counts = {};
+    allComments.forEach(c => { counts[c.quest_id] = (counts[c.quest_id] || 0) + 1; });
+    setCommentCounts(counts);
+  };
+
   useEffect(() => {
     loadQuests();
     base44.auth.me().then(u => setUser(u)).catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (quests.length > 0) loadVoteCounts(quests);
+    if (quests.length > 0) {
+      loadVoteCounts(quests);
+      loadCommentCounts();
+    }
   }, [quests]);
 
   // Only show pending quests on the board
@@ -348,13 +359,14 @@ export default function QuestBoard() {
             <p className="text-slate-600 text-sm">Try a different category or post one!</p>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {displayedQuests.map((quest, i) => (
               <QuestCard key={quest.id} quest={quest} index={i}
                 isSelected={selectedQuestId === quest.id && !isRolling}
                 isRolling={isRolling && rollingId === quest.id}
                 currentUser={user}
                 onDeleted={loadQuests}
+                commentCount={commentCounts[quest.id] || 0}
               />
             ))}
           </div>

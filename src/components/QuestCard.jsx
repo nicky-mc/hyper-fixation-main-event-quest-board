@@ -89,7 +89,7 @@ function TauntEffect() {
   );
 }
 
-export default function QuestCard({ quest, isSelected, isRolling, index, currentUser, onDeleted }) {
+export default function QuestCard({ quest, isSelected, isRolling, index, currentUser, onDeleted, commentCount = 0 }) {
   const cfg = segmentConfig[quest.segment] || fallback;
   const SegmentIcon = cfg.icon;
 
@@ -207,50 +207,42 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
           )}
 
           {/* Body */}
-          <div className="relative p-5 space-y-3">
-            {/* DC Badge */}
-            <div className="absolute top-3 right-3">
-              <div className={cn(
-                "w-12 h-12 rounded-full flex flex-col items-center justify-center",
-                "bg-gradient-to-br from-[#1a1040] to-[#0d0820]",
-                "border-2 shadow-lg",
-                isSelected ? "border-amber-400 shadow-amber-500/40" : "border-purple-700/70 shadow-purple-900/40"
-              )}>
-                <span className="text-[9px] text-purple-400/80 font-bold -mb-0.5 tracking-widest">DC</span>
-                <span className={cn("text-lg font-black", isSelected ? "text-amber-400" : "text-purple-300")}
-                  style={{ fontFamily: 'Georgia, serif' }}>
-                  {quest.difficulty_class}
-                </span>
-              </div>
-            </div>
-
+          <div className="relative p-4 space-y-3">
             {/* Title */}
             <h3 className={cn(
-              "text-xl font-bold pr-14 leading-tight transition-colors",
+              "text-xl font-bold leading-snug transition-colors",
               isSelected ? "text-amber-300" : "text-purple-100"
-            )} style={{ fontFamily: "'Caveat', 'Segoe Script', cursive", fontSize: '1.4rem' }}>
+            )} style={{ fontFamily: "'Caveat', 'Segoe Script', cursive", fontSize: '1.35rem' }}>
               {quest.title}
             </h3>
 
-            {/* Description */}
-            <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-              {quest.description}
-            </p>
-
-            {/* Vote + Quest Giver row — stop propagation so clicks here don't open modal */}
+            {/* Quest Giver + actions row */}
             <div className="flex items-center gap-2 pt-2 border-t border-purple-900/40" onClick={e => e.stopPropagation()}>
-              <VoteButton questId={quest.id} isSelected={isSelected} />
-              <SaveQuestButton questId={quest.id} />
               <div className={cn(
-                "w-7 h-7 rounded-full flex items-center justify-center border text-xs font-black",
+                "w-7 h-7 rounded-full flex items-center justify-center border text-xs font-black shrink-0",
                 "bg-gradient-to-br from-purple-800 to-indigo-900 border-purple-600/50 text-purple-200"
               )}>
                 {quest.quest_giver.charAt(0).toUpperCase()}
               </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-[10px] text-purple-600/70 block">Quest Giver</span>
-                <span className="text-sm font-medium text-purple-200/90 truncate block" style={{ fontFamily: "'Caveat', cursive" }}>
-                  {quest.quest_giver}
+              <span className="text-sm font-medium text-purple-200/80 truncate flex-1" style={{ fontFamily: "'Caveat', cursive" }}>
+                {quest.quest_giver}
+              </span>
+              <VoteButton questId={quest.id} isSelected={isSelected} />
+              {commentCount > 0 && (
+                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-purple-900/40 border border-purple-800/40 shrink-0">
+                  <MessageCircle className="w-3 h-3 text-purple-500" />
+                  <span className="text-[10px] text-purple-400 font-bold">{commentCount}</span>
+                </div>
+              )}
+              <div className={cn(
+                "w-8 h-8 rounded-full flex flex-col items-center justify-center shrink-0",
+                "bg-gradient-to-br from-[#1a1040] to-[#0d0820] border",
+                isSelected ? "border-amber-400" : "border-purple-700/70"
+              )}>
+                <span className="text-[7px] text-purple-400/80 font-bold -mb-0.5">DC</span>
+                <span className={cn("text-sm font-black leading-none", isSelected ? "text-amber-400" : "text-purple-300")}
+                  style={{ fontFamily: 'Georgia, serif' }}>
+                  {quest.difficulty_class}
                 </span>
               </div>
               {canEdit && (

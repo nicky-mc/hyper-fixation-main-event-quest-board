@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Rss, Plus, Send, Loader2, Trash2 } from 'lucide-react';
+import { Rss, Plus, Send, Loader2, Trash2, Camera, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -12,6 +12,8 @@ export default function NewsFeed() {
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -28,6 +30,16 @@ export default function NewsFeed() {
     const data = await base44.entities.NewsPost.list('-created_date', 50);
     setPosts(data);
     setLoading(false);
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingMedia(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setImageUrl(file_url);
+    setUploadingMedia(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const submitPost = async () => {
@@ -94,12 +106,22 @@ export default function NewsFeed() {
                 rows={4}
                 className="w-full bg-purple-950/30 border border-purple-800/40 rounded-lg px-3 py-2 text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:border-purple-500 resize-none"
               />
-              <input
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-                placeholder="Image URL (optional)"
-                className="w-full bg-purple-950/30 border border-purple-800/40 rounded-lg px-3 py-2 text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:border-purple-500"
-              />
+              <div className="flex items-center gap-2">
+                <input ref={fileInputRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleFileUpload} />
+                <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploadingMedia}
+                  className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-purple-800/40 text-purple-400 hover:border-purple-500 hover:text-purple-200 transition-all disabled:opacity-50">
+                  {uploadingMedia ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                  {uploadingMedia ? 'Uploading...' : 'Add Image'}
+                </button>
+                {imageUrl && (
+                  <>
+                    <span className="text-xs text-green-400 font-medium">✓ Image ready</span>
+                    <button type="button" onClick={() => setImageUrl('')} className="p-1 text-slate-600 hover:text-red-400 transition-colors">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </>
+                )}
+              </div>
               {imageUrl && (
                 <img src={imageUrl} alt="preview" className="rounded-lg max-h-40 object-cover w-full" />
               )}
