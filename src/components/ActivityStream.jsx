@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Send, Camera, X, Trash2, Music, Video, Image } from 'lucide-react';
+import { Loader2, Send, X, Trash2, Music, Video, Image } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDistanceToNow } from 'date-fns';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 function MediaPreview({ url, type }) {
   if (!url) return null;
