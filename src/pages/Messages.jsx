@@ -53,16 +53,23 @@ export default function Messages() {
 
   useEffect(() => {
     const initProfile = async () => {
-      const user = await base44.auth.me();
-      if (user) {
-        const profs = await base44.entities.AdventurerProfile.list();
-        const prof = profs.find(p => p.email === user.email);
-        if (prof) {
-          setProfile(prof);
-          await loadData(prof);
+      try {
+        const user = await base44.auth.me();
+        if (user) {
+          const profs = await base44.entities.AdventurerProfile.list();
+          const prof = profs.find(p => p.email === user.email);
+          if (prof) {
+            setProfile(prof);
+            await loadData(prof);
+          } else {
+            console.warn('Profile not found for user:', user.email);
+          }
         }
+      } catch (e) {
+        console.error('Failed to load profile:', e);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     initProfile();
   }, []);
