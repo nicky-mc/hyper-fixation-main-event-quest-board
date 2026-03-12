@@ -374,11 +374,11 @@ export default function Friends() {
                 ) : (
                   <div className="space-y-3">
                     {searchResults.map(p => (
-                      <SearchCard key={p.id}
-                        profile={{ full_name: p.adventurer_name, email: p.email || '', avatar_url: p.avatar_url, location: p.location }}
-                        friendStatus={getFriendStatus(p.email)}
-                        onAdd={() => sendRequest({ full_name: p.adventurer_name, email: p.email || '' })} />
-                    ))}
+                       <SearchCard key={p.id}
+                         profile={{ full_name: p.adventurer_name, email: p.email || '', avatar_url: p.avatar_url, location: p.location }}
+                         friendStatus={getFriendStatus(p.id)}
+                         onAdd={() => sendRequest(p)} />
+                     ))}
                   </div>
                 )}
               </div>
