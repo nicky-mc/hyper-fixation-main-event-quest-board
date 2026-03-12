@@ -3,6 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { Rss, Plus, Send, Loader2, Trash2, Camera, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function NewsFeed() {
   const [user, setUser] = useState(null);
