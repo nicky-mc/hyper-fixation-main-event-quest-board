@@ -49,8 +49,11 @@ export default function QuestBoard() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [mapOpen, setMapOpen] = useState(false);
 
+  const ADMIN_EMAILS = ['nicky@example.com', 'charlotte@example.com']; // update with real emails
+  const isAdmin = user?.role === 'admin';
+
   const loadQuests = async () => {
-    const data = await base44.entities.Quest.list('-created_date', 50);
+    const data = await base44.entities.Quest.list('-created_date', 100);
     setQuests(data);
     setLoading(false);
   };
@@ -77,8 +80,11 @@ export default function QuestBoard() {
     if (cat.id !== 'all') categoryCounts[cat.id] = filterQuestsByCategory(quests, cat.id).length;
   });
 
+  // Only show pending quests on the board
+  const pendingQuests = quests.filter(q => q.status === 'pending');
+
   // Filter then sort
-  const filteredQuests = filterQuestsByCategory(quests, activeCategory);
+  const filteredQuests = filterQuestsByCategory(pendingQuests, activeCategory);
   const displayedQuests = sortByVotes
     ? [...filteredQuests].sort((a, b) => (voteCounts[b.id] || 0) - (voteCounts[a.id] || 0))
     : filteredQuests;
