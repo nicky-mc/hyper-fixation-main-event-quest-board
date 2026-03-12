@@ -426,6 +426,33 @@ export default function AdventurerProfile() {
                   </div>
                 )}
 
+                {/* ── ADMIN ACTION PANEL ── */}
+                {isCurrentUserAdmin && !isOwnProfile && (
+                  <div className="mt-4 p-3 rounded-xl border border-amber-700/40 bg-amber-900/10">
+                    <p className="text-[10px] text-amber-500 uppercase tracking-widest font-bold mb-2 flex items-center gap-1">
+                      <ShieldAlert className="w-3 h-3" /> Admin Actions
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <button onClick={handleAdminPromote}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-amber-300 hover:bg-amber-900/30 transition-all border border-amber-700/40">
+                        <Crown className="w-3 h-3" /> Make Admin
+                      </button>
+                      <button onClick={handleAdminDemote}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800/50 transition-all border border-slate-700/40">
+                        <Shield className="w-3 h-3" /> Demote to User
+                      </button>
+                      <button onClick={handleAdminBan}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-red-400 hover:bg-red-900/20 transition-all border border-red-700/40">
+                        <Ban className="w-3 h-3" /> Ban User
+                      </button>
+                    </div>
+                    <p className="text-[9px] text-slate-600 mt-2">
+                      Role on record: <span className="text-slate-400 font-semibold">{profileUserRole}</span>
+                      {profile?.email && <> · Email: <span className="text-slate-400">{profile.email}</span></>}
+                    </p>
+                  </div>
+                )}
+
                 {/* Stats bar */}
                 <div className="flex items-center mt-4 border-t border-purple-900/30 pt-3 divide-x divide-purple-900/30">
                   <StatPill label="Quests" value={myQuests.length} color="text-red-400" />
