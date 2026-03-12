@@ -2,11 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { MessageCircle, User, Rss, LogOut, LogIn, Menu, X, Trophy } from 'lucide-react';
+import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-// Custom SVG icons
 function SwordsIcon({ className }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -21,11 +20,19 @@ function SwordsIcon({ className }) {
   );
 }
 
+const NAV_ITEMS = [
+  { label: 'Quest Board',   page: 'QuestBoard',      icon: SwordsIcon },
+  { label: 'News Feed',     page: 'NewsFeed',         icon: Rss },
+  { label: 'Hall of Fame',  page: 'CompletedQuests',  icon: Trophy },
+  { label: 'Messages',      page: 'Messages',         icon: MessageCircle },
+  { label: 'My Adventurer', page: 'MyAdventurer',     icon: User },
+];
+
 export default function Layout({ children, currentPageName }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser]             = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const location = useLocation();
+  const [expanded, setExpanded]     = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -49,138 +56,247 @@ export default function Layout({ children, currentPageName }) {
     return unsub;
   }, [user]);
 
-  const navItems = [
-    { label: 'Quest Board', page: 'QuestBoard', icon: SwordsIcon },
-    { label: 'News Feed', page: 'NewsFeed', icon: Rss },
-    { label: 'Hall of Fame', page: 'CompletedQuests', icon: Trophy },
-    { label: 'Messages', page: 'Messages', icon: MessageCircle, badge: unreadCount },
-    { label: 'My Adventurer', page: 'MyAdventurer', icon: User },
-  ];
-
-  const handleLogin = () => base44.auth.redirectToLogin(window.location.pathname);
+  const handleLogin  = () => base44.auth.redirectToLogin(window.location.pathname);
   const handleLogout = () => base44.auth.logout('/');
 
-  return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(160deg, #04030f 0%, #08051a 35%, #060b18 65%, #040809 100%)' }}>
-
-      {/* ── NAVIGATION ── */}
-      <nav className="sticky top-0 z-50 backdrop-blur-xl"
-        style={{
-          background: 'rgba(6, 4, 18, 0.85)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          boxShadow: '0 1px 0 rgba(168,85,247,0.08), 0 4px 24px rgba(0,0,0,0.5)',
-        }}>
-
-        {/* Top accent line — Command Red */}
-        <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, transparent 0%, #dc2626 20%, #fbbf24 50%, #dc2626 80%, transparent 100%)' }} />
-
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-
-          {/* Logo */}
-          <Link to={createPageUrl('QuestBoard')} className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #7f1d1d, #4c1d95)', border: '1px solid rgba(251,191,36,0.3)', boxShadow: '0 0 12px rgba(251,191,36,0.2)' }}>
-              <span className="text-amber-400 font-black text-sm">⚔</span>
-            </div>
-            <span className="font-cinzel font-black text-lg tracking-wide"
-              style={{ background: 'linear-gradient(135deg, #fbbf24, #f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              HME
-            </span>
-          </Link>
-
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navItems.map(({ label, page, icon: Icon, badge }) => {
-              const active = currentPageName === page;
-              return (
-                <Link key={page} to={createPageUrl(page)}
-                  className={cn(
-                    "relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200",
-                    active
-                      ? "text-amber-300"
-                      : "text-slate-400 hover:text-slate-200"
-                  )}
-                  style={active ? {
-                    background: 'rgba(251,191,36,0.08)',
-                    border: '1px solid rgba(251,191,36,0.18)',
-                    boxShadow: '0 0 12px rgba(251,191,36,0.1)',
-                  } : {
-                    background: 'transparent',
-                    border: '1px solid transparent',
-                  }}>
-                  <Icon className="w-3.5 h-3.5" />
-                  {label}
-                  {badge > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center"
-                      style={{ boxShadow: '0 0 8px rgba(239,68,68,0.6)' }}>
-                      {badge > 9 ? '9+' : badge}
-                    </span>
-                  )}
-                  {active && <motion.div layoutId="nav-pill" className="absolute inset-0 rounded-xl pointer-events-none" style={{ background: 'rgba(251,191,36,0.05)' }} />}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Right: user */}
-          <div className="flex items-center gap-2">
-            {user ? (
-              <div className="hidden md:flex items-center gap-2">
-                <span className="text-xs text-slate-500 max-w-[120px] truncate font-medium">{user.full_name || user.email}</span>
-                <button onClick={handleLogout}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300 transition-all"
-                  style={{ background: 'rgba(127,29,29,0.2)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                  <LogOut className="w-3.5 h-3.5" /> Logout
-                </button>
-              </div>
-            ) : (
-              <button onClick={handleLogin}
-                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-amber-400 hover:text-amber-300 transition-all font-semibold"
-                style={{ background: 'rgba(120,53,15,0.2)', border: '1px solid rgba(251,191,36,0.2)' }}>
-                <LogIn className="w-3.5 h-3.5" /> Login
-              </button>
-            )}
-            <button onClick={() => setMobileOpen(o => !o)} className="md:hidden p-2 text-slate-400 hover:text-slate-200 transition-colors">
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+  // Sidebar content shared between desktop & mobile
+  const SidebarContent = ({ onNav }) => (
+    <>
+      {/* Logo */}
+      <Link to={createPageUrl('QuestBoard')} onClick={onNav}
+        className="flex items-center gap-3 px-3 py-4 mb-2 group shrink-0">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-500 group-hover:scale-110"
+          style={{
+            background: 'linear-gradient(135deg, #7f1d1d, #4c1d95)',
+            border: '1px solid rgba(251,191,36,0.4)',
+            boxShadow: '0 0 16px rgba(251,191,36,0.25)',
+          }}>
+          <span className="text-amber-400 font-black text-base">⚔</span>
         </div>
-
-        {/* Mobile menu */}
         <AnimatePresence>
-          {mobileOpen && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-              className="md:hidden overflow-hidden"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(6,4,18,0.97)' }}>
-              <div className="px-4 py-3 space-y-1">
-                {navItems.map(({ label, page, icon: Icon, badge }) => (
-                  <Link key={page} to={createPageUrl(page)}
-                    onClick={() => setMobileOpen(false)}
-                    className="relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:text-white hover:bg-white/5 transition-all font-medium">
-                    <Icon className="w-4 h-4" />
-                    {label}
-                    {badge > 0 && <span className="ml-auto bg-red-500 text-white text-[9px] font-black rounded-full px-1.5">{badge}</span>}
-                  </Link>
-                ))}
-                <div className="pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                  {user ? (
-                    <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-400 hover:bg-red-900/20 rounded-xl transition-all">
-                      <LogOut className="w-4 h-4" /> Logout
-                    </button>
-                  ) : (
-                    <button onClick={handleLogin} className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-amber-400 hover:bg-amber-900/20 rounded-xl transition-all">
-                      <LogIn className="w-4 h-4" /> Login
-                    </button>
-                  )}
-                </div>
-              </div>
-            </motion.div>
+          {expanded && (
+            <motion.span
+              initial={{ opacity: 0, x: -8, width: 0 }}
+              animate={{ opacity: 1, x: 0, width: 'auto' }}
+              exit={{ opacity: 0, x: -8, width: 0 }}
+              className="font-black text-lg tracking-wide overflow-hidden whitespace-nowrap"
+              style={{
+                fontFamily: "'Orbitron', sans-serif",
+                background: 'linear-gradient(135deg, #fbbf24, #f97316)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+              HME
+            </motion.span>
           )}
         </AnimatePresence>
+      </Link>
+
+      {/* Divider */}
+      <div className="mx-3 mb-3 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.4), transparent)' }} />
+
+      {/* Nav items */}
+      <nav className="flex flex-col gap-1 flex-1 px-2">
+        {NAV_ITEMS.map(({ label, page, icon: Icon }) => {
+          const active = currentPageName === page;
+          const badge = page === 'Messages' ? unreadCount : 0;
+          return (
+            <Link key={page} to={createPageUrl(page)} onClick={onNav}
+              className={cn(
+                "relative flex items-center gap-3 px-2.5 py-2.5 rounded-xl transition-all duration-500 group",
+                active ? "text-red-400" : "text-slate-500 hover:text-red-400"
+              )}
+              style={active ? {
+                background: 'rgba(239,68,68,0.1)',
+                border: '1px solid rgba(239,68,68,0.25)',
+                boxShadow: '0 0 16px rgba(239,68,68,0.15)',
+              } : {
+                border: '1px solid transparent',
+              }}>
+              <div className="relative shrink-0 transition-all duration-500"
+                style={{ filter: active ? 'drop-shadow(0 0 6px rgba(239,68,68,0.8))' : '' }}>
+                <Icon className="w-5 h-5 transition-all duration-500 group-hover:[filter:drop-shadow(0_0_6px_rgba(239,68,68,0.9))]" />
+                {badge > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center"
+                    style={{ boxShadow: '0 0 8px rgba(239,68,68,0.7)' }}>
+                    {badge > 9 ? '9+' : badge}
+                  </span>
+                )}
+              </div>
+              <AnimatePresence>
+                {expanded && (
+                  <motion.span
+                    initial={{ opacity: 0, x: -8, width: 0 }}
+                    animate={{ opacity: 1, x: 0, width: 'auto' }}
+                    exit={{ opacity: 0, x: -8, width: 0 }}
+                    className="text-xs font-semibold whitespace-nowrap overflow-hidden"
+                    style={{ fontFamily: "'Exo 2', sans-serif", letterSpacing: '0.05em' }}>
+                    {label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Link>
+          );
+        })}
       </nav>
 
-      {/* Page content */}
-      <main className="flex-1">
+      {/* Bottom: user */}
+      <div className="mt-auto px-2 pb-3 shrink-0">
+        <div className="mx-1 mb-2 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.3), transparent)' }} />
+        {user ? (
+          <>
+            <AnimatePresence>
+              {expanded && (
+                <motion.p
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="text-[9px] text-slate-600 text-center mb-1.5 px-2 truncate"
+                  style={{ fontFamily: "'Exo 2', sans-serif" }}>
+                  {user.full_name || user.email}
+                </motion.p>
+              )}
+            </AnimatePresence>
+            <button onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl text-slate-500 hover:text-red-400 transition-all duration-500 hover:bg-red-900/20 group"
+              style={{ border: '1px solid transparent' }}>
+              <LogOut className="w-4 h-4 shrink-0 group-hover:[filter:drop-shadow(0_0_5px_rgba(239,68,68,0.8))]" />
+              <AnimatePresence>
+                {expanded && (
+                  <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }} exit={{ opacity: 0, width: 0 }}
+                    className="text-xs font-semibold overflow-hidden whitespace-nowrap" style={{ fontFamily: "'Exo 2', sans-serif" }}>
+                    Logout
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+          </>
+        ) : (
+          <button onClick={handleLogin}
+            className="w-full flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl text-amber-500/70 hover:text-amber-400 transition-all duration-500 hover:bg-amber-900/20 group"
+            style={{ border: '1px solid transparent' }}>
+            <LogIn className="w-4 h-4 shrink-0 group-hover:[filter:drop-shadow(0_0_5px_rgba(251,191,36,0.8))]" />
+            <AnimatePresence>
+              {expanded && (
+                <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }} exit={{ opacity: 0, width: 0 }}
+                  className="text-xs font-semibold overflow-hidden whitespace-nowrap" style={{ fontFamily: "'Exo 2', sans-serif" }}>
+                  Login
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+        )}
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen flex relative"
+      style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
+
+      {/* Deep Space Nebula overlays */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Nebula color clouds */}
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-20"
+          style={{ background: 'radial-gradient(circle, rgba(120,40,200,0.6) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full opacity-15"
+          style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.5) 0%, transparent 70%)', filter: 'blur(100px)' }} />
+        <div className="absolute top-1/3 right-0 w-[400px] h-[400px] rounded-full opacity-15"
+          style={{ background: 'radial-gradient(circle, rgba(0,180,220,0.4) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+        {/* Wood-grain texture overlay */}
+        <div className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              rgba(255,255,255,0.03) 2px,
+              rgba(255,255,255,0.03) 3px
+            ), repeating-linear-gradient(
+              90deg,
+              transparent,
+              transparent 8px,
+              rgba(255,255,255,0.015) 8px,
+              rgba(255,255,255,0.015) 9px
+            )`,
+          }} />
+        {/* Starfield dots */}
+        <div className="absolute inset-0 opacity-30"
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
+      </div>
+
+      {/* ── DESKTOP FLOATING SIDEBAR ── */}
+      <motion.aside
+        onHoverStart={() => setExpanded(true)}
+        onHoverEnd={() => setExpanded(false)}
+        animate={{ width: expanded ? 200 : 68 }}
+        transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+        className="hidden md:flex fixed left-4 top-4 bottom-4 z-50 flex-col overflow-hidden rounded-2xl"
+        style={{
+          backdropFilter: 'blur(15px) saturate(1.8)',
+          WebkitBackdropFilter: 'blur(15px) saturate(1.8)',
+          background: 'rgba(8, 6, 24, 0.72)',
+          border: '1px solid rgba(239,68,68,0.18)',
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(239,68,68,0.08)',
+        }}
+      >
+        {/* Command Red top accent */}
+        <div className="absolute inset-x-0 top-0 h-0.5 rounded-t-2xl"
+          style={{ background: 'linear-gradient(90deg, transparent, #dc2626, #fbbf24, #dc2626, transparent)' }} />
+        {/* Command Red left glow edge */}
+        <div className="absolute left-0 top-8 bottom-8 w-0.5 rounded-full"
+          style={{ background: 'linear-gradient(180deg, transparent, rgba(239,68,68,0.6), transparent)' }} />
+
+        <SidebarContent onNav={() => {}} />
+      </motion.aside>
+
+      {/* ── MOBILE HEADER ── */}
+      <div className="md:hidden fixed top-0 inset-x-0 z-50 h-14 flex items-center justify-between px-4"
+        style={{
+          backdropFilter: 'blur(15px)',
+          WebkitBackdropFilter: 'blur(15px)',
+          background: 'rgba(8, 6, 24, 0.85)',
+          borderBottom: '1px solid rgba(239,68,68,0.18)',
+        }}>
+        <div className="h-0.5 absolute inset-x-0 top-0"
+          style={{ background: 'linear-gradient(90deg, transparent, #dc2626, #fbbf24, #dc2626, transparent)' }} />
+        <Link to={createPageUrl('QuestBoard')} className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, #7f1d1d, #4c1d95)', border: '1px solid rgba(251,191,36,0.35)' }}>
+            <span className="text-amber-400 text-xs font-black">⚔</span>
+          </div>
+          <span className="font-black text-base text-amber-400" style={{ fontFamily: "'Orbitron', sans-serif" }}>HME</span>
+        </Link>
+        <button onClick={() => setMobileOpen(o => !o)} className="p-2 text-slate-400 hover:text-red-400 transition-all duration-500">
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {/* Mobile slide-in menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="md:hidden fixed inset-0 z-40 bg-black/60" onClick={() => setMobileOpen(false)} />
+            <motion.div
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+              className="md:hidden fixed left-0 top-0 bottom-0 w-64 z-50 flex flex-col rounded-r-2xl overflow-hidden"
+              style={{
+                backdropFilter: 'blur(15px)',
+                background: 'rgba(8, 6, 24, 0.95)',
+                border: '1px solid rgba(239,68,68,0.2)',
+              }}>
+              <div className="h-0.5 absolute inset-x-0 top-0"
+                style={{ background: 'linear-gradient(90deg, transparent, #dc2626, #fbbf24, #dc2626, transparent)' }} />
+              <div className="pt-4">
+                <SidebarContent onNav={() => setMobileOpen(false)} />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ── MAIN CONTENT ── */}
+      <main className="flex-1 relative z-10 md:pl-24 pt-14 md:pt-0 min-h-screen">
         {children}
       </main>
     </div>
