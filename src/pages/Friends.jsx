@@ -144,14 +144,13 @@ export default function Friends() {
     if (profile) loadAll(profile);
   }, [profile]);
 
-  const loadAll = async (u) => {
+  const loadAll = async (prof) => {
     setLoading(true);
-    const name = u.full_name || u.email;
 
-    const isAdmin = u.role === 'admin';
+    const isAdmin = prof.role === 'admin';
     const [sentFs, receivedFs, profiles, allPending] = await Promise.all([
-      base44.entities.Friendship.filter({ requester_email: u.email }),
-      base44.entities.Friendship.filter({ recipient_email: u.email }),
+      base44.entities.Friendship.filter({ requester_id: prof.id }),
+      base44.entities.Friendship.filter({ recipient_id: prof.id }),
       base44.entities.AdventurerProfile.list('-created_date', 200),
       isAdmin ? base44.entities.Friendship.filter({ status: 'pending' }) : Promise.resolve([]),
     ]);
@@ -169,15 +168,13 @@ export default function Friends() {
 
     // Build friend profile cards
     const profileMap = {};
-    profiles.forEach(p => { profileMap[p.adventurer_name] = p; });
+    profiles.forEach(p => { profileMap[p.id] = p; });
 
     const friendCards = accepted.map(f => {
-      const friendName = f.requester_email === u.email ? f.recipient_name : f.requester_name;
-      return { ...(profileMap[friendName] || { adventurer_name: friendName }), _friendship: f };
+      const friendId = f.requester_id === prof.id ? f.recipient_id : f.requester_id;
+      return { ...(profileMap[friendId] || { id: friendId, adventurer_name: f.recipient_name || f.requester_name }), _friendship: f };
     });
     setFriendProfiles(friendCards);
-
-    // No User.list() needed — search is powered by AdventurerProfile
 
     setLoading(false);
   };
