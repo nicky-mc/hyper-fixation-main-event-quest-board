@@ -73,10 +73,13 @@ export default function QuestBoard() {
     if (quests.length > 0) loadVoteCounts(quests);
   }, [quests]);
 
+  // Only show pending quests on the board
+  const pendingQuests = quests.filter(q => q.status === 'pending');
+
   // Category counts for filter badges
-  const categoryCounts = { total: quests.length };
+  const categoryCounts = { total: pendingQuests.length };
   CATEGORIES.forEach(cat => {
-    if (cat.id !== 'all') categoryCounts[cat.id] = filterQuestsByCategory(quests, cat.id).length;
+    if (cat.id !== 'all') categoryCounts[cat.id] = filterQuestsByCategory(pendingQuests, cat.id).length;
   });
 
   // Only show pending quests on the board
