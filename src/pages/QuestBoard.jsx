@@ -49,7 +49,6 @@ export default function QuestBoard() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [mapOpen, setMapOpen] = useState(false);
 
-  const ADMIN_EMAILS = ['nicky@example.com', 'charlotte@example.com']; // update with real emails
   const isAdmin = user?.role === 'admin';
 
   const loadQuests = async () => {
@@ -151,14 +150,16 @@ export default function QuestBoard() {
         {/* ── TOP BAR ── */}
         <div className="flex justify-end gap-2 mb-4">
           <NotificationBell />
-          <motion.button
-            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}
-            onClick={() => setSettingsOpen(true)}
-            className="p-2.5 rounded-xl border-2 border-purple-700/40 bg-purple-900/30 text-purple-400 hover:border-purple-500 hover:text-purple-300 transition-all"
-            title="Host notification settings"
-          >
-            <Settings className="w-5 h-5" />
-          </motion.button>
+          {isAdmin && (
+            <motion.button
+              whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}
+              onClick={() => setSettingsOpen(true)}
+              className="p-2.5 rounded-xl border-2 border-purple-700/40 bg-purple-900/30 text-purple-400 hover:border-purple-500 hover:text-purple-300 transition-all"
+              title="Host notification settings"
+            >
+              <Settings className="w-5 h-5" />
+            </motion.button>
+          )}
         </div>
 
       {/* ── HEADER ── */}
@@ -259,12 +260,21 @@ export default function QuestBoard() {
             </span>
           </motion.button>
 
-          <Button onClick={() => setIsDrawerOpen(true)}
-            className="px-6 py-5 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 hover:from-purple-800 hover:to-indigo-800 border-2 border-purple-600/50 hover:border-purple-500 text-purple-200 shadow-xl text-xl"
-            style={{ fontFamily: "'Caveat', cursive" }}
-          >
-            <Plus className="w-5 h-5 mr-2" /> Post a Quest 🦈
-          </Button>
+          {user ? (
+            <Button onClick={() => setIsDrawerOpen(true)}
+              className="px-6 py-5 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 hover:from-purple-800 hover:to-indigo-800 border-2 border-purple-600/50 hover:border-purple-500 text-purple-200 shadow-xl text-xl"
+              style={{ fontFamily: "'Caveat', cursive" }}
+            >
+              <Plus className="w-5 h-5 mr-2" /> Post a Quest 🦈
+            </Button>
+          ) : (
+            <Button onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
+              className="px-6 py-5 bg-gradient-to-r from-purple-900/60 to-indigo-900/60 border-2 border-purple-700/40 text-purple-400 shadow-xl text-xl"
+              style={{ fontFamily: "'Caveat', cursive" }}
+            >
+              <Plus className="w-5 h-5 mr-2" /> Login to Post a Quest 🦈
+            </Button>
+          )}
 
           {user?.role === 'admin' && (
             <motion.button
