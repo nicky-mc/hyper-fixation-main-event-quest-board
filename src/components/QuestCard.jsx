@@ -250,12 +250,18 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
             )}>
               {quest.quest_giver.charAt(0).toUpperCase()}
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <span className="text-[10px] text-purple-600/70 block">Quest Giver</span>
-              <span className="text-sm font-medium text-purple-200/90" style={{ fontFamily: "'Caveat', cursive" }}>
+              <span className="text-sm font-medium text-purple-200/90 truncate block" style={{ fontFamily: "'Caveat', cursive" }}>
                 {quest.quest_giver}
               </span>
             </div>
+            {canEdit && (
+              <button onClick={handleDelete} title="Delete quest"
+                className="p-1.5 text-slate-600 hover:text-red-400 transition-colors rounded shrink-0">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
 
