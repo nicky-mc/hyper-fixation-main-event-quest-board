@@ -82,9 +82,6 @@ export default function QuestBoard() {
     if (cat.id !== 'all') categoryCounts[cat.id] = filterQuestsByCategory(pendingQuests, cat.id).length;
   });
 
-  // Only show pending quests on the board
-  const pendingQuests = quests.filter(q => q.status === 'pending');
-
   // Filter then sort
   const filteredQuests = filterQuestsByCategory(pendingQuests, activeCategory);
   const displayedQuests = sortByVotes
