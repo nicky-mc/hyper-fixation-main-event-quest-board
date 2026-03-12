@@ -3,7 +3,6 @@ import { base44 } from '@/api/base44Client';
 import { Send, Loader2, MessageCircle, ArrowLeft, Smile, Paperclip, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useAdventurer } from '@/layout.jsx';
 
 function Avatar({ name, src, size = 'md' }) {
   const sizes = { sm: 'w-8 h-8 text-xs', md: 'w-10 h-10 text-sm', lg: 'w-12 h-12 text-base' };
@@ -39,7 +38,7 @@ function formatTime(iso) {
 }
 
 export default function Messages() {
-  const profile = useAdventurer();
+  const [profile, setProfile] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -53,8 +52,19 @@ export default function Messages() {
   const textareaRef = useRef(null);
 
   useEffect(() => {
-    if (profile) loadData(profile);
-  }, [profile]);
+    const initProfile = async () => {
+      const user = await base44.auth.me();
+      if (user) {
+        const prof = await base44.entities.AdventurerProfile.filter({ auth_id: user.id });
+        if (prof.length > 0) {
+          setProfile(prof[0]);
+          loadData(prof[0]);
+        }
+      }
+      setLoading(false);
+    };
+    initProfile();
+  }, []);
 
   const loadData = async (prof) => {
     const isAdmin = prof.role === 'admin';
