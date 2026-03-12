@@ -163,7 +163,8 @@ export default function Friends() {
     setFriendships(all);
 
     const accepted = all.filter(f => f.status === 'accepted');
-    const incomingPending = receivedFs.filter(f => f.status === 'pending');
+    // Admins see ALL pending requests platform-wide for moderation
+    const incomingPending = isAdmin ? allPending : receivedFs.filter(f => f.status === 'pending');
 
     setFriends(accepted);
     setPending(incomingPending);
