@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2, Camera, Shield, Crown, Zap, Trophy, Sword, UserPlus, UserMinus, UserCheck, Clock, MapPin, Star, Flame, Bookmark, CheckCircle2, Users } from 'lucide-react';
+import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2, Camera, Shield, Crown, Zap, Trophy, Sword, UserPlus, UserMinus, UserCheck, Clock, MapPin, Star, Flame, Bookmark, CheckCircle2, Users, ShieldAlert, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
