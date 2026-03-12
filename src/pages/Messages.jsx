@@ -304,7 +304,7 @@ export default function Messages() {
         ) : (
           <>
             {conversation.map((m, i) => {
-              const isMe = m.sender_email === user.email;
+              const isMe = m.sender_id === profile.id;
               const prevMsg = conversation[i - 1];
               const showTimestamp = !prevMsg || (new Date(m.created_date) - new Date(prevMsg.created_date)) > 5 * 60 * 1000;
               return (
@@ -322,7 +322,7 @@ export default function Messages() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ duration: 0.15 }}
                     className={cn("flex items-end gap-2 mb-1", isMe ? "justify-end" : "justify-start")}>
-                    {!isMe && <Avatar name={selectedUser.full_name || selectedUser.email} size="sm" />}
+                    {!isMe && <Avatar name={selectedUser.full_name || selectedUser.id} size="sm" />}
                     <div className={cn(
                       "max-w-[72%] sm:max-w-[60%] px-4 py-2.5 text-sm leading-relaxed",
                       isMe
@@ -339,7 +339,7 @@ export default function Messages() {
                     }}>
                       {m.content}
                     </div>
-                    {isMe && <Avatar name={user.full_name || user.email} size="sm" />}
+                    {isMe && <Avatar name={profile.adventurer_name || profile.id} size="sm" />}
                   </motion.div>
                 </div>
               );
