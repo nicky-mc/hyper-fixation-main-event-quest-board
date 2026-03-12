@@ -38,7 +38,6 @@ const NAV_ITEMS = [
 ];
 
 export default function Layout({ children, currentPageName }) {
-  const { profile, loading: syncLoading } = useAdventurerSync();
   const [user, setUser]             = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,12 +46,12 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     base44.auth.me().then(u => {
       setUser(u);
-      if (u && profile) loadUnread(profile.id);
+      if (u) loadUnread(u.email);
     }).catch(() => {});
-  }, [profile]);
+  }, []);
 
-  const loadUnread = async (adventurerId) => {
-    const msgs = await base44.entities.Message.filter({ recipient_id: adventurerId, read: false });
+  const loadUnread = async (profileId) => {
+    const msgs = await base44.entities.Message.filter({ recipient_id: profileId, read: false });
     setUnreadCount(msgs.length);
   };
 
@@ -198,6 +197,7 @@ export default function Layout({ children, currentPageName }) {
   );
 
   return (
+    <AdventurerContext.Provider value={profile}>
     <div className="min-h-screen flex relative"
       style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
 
@@ -311,5 +311,6 @@ export default function Layout({ children, currentPageName }) {
 
       <MessageToast currentPageName={currentPageName} />
     </div>
+    </AdventurerContext.Provider>
   );
 }
