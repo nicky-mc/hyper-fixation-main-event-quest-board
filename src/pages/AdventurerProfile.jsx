@@ -102,13 +102,13 @@ export default function AdventurerProfile() {
       setQuests(map);
     }
 
-    // follower / following counts
-    const [followers, following] = await Promise.all([
-      base44.entities.Friendship.filter({ following_name: adventurerName }),
-      base44.entities.Friendship.filter({ follower_name: adventurerName }),
+    // friend counts (accepted only)
+    const [asRecipient, asRequester] = await Promise.all([
+      base44.entities.Friendship.filter({ recipient_name: adventurerName, status: 'accepted' }),
+      base44.entities.Friendship.filter({ requester_name: adventurerName, status: 'accepted' }),
     ]);
-    setFollowerCount(followers.length);
-    setFollowingCount(following.length);
+    setFollowerCount(asRecipient.length);
+    setFollowingCount(asRequester.length);
 
     setLoading(false);
   };
