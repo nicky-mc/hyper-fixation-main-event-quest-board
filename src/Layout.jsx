@@ -29,6 +29,7 @@ const NAV_ITEMS = [
   { label: 'My Adventurer', page: 'MyAdventurer',     icon: User },
   { label: 'Episode Calendar', page: 'EpisodeCalendar', icon: CalendarDays },
   { label: 'Adventurers', page: 'AdventurersDirectory', icon: Users },
+  { label: 'Friends', page: 'Friends', icon: UserPlus },
 ];
 
 export default function Layout({ children, currentPageName }) {
