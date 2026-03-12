@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2, Camera } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
@@ -18,6 +18,8 @@ export default function AdventurerProfile() {
   const [editBio, setEditBio] = useState('');
   const [editName, setEditName] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!adventurerName) { setLoading(false); return; }
@@ -36,7 +38,6 @@ export default function AdventurerProfile() {
     setEditName(prof?.adventurer_name || adventurerName);
     setComments(allComments);
 
-    // Fetch quest titles for the comments
     const questIds = [...new Set(allComments.map(c => c.quest_id))];
     if (questIds.length > 0) {
       const allQuests = await base44.entities.Quest.list();
@@ -59,22 +60,37 @@ export default function AdventurerProfile() {
     setSaving(false);
   };
 
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    if (profile) {
+      await base44.entities.AdventurerProfile.update(profile.id, { avatar_url: file_url });
+    } else {
+      await base44.entities.AdventurerProfile.create({ adventurer_name: adventurerName, avatar_url: file_url });
+    }
+    await loadAll();
+    setUploadingAvatar(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const formatTime = (iso) => {
     const d = new Date(iso);
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
+  const avatarUrl = profile?.avatar_url;
+
   return (
     <div className="min-h-screen relative overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 30%, #080d1a 60%, #050a10 100%)' }}>
-      {/* Background */}
       <div className="absolute inset-0 pointer-events-none opacity-30"
         style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-500 via-purple-500 to-red-500 opacity-60" />
       <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 via-amber-500 to-cyan-500 opacity-60" />
 
       <div className="relative max-w-2xl mx-auto px-4 py-10">
-        {/* Back button */}
         <Link to={createPageUrl('QuestBoard')}
           className="inline-flex items-center gap-2 text-purple-500 hover:text-purple-300 text-xs mb-8 transition-colors">
           <ArrowLeft className="w-3.5 h-3.5" />
@@ -96,9 +112,33 @@ export default function AdventurerProfile() {
 
               <div className="px-6 py-5 border-b border-purple-900/40 bg-purple-950/30 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 border-2 border-purple-500/50 flex items-center justify-center text-xl font-black text-white">
-                    {adventurerName.charAt(0).toUpperCase()}
+                  {/* Avatar */}
+                  <div className="relative shrink-0">
+                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-purple-500/50">
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-xl font-black text-white">
+                          {adventurerName.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                    {editing && (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadingAvatar}
+                        className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-purple-600 border-2 border-[#0d0d1a] flex items-center justify-center hover:bg-purple-500 transition-colors disabled:opacity-50"
+                        title="Upload profile picture"
+                      >
+                        {uploadingAvatar
+                          ? <Loader2 className="w-3 h-3 animate-spin text-white" />
+                          : <Camera className="w-3 h-3 text-white" />}
+                      </button>
+                    )}
                   </div>
+
                   <div>
                     {editing ? (
                       <input value={editName} onChange={e => setEditName(e.target.value)} maxLength={40}
@@ -112,6 +152,7 @@ export default function AdventurerProfile() {
                     <p className="text-[10px] text-purple-500 uppercase tracking-widest">Adventurer</p>
                   </div>
                 </div>
+
                 {!editing ? (
                   <button onClick={() => setEditing(true)}
                     className="p-2 rounded-lg border border-purple-700/40 text-purple-400 hover:text-purple-200 hover:border-purple-500 transition-colors">
@@ -168,12 +209,8 @@ export default function AdventurerProfile() {
                         className="rounded-xl border border-purple-900/40 bg-purple-950/20 overflow-hidden">
                         {quest && (
                           <div className="px-4 py-1.5 bg-purple-900/20 border-b border-purple-900/30 flex items-center justify-between">
-                            <span className="text-[10px] text-purple-500 uppercase tracking-widest">
-                              {quest.segment}
-                            </span>
-                            <span className="text-[10px] text-amber-600 font-bold truncate max-w-[60%] text-right">
-                              {quest.title}
-                            </span>
+                            <span className="text-[10px] text-purple-500 uppercase tracking-widest">{quest.segment}</span>
+                            <span className="text-[10px] text-amber-600 font-bold truncate max-w-[60%] text-right">{quest.title}</span>
                           </div>
                         )}
                         <div className="px-4 py-3">

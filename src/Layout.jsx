@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { Swords, MessageCircle, User, Rss, LogOut, LogIn, Menu, X } from 'lucide-react';
+import { Swords, MessageCircle, User, Rss, LogOut, LogIn, Menu, X, Trophy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +37,7 @@ export default function Layout({ children, currentPageName }) {
   const navItems = [
     { label: 'Quest Board', page: 'QuestBoard', icon: Swords },
     { label: 'News Feed', page: 'NewsFeed', icon: Rss },
+    { label: 'Hall of Fame', page: 'CompletedQuests', icon: Trophy },
     { label: 'Messages', page: 'Messages', icon: MessageCircle, badge: unreadCount },
     { label: 'My Adventurer', page: 'MyAdventurer', icon: User },
   ];
