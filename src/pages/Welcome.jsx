@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { motion } from 'framer-motion';
-
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+import SignInModal from '@/components/SignInModal';
+import SignUpModal from '@/components/SignUpModal';
 
 const FEATURES = [
   { icon: '⚔️', title: 'Quest Board', desc: 'Submit and vote on show topics & side quests' },
@@ -11,6 +13,9 @@ const FEATURES = [
 ];
 
 export default function Welcome() {
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
+
   // If already logged in, redirect straight to QuestBoard
   useEffect(() => {
     base44.auth.isAuthenticated().then(auth => {
@@ -18,7 +23,17 @@ export default function Welcome() {
     });
   }, []);
 
-  const handleLogin = () => base44.auth.redirectToLogin('/QuestBoard');
+  // Handle ESC key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        setShowSignIn(false);
+        setShowSignUp(false);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden"
