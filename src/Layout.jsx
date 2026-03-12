@@ -26,6 +26,7 @@ const NAV_ITEMS = [
   { label: 'Hall of Fame',  page: 'CompletedQuests',  icon: Trophy },
   { label: 'Messages',      page: 'Messages',         icon: MessageCircle },
   { label: 'My Adventurer', page: 'MyAdventurer',     icon: User },
+  { label: 'Episode Calendar', page: 'EpisodeCalendar', icon: CalendarDays },
 ];
 
 export default function Layout({ children, currentPageName }) {
