@@ -10,6 +10,8 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import CompletedQuests from './pages/CompletedQuests';
 import EpisodeCalendar from './pages/EpisodeCalendar';
 import AdventurersDirectory from './pages/AdventurersDirectory';
+import Friends from './pages/Friends';
+import Welcome from './pages/Welcome';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
