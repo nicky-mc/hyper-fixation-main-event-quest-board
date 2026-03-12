@@ -49,6 +49,7 @@ export default function QuestBoard() {
   const [user, setUser] = useState(null);
   const [activeCategory, setActiveCategory] = useState('all');
   const [mapOpen, setMapOpen] = useState(false);
+  const [feedOpen, setFeedOpen] = useState(false);
 
   const isAdmin = user?.role === 'admin';
 
@@ -218,102 +219,93 @@ export default function QuestBoard() {
             Submit your Side Quests — they'll Roll for Initiative to pick what's next on air!
           </p>
 
-          {/* Host stat bars */}
-          <div className="flex items-center justify-center gap-6 mt-5 flex-wrap">
+          {/* Host cards */}
+          <div className="flex items-center justify-center gap-4 mt-5 flex-wrap">
             {[
               { name: 'Nicky', role: 'ADHD · Gifted · Trans', color: 'from-purple-600 to-violet-400', stat: 'Hyper-focus: 110%' },
               { name: 'Charlotte', role: 'AuDHD · Tactical Analyst', color: 'from-pink-600 to-rose-400', stat: 'Shark Facts: ∞' },
             ].map(h => (
-              <div key={h.name} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
-                <div className={cn("w-6 h-6 rounded-full bg-gradient-to-br flex items-center justify-center text-xs font-black text-white shrink-0", h.color)}>
+              <div key={h.name} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10">
+                <div className={cn("w-8 h-8 rounded-full bg-gradient-to-br flex items-center justify-center text-sm font-black text-white shrink-0", h.color)}>
                   {h.name[0]}
                 </div>
                 <div className="text-left">
-                  <div className="text-xs font-bold text-white">{h.name}</div>
+                  <div className="text-sm font-bold text-white">{h.name}</div>
                   <div className="text-[10px] text-slate-500">{h.role} · <span className="text-amber-500">{h.stat}</span></div>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Admin combat buttons — Roll for Initiative + RKO */}
+          {isAdmin && (
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}
+              className="flex items-center justify-center gap-3 mt-6 flex-wrap">
+              <motion.button
+                onClick={rollForInitiative}
+                disabled={pendingQuests.length === 0 || isRolling}
+                whileHover={{ scale: pendingQuests.length === 0 || isRolling ? 1 : 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                className="relative h-14 px-8 rounded-xl font-black text-white disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+                style={{
+                  background: isRolling ? 'linear-gradient(135deg, #dc2626, #ea580c, #dc2626)' : 'linear-gradient(135deg, #b91c1c, #c2410c)',
+                  border: '2px solid rgba(239,68,68,0.6)',
+                  boxShadow: '0 0 30px rgba(239,68,68,0.3), 0 8px 30px rgba(0,0,0,0.5)',
+                }}
+              >
+                {isRolling && (
+                  <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 0.4, repeat: Infinity }}
+                    className="absolute -inset-1 bg-gradient-to-r from-red-500 via-amber-500 to-red-500 rounded-xl blur-md -z-10" />
+                )}
+                <span className="flex items-center gap-2" style={{ fontFamily: "'Caveat', cursive", fontSize: '1.5rem' }}>
+                  {isRolling ? <><Loader2 className="w-5 h-5 animate-spin" /> Rolling...</> : <><Swords className="w-5 h-5" /> Roll for Initiative!</>}
+                </span>
+              </motion.button>
+              <RKOButton userIsAdmin={true} />
+            </motion.div>
+          )}
         </motion.header>
 
         {/* ── ACTION BAR ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+          className="flex flex-wrap items-center justify-center gap-3 mb-10">
 
-          {/* Roll for Initiative — admin only */}
+          {/* Post a Quest */}
           <motion.button
-            onClick={rollForInitiative}
-            disabled={pendingQuests.length === 0 || isRolling || !isAdmin}
-            whileHover={{ scale: quests.length === 0 || isRolling ? 1 : 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative px-8 py-4 rounded-xl font-black text-xl text-white disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
-            style={{
-              background: isRolling
-                ? 'linear-gradient(135deg, #dc2626, #ea580c, #dc2626)'
-                : 'linear-gradient(135deg, #b91c1c, #c2410c)',
-              border: '2px solid rgba(239,68,68,0.6)',
-              boxShadow: '0 0 30px rgba(239,68,68,0.3), 0 10px 40px rgba(0,0,0,0.5)',
-            }}
+            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+            onClick={() => user ? setIsDrawerOpen(true) : base44.auth.redirectToLogin(window.location.pathname)}
+            className="h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-purple-600/50 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 hover:from-purple-800 hover:to-indigo-800 hover:border-purple-500 text-purple-200 font-bold text-sm transition-all"
           >
-            {isRolling && (
-              <motion.div
-                animate={{ opacity: [0.4, 1, 0.4] }}
-                transition={{ duration: 0.4, repeat: Infinity }}
-                className="absolute -inset-1 bg-gradient-to-r from-red-500 via-amber-500 to-red-500 rounded-xl blur-md -z-10"
-              />
-            )}
-            <span className="flex items-center gap-3" style={{ fontFamily: "'Caveat', cursive", fontSize: '1.6rem' }}>
-              {isRolling
-                ? <><Loader2 className="w-6 h-6 animate-spin" /> Rolling Initiative...</>
-                : <><Swords className="w-6 h-6" /> Roll for Initiative!</>
-              }
-            </span>
+            <Plus className="w-4 h-4" />
+            {user ? 'Post a Quest 🦈' : 'Login to Post 🦈'}
           </motion.button>
 
-          {user ? (
-            <Button onClick={() => setIsDrawerOpen(true)}
-              className="px-6 py-5 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 hover:from-purple-800 hover:to-indigo-800 border-2 border-purple-600/50 hover:border-purple-500 text-purple-200 shadow-xl text-xl"
-              style={{ fontFamily: "'Caveat', cursive" }}
-            >
-              <Plus className="w-5 h-5 mr-2" /> Post a Quest 🦈
-            </Button>
-          ) : (
-            <Button onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
-              className="px-6 py-5 bg-gradient-to-r from-purple-900/60 to-indigo-900/60 border-2 border-purple-700/40 text-purple-400 shadow-xl text-xl"
-              style={{ fontFamily: "'Caveat', cursive" }}
-            >
-              <Plus className="w-5 h-5 mr-2" /> Login to Post a Quest 🦈
-            </Button>
-          )}
-
-          {user?.role === 'admin' && (
+          {/* Sort by Votes — admin only */}
+          {isAdmin && (
             <motion.button
-              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
               onClick={() => setSortByVotes(s => !s)}
               className={cn(
-                "flex items-center gap-2 px-5 py-3 rounded-xl border-2 font-bold text-sm transition-all",
-                sortByVotes
-                  ? "bg-amber-500/20 border-amber-500/60 text-amber-300"
-                  : "bg-purple-900/30 border-purple-700/40 text-purple-400 hover:border-purple-500"
+                "h-11 flex items-center gap-2 px-5 rounded-xl border-2 font-bold text-sm transition-all",
+                sortByVotes ? "bg-amber-500/20 border-amber-500/60 text-amber-300" : "bg-purple-900/30 border-purple-700/40 text-purple-400 hover:border-purple-500"
               )}
             >
               <ArrowUpDown className="w-4 h-4" />
-              {sortByVotes ? "Sorted by Votes" : "Sort by Votes"}
+              {sortByVotes ? 'By Votes' : 'Sort by Votes'}
             </motion.button>
           )}
 
-          {/* World Map button */}
+          {/* Quest Map */}
           <motion.button
-            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
             onClick={() => setMapOpen(true)}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-cyan-800/50 bg-cyan-950/30 text-cyan-400 hover:border-cyan-600/70 font-bold text-sm transition-all"
+            className="h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-cyan-800/50 bg-cyan-950/30 text-cyan-400 hover:border-cyan-600/70 font-bold text-sm transition-all"
           >
             <Map className="w-4 h-4" /> Quest Map
           </motion.button>
 
-          <RKOButton userIsAdmin={user?.role === 'admin'} />
-          <ActivityDrawer />
+          {/* Live Feed */}
+          <ActivityDrawer isOpen={feedOpen} onOpenChange={setFeedOpen} />
         </motion.div>
 
         {/* ── CATEGORY FILTER ── */}
