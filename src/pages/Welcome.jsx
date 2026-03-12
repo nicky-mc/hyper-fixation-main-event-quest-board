@@ -50,19 +50,22 @@ export default function Welcome() {
               alt="The Hyper-Fixation Main Event" className="w-full h-full object-cover" />
           </div>
 
-          <h1 className="text-5xl sm:text-6xl font-black text-center leading-tight mb-3"
+          <h1 className="text-4xl sm:text-5xl font-black text-center leading-tight mb-6"
             style={{
               fontFamily: "'Orbitron', sans-serif",
               background: 'linear-gradient(135deg, #fbbf24, #f97316)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-            HME
+            Welcome to the Hyper-Fixation Main Event!
           </h1>
-          <p className="text-slate-400 text-center text-sm sm:text-base max-w-sm"
-            style={{ fontFamily: "'Exo 2', sans-serif" }}>
-            The Adventurer's Guild — where every episode is a quest
-          </p>
+          <div className="text-slate-300 text-center text-sm sm:text-base max-w-xl space-y-4"
+            style={{ fontFamily: "'Exo 2', sans-serif", lineHeight: '1.8' }}>
+            <p>Step inside, Adventurer. Whether you've just dropped out of warp, crawled from a dungeon, or climbed through the ropes of the squared circle, you've found the right tavern.</p>
+            <p>This is the official Side Quest Board for Nicky and Charlotte's quest to bridge the Executive Function Gap. We're here to talk deep-lore, geek sociology, and the beautiful chaos of neurodivergent life.</p>
+            <p className="text-amber-300 font-semibold">The Current Objective: We need your input! Look at the board below, check your current Mana levels, and submit a Side Quest for us to tackle on the show.</p>
+            <p className="text-red-400 font-semibold">Roll for Initiative, the portal is open.</p>
+          </div>
         </motion.div>
 
         {/* Main Card */}
