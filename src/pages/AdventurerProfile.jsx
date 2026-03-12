@@ -310,7 +310,7 @@ export default function AdventurerProfile() {
                   </div>
 
                   {/* Action buttons */}
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex gap-2 mt-4 flex-wrap">
                     {isOwnProfile ? (
                       !editing ? (
                         <button onClick={() => setEditing(true)}
@@ -330,24 +330,33 @@ export default function AdventurerProfile() {
                         </div>
                       )
                     ) : (
-                      <button onClick={handleFriendAction} disabled={friendTogglingLoading}
-                        className={cn(
-                          "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300",
-                          !friendshipRecord
-                            ? "bg-purple-700 border border-purple-500/50 text-white hover:bg-purple-600"
-                            : friendshipRecord.status === 'pending' && friendshipRecord.requester_email === currentUser?.email
-                            ? "bg-slate-800/60 border border-slate-600/50 text-slate-400 hover:border-red-600/50 hover:text-red-400"
-                            : friendshipRecord.status === 'pending'
-                            ? "bg-green-900/40 border border-green-600/50 text-green-300 hover:bg-green-800/60"
-                            : "bg-purple-900/40 border border-purple-700/50 text-purple-300 hover:bg-red-900/30 hover:border-red-700/50 hover:text-red-300"
-                        )}>
-                        {friendTogglingLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> :
-                          !friendshipRecord ? <><UserPlus className="w-3.5 h-3.5" /> Add Friend</> :
-                          friendshipRecord.status === 'pending' && friendshipRecord.requester_email === currentUser?.email ? <><Clock className="w-3.5 h-3.5" /> Pending</> :
-                          friendshipRecord.status === 'pending' ? <><UserCheck className="w-3.5 h-3.5" /> Accept</> :
-                          <><UserMinus className="w-3.5 h-3.5" /> Unfriend</>
-                        }
-                      </button>
+                      <>
+                        <button onClick={handleFriendAction} disabled={friendTogglingLoading}
+                          className={cn(
+                            "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300",
+                            !friendshipRecord
+                              ? "bg-purple-700 border border-purple-500/50 text-white hover:bg-purple-600"
+                              : friendshipRecord.status === 'pending' && friendshipRecord.requester_email === currentUser?.email
+                              ? "bg-slate-800/60 border border-slate-600/50 text-slate-400 hover:border-red-600/50 hover:text-red-400"
+                              : friendshipRecord.status === 'pending'
+                              ? "bg-green-900/40 border border-green-600/50 text-green-300 hover:bg-green-800/60"
+                              : "bg-purple-900/40 border border-purple-700/50 text-purple-300 hover:bg-red-900/30 hover:border-red-700/50 hover:text-red-300"
+                          )}>
+                          {friendTogglingLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> :
+                            !friendshipRecord ? <><UserPlus className="w-3.5 h-3.5" /> Add Friend</> :
+                            friendshipRecord.status === 'pending' && friendshipRecord.requester_email === currentUser?.email ? <><Clock className="w-3.5 h-3.5" /> Pending</> :
+                            friendshipRecord.status === 'pending' ? <><UserCheck className="w-3.5 h-3.5" /> Accept</> :
+                            <><UserMinus className="w-3.5 h-3.5" /> Unfriend</>
+                          }
+                        </button>
+                        {/* Message button — only visible if friends */}
+                        {canMessage && (
+                          <Link to={createPageUrl('Messages')}
+                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-700/60 border border-indigo-500/50 text-indigo-200 hover:bg-indigo-600/70 text-sm font-bold transition-all">
+                            <MessageCircle className="w-3.5 h-3.5" /> Message
+                          </Link>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
