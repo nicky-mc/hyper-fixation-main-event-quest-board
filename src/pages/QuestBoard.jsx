@@ -193,21 +193,22 @@ export default function QuestBoard() {
           {/* Main title */}
           <div className="relative inline-block">
             <motion.h1
-              animate={{ textShadow: ['0 0 20px rgba(251,191,36,0.3)', '0 0 50px rgba(251,191,36,0.6)', '0 0 20px rgba(251,191,36,0.3)'] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-orange-600 leading-tight"
-              style={{ fontFamily: "'Caveat', 'Segoe Script', cursive" }}
+              animate={{ textShadow: ['0 0 30px rgba(251,191,36,0.3)', '0 0 70px rgba(251,191,36,0.55)', '0 0 30px rgba(251,191,36,0.3)'] }}
+              transition={{ duration: 3.5, repeat: Infinity }}
+              className="font-cinzel font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 leading-tight"
+              style={{ fontSize: 'clamp(2.8rem, 8vw, 5.5rem)', letterSpacing: '0.02em' }}
             >
               The Hyper-fixation
             </motion.h1>
-            <div className="flex items-center justify-center gap-3 mt-1">
-              <span className="h-px flex-1 bg-gradient-to-r from-transparent via-red-600 to-transparent opacity-60" />
-              <span className="text-red-500 text-lg font-black tracking-[0.3em] uppercase" style={{ fontFamily: 'Georgia, serif' }}>
-                ⚔️ MAIN EVENT ⚔️
+            <div className="flex items-center justify-center gap-3 mt-2">
+              <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
+              <span className="font-cinzel font-bold tracking-[0.3em] uppercase text-sm"
+                style={{ color: '#ef4444', textShadow: '0 0 12px rgba(239,68,68,0.5)' }}>
+                ⚔ MAIN EVENT ⚔
               </span>
-              <span className="h-px flex-1 bg-gradient-to-r from-transparent via-red-600 to-transparent opacity-60" />
+              <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
             </div>
-            <p className="text-3xl font-bold text-purple-300/80 mt-1" style={{ fontFamily: "'Caveat', cursive" }}>
+            <p className="font-cinzel font-semibold text-purple-300/70 mt-1 tracking-widest text-xl">
               Quest Board
             </p>
           </div>
