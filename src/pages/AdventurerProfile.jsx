@@ -203,6 +203,15 @@ export default function AdventurerProfile() {
     else await base44.entities.AdventurerProfile.create({ adventurer_name: adventurerName, cover_url: file_url });
     await loadAll(); setUploadingCover(false);
     if (coverRef.current) coverRef.current.value = '';
+    setCoverDisplay({ position: { x: 50, y: 50 }, zoom: 100 });
+  };
+
+  const handleSaveCoverPosition = async (data) => {
+    setCoverDisplay(data);
+    setEditingCoverPosition(false);
+    if (profile) {
+      await base44.entities.AdventurerProfile.update(profile.id, { cover_display: data });
+    }
   };
 
   const formatTime = (iso) => {
