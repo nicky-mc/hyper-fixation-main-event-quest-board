@@ -55,10 +55,11 @@ export default function Messages() {
     const initProfile = async () => {
       const user = await base44.auth.me();
       if (user) {
-        const prof = await base44.entities.AdventurerProfile.filter({ auth_id: user.id });
-        if (prof.length > 0) {
-          setProfile(prof[0]);
-          loadData(prof[0]);
+        const profs = await base44.entities.AdventurerProfile.list();
+        const prof = profs.find(p => p.email === user.email);
+        if (prof) {
+          setProfile(prof);
+          await loadData(prof);
         }
       }
       setLoading(false);
