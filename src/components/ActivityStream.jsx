@@ -115,7 +115,7 @@ export default function ActivityStream() {
   const [posting, setPosting] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(u => { setUser(u); if (u?.full_name) setPostName(u.full_name); }).catch(() => {});
+    base44.auth.me().then(u => { setUser(u); setPostName(u?.full_name || u?.email || ''); }).catch(() => {});
     loadActivities();
 
     const unsub = base44.entities.Activity.subscribe((event) => {
@@ -162,13 +162,17 @@ export default function ActivityStream() {
 
       {/* Post form */}
       <form onSubmit={handlePost} className="mb-3 space-y-2 p-3 rounded-xl border border-purple-900/40 bg-white/[0.02]">
-        <input
-          value={postName}
-          onChange={e => setPostName(e.target.value)}
-          placeholder="Your name..."
-          maxLength={40}
-          className="w-full px-3 py-1.5 rounded-lg bg-[#0d0820]/70 border border-purple-800/40 text-purple-100 placeholder:text-slate-600 text-xs focus:outline-none focus:border-purple-500"
-        />
+        {user ? (
+          <p className="text-[10px] text-purple-600">Posting as <span className="text-purple-400 font-bold">{postName}</span></p>
+        ) : (
+          <input
+            value={postName}
+            onChange={e => setPostName(e.target.value)}
+            placeholder="Your name..."
+            maxLength={40}
+            className="w-full px-3 py-1.5 rounded-lg bg-[#0d0820]/70 border border-purple-800/40 text-purple-100 placeholder:text-slate-600 text-xs focus:outline-none focus:border-purple-500"
+          />
+        )}
         <div className="flex gap-2 items-start">
           <textarea
             value={postContent}

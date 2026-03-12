@@ -12,6 +12,17 @@ export default function QuestComments({ questId }) {
   const [authorName, setAuthorName] = useState('');
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [autoName, setAutoName] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me().then(u => {
+      if (u) {
+        const name = u.full_name || u.email;
+        setAuthorName(name);
+        setAutoName(true);
+      }
+    }).catch(() => {});
+  }, []);
 
   const load = async () => {
     const data = await base44.entities.QuestComment.filter({ quest_id: questId }, 'created_date');
@@ -103,14 +114,19 @@ export default function QuestComments({ questId }) {
 
       {/* Post form */}
       <form onSubmit={handleSubmit} className="space-y-2">
-        <input
-          value={authorName}
-          onChange={e => setAuthorName(e.target.value)}
-          placeholder="Your adventurer name..."
-          maxLength={40}
-          className="w-full px-3 py-2 rounded-lg bg-[#0d0820]/70 border border-purple-800/50 text-purple-100 placeholder:text-slate-600 text-xs focus:outline-none focus:border-purple-500 transition-colors"
-          required
-        />
+        {!autoName && (
+          <input
+            value={authorName}
+            onChange={e => setAuthorName(e.target.value)}
+            placeholder="Your adventurer name..."
+            maxLength={40}
+            className="w-full px-3 py-2 rounded-lg bg-[#0d0820]/70 border border-purple-800/50 text-purple-100 placeholder:text-slate-600 text-xs focus:outline-none focus:border-purple-500 transition-colors"
+            required
+          />
+        )}
+        {autoName && (
+          <p className="text-[10px] text-purple-600">Posting as <span className="text-purple-400 font-bold">{authorName}</span></p>
+        )}
         <div className="flex gap-2">
           <input
             value={content}
