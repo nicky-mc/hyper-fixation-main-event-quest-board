@@ -280,6 +280,36 @@ export default function MyAdventurer() {
           )}
         </AnimatePresence>
 
+        {/* Friend Requests Inbox */}
+        <AnimatePresence>
+          {pendingRequests.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="mb-5 rounded-xl border border-cyan-700/50 bg-cyan-950/20 overflow-hidden">
+              <div className="px-4 py-2 border-b border-cyan-800/40 flex items-center gap-2">
+                <Users className="w-4 h-4 text-cyan-400" />
+                <span className="text-xs font-bold text-cyan-300 uppercase tracking-widest">Friend Requests ({pendingRequests.length})</span>
+              </div>
+              <div className="divide-y divide-cyan-900/30">
+                {pendingRequests.map(req => (
+                  <div key={req.id} className="flex items-center justify-between px-4 py-2.5 gap-3">
+                    <span className="text-sm text-purple-200 font-semibold truncate">{req.requester_name}</span>
+                    <div className="flex gap-2 shrink-0">
+                      <button onClick={() => acceptRequest(req)}
+                        className="flex items-center gap-1 px-3 py-1 rounded-lg bg-green-800/50 border border-green-600/50 text-green-300 hover:bg-green-700/60 text-xs font-bold transition-all">
+                        <CheckCircle2 className="w-3 h-3" /> Accept
+                      </button>
+                      <button onClick={() => declineRequest(req)}
+                        className="px-3 py-1 rounded-lg bg-slate-800/50 border border-slate-600/40 text-slate-400 hover:text-red-400 hover:border-red-600/40 text-xs font-bold transition-all">
+                        Decline
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Tab bar */}
         <div className="flex gap-1 p-1 rounded-xl bg-purple-950/40 border border-purple-900/40 mb-4">
           {tabs.map(tab => {
