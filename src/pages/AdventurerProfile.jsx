@@ -93,6 +93,7 @@ export default function AdventurerProfile() {
     setEditName(prof?.adventurer_name || adventurerName);
     setEditLocation(prof?.location || '');
     setEditFavSegment(prof?.favorite_segment || '');
+    setCoverDisplay(prof?.cover_display || { position: { x: 50, y: 50 }, zoom: 100 });
     setComments(allComments);
 
     const mine = submittedQuests.filter(q => q.quest_giver === adventurerName);
