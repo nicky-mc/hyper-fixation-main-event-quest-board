@@ -166,7 +166,10 @@ export default function AdventurerProfile() {
 
   const saveProfile = async () => {
     setSaving(true);
-    const data = { adventurer_name: editName, bio: editBio, location: editLocation, favorite_segment: editFavSegment };
+    // Also persist the user's email + role onto their profile so others can look it up
+    const emailToSave = currentUser?.email || '';
+    const roleToSave = currentUser?.role || 'user';
+    const data = { adventurer_name: editName, bio: editBio, location: editLocation, favorite_segment: editFavSegment, email: emailToSave, role: roleToSave };
     if (profile) {
       await base44.entities.AdventurerProfile.update(profile.id, data);
     } else {
