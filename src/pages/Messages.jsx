@@ -158,9 +158,10 @@ export default function Messages() {
     const content = input.trim();
     setInput('');
     await base44.entities.Message.create({
-      sender_email: user.email,
-      sender_name: user.full_name || user.email,
-      recipient_email: selectedUser.email,
+      sender_id: profile.id,
+      sender_name: profile.adventurer_name,
+      recipient_id: selectedUser.id,
+      recipient_name: selectedUser.full_name,
       content,
       read: false,
     });
@@ -169,20 +170,20 @@ export default function Messages() {
   };
 
   const filteredUsers = allUsers.filter(u2 =>
-    (u2.full_name || u2.email).toLowerCase().includes(search.toLowerCase())
+    (u2.full_name || u2.id).toLowerCase().includes(search.toLowerCase())
   );
 
   // Sort by last message time
   const sortedUsers = [...filteredUsers].sort((a, b) => {
-    const la = getLastMsg(a.email);
-    const lb = getLastMsg(b.email);
+    const la = getLastMsg(a.id);
+    const lb = getLastMsg(b.id);
     if (!la && !lb) return 0;
     if (!la) return 1;
     if (!lb) return -1;
     return new Date(lb.created_date) - new Date(la.created_date);
   });
 
-  if (!user && !loading) return (
+  if (!profile && !loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 text-slate-500">
       <MessageCircle className="w-10 h-10" />
       <p className="text-sm">Please log in to use messages.</p>
