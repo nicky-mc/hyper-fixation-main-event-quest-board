@@ -133,29 +133,19 @@ export default function QuestBoard() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 30%, #080d1a 60%, #050a10 100%)' }}
-    >
-      {/* Atmospheric background layers */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Deep Space Nebula background (supplements the layout bg) */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Starfield */}
-        <div className="absolute inset-0 opacity-40"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        {/* WWE Ring spotlight */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-amber-500/5 rounded-full blur-3xl" />
-        {/* Horror red tinge */}
-        <div className="absolute bottom-0 left-0 w-[500px] h-[300px] bg-red-900/10 blur-3xl" />
-        {/* Trek LCARS blue */}
-        <div className="absolute top-1/3 right-0 w-[400px] h-[400px] bg-blue-900/10 blur-3xl" />
-        {/* Shark water shimmer */}
-        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-cyan-900/8 blur-2xl" />
-        {/* Floating particles */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] opacity-20 rounded-full"
+          style={{ background: 'radial-gradient(ellipse, rgba(251,191,36,0.3) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] opacity-20 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.5) 0%, transparent 70%)', filter: 'blur(80px)' }} />
         {particles.map(p => <Particle key={p.id} style={p.style} />)}
       </div>
 
-      {/* LCARS-style decorative side bars */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-500 via-purple-500 to-red-500 opacity-60" />
-      <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 via-amber-500 to-cyan-500 opacity-60" />
+      {/* LCARS-style side bars */}
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-500 via-purple-500 to-red-500 opacity-50" />
+      <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 via-amber-500 to-cyan-500 opacity-50" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
