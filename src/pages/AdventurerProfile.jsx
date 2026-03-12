@@ -132,11 +132,18 @@ export default function AdventurerProfile() {
 
     if (!friendshipRecord) {
       // Send request
+      // Find recipient's email from users list if possible
+      let recipientEmail = '';
+      try {
+        const users = await base44.entities.User.list();
+        const recipient = users.find(u => (u.full_name || u.email) === adventurerName);
+        recipientEmail = recipient?.email || '';
+      } catch {}
       const rec = await base44.entities.Friendship.create({
         requester_email: currentUser.email,
         requester_name: myName,
         recipient_name: adventurerName,
-        recipient_email: '',
+        recipient_email: recipientEmail,
         status: 'pending',
       });
       setFriendshipRecord(rec);
