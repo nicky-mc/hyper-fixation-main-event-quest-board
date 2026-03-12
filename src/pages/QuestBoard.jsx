@@ -332,6 +332,9 @@ export default function QuestBoard() {
           <ActivityDrawer isOpen={feedOpen} onOpenChange={setFeedOpen} />
         </motion.div>
 
+        {/* ── NEXT SHOW BANNER ── */}
+        <NextShowBanner />
+
         {/* ── CATEGORY FILTER ── */}
         {!loading && quests.length > 0 && (
           <QuestCategoryFilter active={activeCategory} onChange={setActiveCategory} counts={categoryCounts} />
