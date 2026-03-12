@@ -1,4 +1,5 @@
-import { Sword, Shield, Scroll, Star, Flame, Zap, Radio, Skull, Fish, Telescope, BookOpen, Dices, Trophy, Anchor, Ghost, Tv, RotateCcw, Users, Heart, MessageCircle, ChevronDown, Trash2, Pencil } from 'lucide-react';
+import { Sword, Shield, Scroll, Star, Flame, Zap, Radio, Skull, Fish, Telescope, BookOpen, Dices, Trophy, Anchor, Ghost, Tv, RotateCcw, Users, Heart, MessageCircle, ChevronDown, Trash2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
@@ -92,7 +93,7 @@ function TauntEffect() {
   );
 }
 
-export default function QuestCard({ quest, isSelected, isRolling, index }) {
+export default function QuestCard({ quest, isSelected, isRolling, index, currentUser, onDeleted }) {
   const cfg = segmentConfig[quest.segment] || fallback;
   const SegmentIcon = cfg.icon;
 
@@ -100,6 +101,15 @@ export default function QuestCard({ quest, isSelected, isRolling, index }) {
   const [showTaunt, setShowTaunt] = useState(false);
   const [settled, setSettled] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
+
+  const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.email === quest.created_by);
+
+  const handleDelete = async (e) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this quest?')) return;
+    await base44.entities.Quest.delete(quest.id);
+    onDeleted?.();
+  };
 
   useEffect(() => {
     if (isSelected) {
