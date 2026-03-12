@@ -13,7 +13,7 @@ export default function NewsFeed() {
   const [imageUrl, setImageUrl] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const fileInputRef = useState(null);
+  const fileInputRef = { current: null };
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
