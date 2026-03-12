@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays } from 'lucide-react';
+import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +27,7 @@ const NAV_ITEMS = [
   { label: 'Messages',      page: 'Messages',         icon: MessageCircle },
   { label: 'My Adventurer', page: 'MyAdventurer',     icon: User },
   { label: 'Episode Calendar', page: 'EpisodeCalendar', icon: CalendarDays },
+  { label: 'Adventurers', page: 'AdventurersDirectory', icon: Users },
 ];
 
 export default function Layout({ children, currentPageName }) {
