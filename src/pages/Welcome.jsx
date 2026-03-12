@@ -2,19 +2,6 @@ import { useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 
-function SwordsIcon({ className }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
-      <line x1="13" y1="19" x2="15" y2="17" />
-      <polyline points="9.5 6.5 6 3 3 6 6.5 9.5" />
-      <line x1="5" y1="11" x2="7" y2="9" />
-      <polyline points="14.5 6.5 18 3 21 6 17.5 9.5" />
-      <line x1="19" y1="13" x2="21" y2="11" />
-      <polyline points="9.5 17.5 21 6 21 21 6 21 17.5 9.5" />
-    </svg>
-  );
-}
 
 const FEATURES = [
   { icon: '⚔️', title: 'Quest Board', desc: 'Submit and vote on show topics & side quests' },
