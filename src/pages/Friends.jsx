@@ -163,10 +163,7 @@ export default function Friends() {
     setFriendships(all);
 
     const accepted = all.filter(f => f.status === 'accepted');
-    // Admins see ALL pending requests across the platform
-    const incomingPending = u.role === 'admin'
-      ? allPending
-      : receivedFs.filter(f => f.status === 'pending');
+    const incomingPending = receivedFs.filter(f => f.status === 'pending');
 
     setFriends(accepted);
     setPending(incomingPending);
@@ -232,14 +229,23 @@ export default function Friends() {
   const profileMap = {};
   allProfiles.forEach(p => { profileMap[p.adventurer_name] = p; });
 
-  const myName = user ? (user.full_name || user.email) : '';
-  // Search results from AdventurerProfile — accessible to all authenticated users
+  // Search results powered by AdventurerProfile (accessible to all authenticated users)
+  const myName = user?.full_name || user?.email;
   const searchResults = allProfiles
-    .filter(p => p.adventurer_name !== myName)
+    .filter(p => p.adventurer_name !== myName) // exclude self
     .filter(p => {
       if (!searchQuery.trim()) return true;
-      return p.adventurer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-             p.location?.toLowerCase().includes(searchQuery.toLowerCase());
+      const q = searchQuery.toLowerCase();
+      return (p.adventurer_name || '').toLowerCase().includes(q) ||
+             (p.location || '').toLowerCase().includes(q) ||
+             (p.email || '').toLowerCase().includes(q);
+    })
+    .sort((a, b) => {
+      const aStatus = getFriendStatus(a.email);
+      const bStatus = getFriendStatus(b.email);
+      if (aStatus === 'none' && bStatus !== 'none') return -1;
+      if (aStatus !== 'none' && bStatus === 'none') return 1;
+      return 0;
     });
 
   const pendingCount = pending.length;
@@ -373,27 +379,21 @@ export default function Friends() {
                   />
                 </div>
 
-                {searchResults.length === 0 ? (
+                {allUsers.length === 0 ? (
+                  <div className="text-center py-12 text-slate-600 text-sm">
+                    <p>User search requires admin access. Visit adventurer profiles to add friends!</p>
+                  </div>
+                ) : searchResults.length === 0 ? (
                   <div className="text-center py-12 text-slate-600 text-sm">No adventurers found.</div>
                 ) : (
                   <div className="space-y-3">
-                    {searchResults.map(p => {
-                      const fs = friendships.find(f =>
-                        (f.requester_email === user?.email && f.recipient_name === p.adventurer_name) ||
-                        (f.recipient_email === user?.email && f.requester_name === p.adventurer_name)
-                      );
-                      const status = !fs ? 'none' : fs.status === 'accepted' ? 'friends' : 'pending';
+                    {searchResults.map(u2 => {
+                      const profile = allProfiles.find(p => p.adventurer_name === (u2.full_name || u2.email));
                       return (
-                        <SearchCard key={p.id}
-                          profile={{ full_name: p.adventurer_name, email: p.created_by, avatar_url: p.avatar_url, location: p.location }}
-                          friendStatus={status}
-                          onAdd={() => base44.entities.Friendship.create({
-                            requester_email: user.email,
-                            requester_name: myName,
-                            recipient_name: p.adventurer_name,
-                            recipient_email: p.created_by || '',
-                            status: 'pending',
-                          })} />
+                        <SearchCard key={u2.email}
+                          profile={{ ...u2, avatar_url: profile?.avatar_url, location: profile?.location }}
+                          friendStatus={getFriendStatus(u2.email)}
+                          onAdd={() => sendRequest(u2)} />
                       );
                     })}
                   </div>
