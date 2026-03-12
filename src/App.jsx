@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import CompletedQuests from './pages/CompletedQuests';
 import EpisodeCalendar from './pages/EpisodeCalendar';
+import AdventurersDirectory from './pages/AdventurersDirectory';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -62,6 +63,7 @@ const AuthenticatedApp = () => {
       ))}
       <Route path="/CompletedQuests" element={<LayoutWrapper currentPageName="CompletedQuests"><CompletedQuests /></LayoutWrapper>} />
       <Route path="/EpisodeCalendar" element={<LayoutWrapper currentPageName="EpisodeCalendar"><EpisodeCalendar /></LayoutWrapper>} />
+      <Route path="/AdventurersDirectory" element={<LayoutWrapper currentPageName="AdventurersDirectory"><AdventurersDirectory /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
