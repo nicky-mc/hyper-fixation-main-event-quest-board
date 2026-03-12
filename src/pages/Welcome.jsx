@@ -17,13 +17,21 @@ const FEATURES = [
 export default function Welcome() {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
+  const { isAuthenticated, isLoadingAuth } = useAuth();
 
-  // If already logged in, redirect straight to QuestBoard
-  useEffect(() => {
-    base44.auth.isAuthenticated().then(auth => {
-      if (auth) window.location.href = '/QuestBoard';
-    });
-  }, []);
+  // If already logged in and auth check complete, redirect to QuestBoard
+  if (isAuthenticated && !isLoadingAuth) {
+    return <Navigate to="/QuestBoard" replace />;
+  }
+
+  // Show loading while auth is checking
+  if (isLoadingAuth) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   // Handle ESC key
   useEffect(() => {
