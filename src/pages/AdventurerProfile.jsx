@@ -54,10 +54,10 @@ export default function AdventurerProfile() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [friendshipRecord, setFriendshipRecord] = useState(null);
+  const [friendshipRecord, setFriendshipRecord] = useState(null); // record where I requested or was requested
+  const [friendTogglingLoading, setFriendTogglingLoading] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
-  const [friendTogglingLoading, setFriendTogglingLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('quests');
   const avatarRef = useRef(null);
   const coverRef = useRef(null);
