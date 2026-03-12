@@ -151,10 +151,12 @@ export default function Friends() {
     setLoading(true);
     const name = u.full_name || u.email;
 
-    const [sentFs, receivedFs, profiles] = await Promise.all([
+    const isAdmin = u.role === 'admin';
+    const [sentFs, receivedFs, profiles, allPending] = await Promise.all([
       base44.entities.Friendship.filter({ requester_email: u.email }),
       base44.entities.Friendship.filter({ recipient_email: u.email }),
       base44.entities.AdventurerProfile.list('-created_date', 200),
+      isAdmin ? base44.entities.Friendship.filter({ status: 'pending' }) : Promise.resolve([]),
     ]);
 
     const all = [...sentFs, ...receivedFs];
