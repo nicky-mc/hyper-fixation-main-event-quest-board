@@ -232,18 +232,14 @@ export default function Friends() {
   const profileMap = {};
   allProfiles.forEach(p => { profileMap[p.adventurer_name] = p; });
 
-  // Search results: all users, with friends shown last (or filtered by name)
-  const searchResults = allUsers
-    .filter(u2 => {
+  const myName = user ? (user.full_name || user.email) : '';
+  // Search results from AdventurerProfile — accessible to all authenticated users
+  const searchResults = allProfiles
+    .filter(p => p.adventurer_name !== myName)
+    .filter(p => {
       if (!searchQuery.trim()) return true;
-      return (u2.full_name || u2.email).toLowerCase().includes(searchQuery.toLowerCase());
-    })
-    .sort((a, b) => {
-      const aStatus = getFriendStatus(a.email);
-      const bStatus = getFriendStatus(b.email);
-      if (aStatus === 'none' && bStatus !== 'none') return -1;
-      if (aStatus !== 'none' && bStatus === 'none') return 1;
-      return 0;
+      return p.adventurer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+             p.location?.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
   const pendingCount = pending.length;
