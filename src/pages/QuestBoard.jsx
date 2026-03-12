@@ -273,7 +273,7 @@ export default function QuestBoard() {
                 {/* Top highlight ridge */}
                 <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
 
-                <span className="relative flex items-center gap-3 font-cinzel" style={{ fontSize: '1.1rem', letterSpacing: '0.05em' }}>
+                <span className="relative flex items-center gap-3" style={{ fontFamily: "'Exo 2', sans-serif", fontSize: '1.1rem', fontWeight: 800, letterSpacing: '0.08em' }}>
                   {isRolling
                     ? <><Loader2 className="w-5 h-5 animate-spin" /> Rolling Initiative...</>
                     : <><Swords className="w-5 h-5" /> Roll for Initiative!</>
