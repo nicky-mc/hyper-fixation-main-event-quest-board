@@ -216,11 +216,15 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
 
             {/* Quest giver row */}
             <div className="flex items-center gap-2 pt-2.5 border-t border-white/5" onClick={e => e.stopPropagation()}>
-              <div className="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-bold shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(88,28,135,0.8), rgba(30,27,75,0.9))', borderColor: 'rgba(168,85,247,0.35)' }}>
-                <span className="text-purple-200">{quest.quest_giver.charAt(0).toUpperCase()}</span>
-              </div>
-              <span className="text-sm font-medium text-purple-300/80 truncate flex-1 font-cinzel">{quest.quest_giver}</span>
+              <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(quest.quest_giver)}`}
+                onClick={e => e.stopPropagation()}
+                className="flex items-center gap-2 flex-1 min-w-0 group/giver hover:opacity-80 transition-opacity">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-bold shrink-0"
+                  style={{ background: 'linear-gradient(135deg, rgba(88,28,135,0.8), rgba(30,27,75,0.9))', borderColor: 'rgba(168,85,247,0.35)' }}>
+                  <span className="text-purple-200">{quest.quest_giver.charAt(0).toUpperCase()}</span>
+                </div>
+                <span className="text-sm font-medium text-purple-300/80 truncate font-cinzel group-hover/giver:text-purple-200">{quest.quest_giver}</span>
+              </Link>
 
               <VoteButton questId={quest.id} isSelected={isSelected} />
 
