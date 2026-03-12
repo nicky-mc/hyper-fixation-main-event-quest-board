@@ -24,7 +24,7 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   : <>{children}</>;
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated } = useAuth();
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -39,38 +39,103 @@ const AuthenticatedApp = () => {
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      // Send to Welcome page instead of raw login
-      window.location.href = '/Welcome';
-      return null;
     }
   }
 
   // Render the main app
   return (
     <Routes>
-      <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
-        </LayoutWrapper>
-      } />
-      {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-          key={path}
-          path={`/${path}`}
-          element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
-          }
-        />
-      ))}
-      <Route path="/CompletedQuests" element={<LayoutWrapper currentPageName="CompletedQuests"><CompletedQuests /></LayoutWrapper>} />
-      <Route path="/EpisodeCalendar" element={<LayoutWrapper currentPageName="EpisodeCalendar"><EpisodeCalendar /></LayoutWrapper>} />
-      <Route path="/AdventurersDirectory" element={<LayoutWrapper currentPageName="AdventurersDirectory"><AdventurersDirectory /></LayoutWrapper>} />
-      <Route path="/Friends" element={<LayoutWrapper currentPageName="Friends"><Friends /></LayoutWrapper>} />
-      <Route path="/Discover" element={<LayoutWrapper currentPageName="Discover"><Discover /></LayoutWrapper>} />
+      {/* Public Welcome page - always accessible */}
       <Route path="/Welcome" element={<Welcome />} />
+
+      {/* Default redirect for unauthenticated users */}
+      <Route path="/" element={
+        isAuthenticated ? (
+          <Navigate to="/QuestBoard" replace />
+        ) : (
+          <Navigate to="/Welcome" replace />
+        )
+      } />
+
+      {/* Protected routes - require authentication */}
+      <Route path="/QuestBoard" element={
+        <ProtectedRoute>
+          <LayoutWrapper currentPageName="QuestBoard">
+            <pagesConfig.Pages.QuestBoard />
+          </LayoutWrapper>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/Messages" element={
+        <ProtectedRoute>
+          <LayoutWrapper currentPageName="Messages">
+            <pagesConfig.Pages.Messages />
+          </LayoutWrapper>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/Friends" element={
+        <ProtectedRoute>
+          <LayoutWrapper currentPageName="Friends">
+            <Friends />
+          </LayoutWrapper>
+        </ProtectedRoute>
+      } />
+
+      {/* Other auth-required pages from pagesConfig */}
+      {Object.entries(pagesConfig.Pages).map(([path, Page]) => {
+        // Skip already explicitly defined routes
+        if (['QuestBoard', 'Messages'].includes(path)) return null;
+        
+        return (
+          <Route
+            key={path}
+            path={`/${path}`}
+            element={
+              <ProtectedRoute>
+                <LayoutWrapper currentPageName={path}>
+                  <Page />
+                </LayoutWrapper>
+              </ProtectedRoute>
+            }
+          />
+        );
+      })}
+
+      {/* Other explicit protected routes */}
+      <Route path="/CompletedQuests" element={
+        <ProtectedRoute>
+          <LayoutWrapper currentPageName="CompletedQuests">
+            <CompletedQuests />
+          </LayoutWrapper>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/EpisodeCalendar" element={
+        <ProtectedRoute>
+          <LayoutWrapper currentPageName="EpisodeCalendar">
+            <EpisodeCalendar />
+          </LayoutWrapper>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/AdventurersDirectory" element={
+        <ProtectedRoute>
+          <LayoutWrapper currentPageName="AdventurersDirectory">
+            <AdventurersDirectory />
+          </LayoutWrapper>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/Discover" element={
+        <ProtectedRoute>
+          <LayoutWrapper currentPageName="Discover">
+            <Discover />
+          </LayoutWrapper>
+        </ProtectedRoute>
+      } />
+
+      {/* 404 */}
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
