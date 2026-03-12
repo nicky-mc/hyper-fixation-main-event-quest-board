@@ -287,9 +287,21 @@ export default function AdventurerProfile() {
               className="rounded-2xl border-2 border-purple-700/40 overflow-hidden mb-4">
 
               {/* Cover photo */}
-              <div className="relative h-44 sm:h-56">
+              <div 
+                className="relative h-44 sm:h-56 overflow-hidden cursor-pointer group"
+                onClick={() => coverUrl && setViewingImage({ url: coverUrl, alt: 'cover' })}
+              >
                 {coverUrl ? (
-                  <img src={coverUrl} alt="cover" className="w-full h-full object-cover" />
+                   <img 
+                     src={coverUrl} 
+                     alt="cover" 
+                     className="w-full h-full object-cover group-hover:brightness-75 transition-all"
+                     style={{
+                       objectPosition: `${coverDisplay.position.x}% ${coverDisplay.position.y}%`,
+                       transform: `scale(${coverDisplay.zoom / 100})`,
+                       transformOrigin: `${coverDisplay.position.x}% ${coverDisplay.position.y}%`,
+                     }}
+                   />
                 ) : (
                   <div className="w-full h-full"
                     style={{ background: 'linear-gradient(135deg, #1a0533 0%, #0d1a3a 40%, #1a1033 70%, #0a0a1a 100%)' }}>
