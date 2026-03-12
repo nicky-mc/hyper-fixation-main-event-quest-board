@@ -105,8 +105,8 @@ export default function Welcome() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <button onClick={handleLogin}
-                className="flex-1 py-4 rounded-xl font-black text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
+              <button onClick={() => setShowSignIn(true)}
+                className="flex-1 min-h-[50px] sm:py-4 rounded-xl font-black text-base transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
                 style={{
                   fontFamily: "'Exo 2', sans-serif",
                   background: 'radial-gradient(ellipse at 50% 0%, #ef4444 0%, #b91c1c 50%, #7f1d1d 100%)',
@@ -114,19 +114,19 @@ export default function Welcome() {
                   color: '#fff',
                   letterSpacing: '0.08em',
                 }}>
-                ⚔️ Member Login
+                ⚔️ Ready Player One
               </button>
-              <button onClick={handleLogin}
-                className="flex-1 py-4 rounded-xl font-black text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
+              <button onClick={() => setShowSignUp(true)}
+                className="flex-1 min-h-[50px] sm:py-4 rounded-xl font-black text-base transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
                 style={{
                   fontFamily: "'Exo 2', sans-serif",
                   background: 'rgba(251,191,36,0.1)',
-                  border: '1px solid rgba(251,191,36,0.4)',
+                  border: '2px solid rgba(251,191,36,0.4)',
                   boxShadow: '0 0 20px rgba(251,191,36,0.1)',
                   color: '#fbbf24',
                   letterSpacing: '0.08em',
                 }}>
-                📜 Join the Board
+                📜 Insert Coin
               </button>
             </div>
 
