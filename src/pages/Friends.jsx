@@ -177,13 +177,7 @@ export default function Friends() {
     });
     setFriendProfiles(friendCards);
 
-    // Try to load all users for search
-    try {
-      const users = await base44.entities.User.list();
-      setAllUsers(users.filter(x => x.email !== u.email));
-    } catch {
-      setAllUsers([]);
-    }
+    // No User.list() needed — search is powered by AdventurerProfile
 
     setLoading(false);
   };
