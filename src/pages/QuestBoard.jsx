@@ -240,27 +240,55 @@ export default function QuestBoard() {
           {/* Admin combat buttons — Roll for Initiative + RKO */}
           {isAdmin && (
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}
-              className="flex items-center justify-center gap-3 mt-6 flex-wrap">
+              className="flex items-center justify-center gap-4 mt-7 flex-wrap">
+
+              {/* Artifact-style Initiative button */}
               <motion.button
                 onClick={rollForInitiative}
                 disabled={pendingQuests.length === 0 || isRolling}
-                whileHover={{ scale: pendingQuests.length === 0 || isRolling ? 1 : 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                className="relative h-14 px-8 rounded-xl font-black text-white disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
-                style={{
-                  background: isRolling ? 'linear-gradient(135deg, #dc2626, #ea580c, #dc2626)' : 'linear-gradient(135deg, #b91c1c, #c2410c)',
-                  border: '2px solid rgba(239,68,68,0.6)',
-                  boxShadow: '0 0 30px rgba(239,68,68,0.3), 0 8px 30px rgba(0,0,0,0.5)',
-                }}
-              >
-                {isRolling && (
-                  <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 0.4, repeat: Infinity }}
-                    className="absolute -inset-1 bg-gradient-to-r from-red-500 via-amber-500 to-red-500 rounded-xl blur-md -z-10" />
+                whileHover={{ scale: pendingQuests.length === 0 || isRolling ? 1 : 1.05, y: -2 }}
+                whileTap={{ scale: 0.96, y: 0 }}
+                className={cn(
+                  "relative h-16 px-10 rounded-2xl font-black text-white disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden transition-all duration-300",
+                  isRolling ? "artifact-btn-rolling" : "artifact-btn"
                 )}
-                <span className="flex items-center gap-2" style={{ fontFamily: "'Caveat', cursive", fontSize: '1.5rem' }}>
-                  {isRolling ? <><Loader2 className="w-5 h-5 animate-spin" /> Rolling...</> : <><Swords className="w-5 h-5" /> Roll for Initiative!</>}
+                style={{ border: `2px solid ${isRolling ? 'rgba(239,68,68,0.8)' : 'rgba(239,68,68,0.4)'}` }}
+              >
+                {/* Ambient inner glow */}
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(239,68,68,0.3) 0%, transparent 60%)' }}
+                  animate={isRolling ? { opacity: [0.5, 1, 0.5] } : { opacity: 0.6 }}
+                  transition={{ duration: 0.4, repeat: isRolling ? Infinity : 0 }}
+                />
+
+                {/* Warp speed streaks when rolling */}
+                {isRolling && Array.from({ length: 10 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute top-1/2 left-1/2 h-px"
+                    style={{
+                      originX: 0, originY: 0,
+                      rotate: `${i * 36}deg`,
+                      width: `${30 + Math.random() * 60}%`,
+                      background: 'linear-gradient(to right, transparent, rgba(251,191,36,0.8), white)',
+                    }}
+                    animate={{ scaleX: [0, 1, 0], opacity: [0, 1, 0] }}
+                    transition={{ duration: 0.4, delay: i * 0.04, repeat: Infinity, repeatDelay: 0.2 }}
+                  />
+                ))}
+
+                {/* Top highlight ridge */}
+                <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
+
+                <span className="relative flex items-center gap-3 font-cinzel" style={{ fontSize: '1.1rem', letterSpacing: '0.05em' }}>
+                  {isRolling
+                    ? <><Loader2 className="w-5 h-5 animate-spin" /> Rolling Initiative...</>
+                    : <><Swords className="w-5 h-5" /> Roll for Initiative!</>
+                  }
                 </span>
               </motion.button>
+
               <RKOButton userIsAdmin={true} />
             </motion.div>
           )}
