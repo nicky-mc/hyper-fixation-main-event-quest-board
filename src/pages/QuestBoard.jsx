@@ -230,10 +230,10 @@ export default function QuestBoard() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
 
-          {/* Roll for Initiative */}
+          {/* Roll for Initiative — admin only */}
           <motion.button
             onClick={rollForInitiative}
-            disabled={quests.length === 0 || isRolling}
+            disabled={pendingQuests.length === 0 || isRolling || !isAdmin}
             whileHover={{ scale: quests.length === 0 || isRolling ? 1 : 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="relative px-8 py-4 rounded-xl font-black text-xl text-white disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
