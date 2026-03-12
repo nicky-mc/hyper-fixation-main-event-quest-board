@@ -165,16 +165,19 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
         <div
           onClick={() => setShowModal(true)}
           className={cn(
-            "relative overflow-hidden rounded-2xl transition-all duration-400 h-full cursor-pointer glass-card",
-            isSelected ? "border border-amber-400/60" : "hover:border-purple-500/40",
-            isSelected && "glass-card-selected"
+            "relative overflow-hidden rounded-2xl h-full cursor-pointer",
+            isSelected ? "border border-amber-400/60" : "border border-amber-400/20 hover:border-amber-400/50",
           )}
           style={{
+            background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(16px) saturate(1.5)',
+            WebkitBackdropFilter: 'blur(16px) saturate(1.5)',
+            transition: 'all 0.5s ease-in-out',
             boxShadow: isSelected
-              ? '0 0 0 1px rgba(251,191,36,0.3), 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(251,191,36,0.15)'
+              ? '0 0 0 1px rgba(251,191,36,0.4), 0 20px 60px rgba(0,0,0,0.8), 0 0 50px rgba(251,191,36,0.2)'
               : hovered
-              ? '0 0 0 1px rgba(168,85,247,0.2), 0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(168,85,247,0.12)'
-              : '0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)',
+              ? '0 20px 60px rgba(0,0,0,0.7), 0 0 30px rgba(168,85,247,0.2), 0 0 0 1px rgba(251,191,36,0.3)'
+              : '0 20px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(251,191,36,0.15)',
           }}
         >
           {showWarp && <WarpEffect />}
