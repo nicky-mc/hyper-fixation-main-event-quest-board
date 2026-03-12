@@ -85,6 +85,7 @@ export default function MyAdventurer() {
   const [allQuests, setAllQuests] = useState([]);
   const [comments, setComments] = useState([]);
   const [savedRecords, setSavedRecords] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('quests');
 
