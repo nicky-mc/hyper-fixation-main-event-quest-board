@@ -81,7 +81,7 @@ export default function AdventurersDirectory() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {filtered.map((p, i) => (
               <motion.div key={p.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-                <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(p.adventurer_name)}`}
+                <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(p.name)}`}
                   className="flex items-center gap-3 p-4 rounded-xl transition-all duration-300 group"
                   style={{
                     background: 'rgba(8,6,24,0.7)', backdropFilter: 'blur(12px)',
@@ -93,17 +93,17 @@ export default function AdventurersDirectory() {
                   {/* Avatar */}
                   <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-purple-600/30">
                     {p.avatar_url ? (
-                      <img src={p.avatar_url} alt={p.adventurer_name} className="w-full h-full object-cover" />
+                      <img src={p.avatar_url} alt={p.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-lg font-black text-white">
-                        {p.adventurer_name?.charAt(0).toUpperCase()}
+                        {p.name?.charAt(0).toUpperCase()}
                       </div>
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-white truncate" style={{ fontFamily: "'Exo 2', sans-serif" }}>
-                      {p.adventurer_name}
+                      {p.name}
                     </p>
                     {p.location && (
                       <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5" style={{ fontFamily: "'Exo 2', sans-serif" }}>
