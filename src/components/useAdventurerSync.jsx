@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext, useContext } from 'react';
 import { base44 } from '@/api/base44Client';
 
 const ADMIN_EMAIL = 'host@heroesmostepic.com';
+
+export const AdventurerContext = createContext(null);
+export const useAdventurer = () => useContext(AdventurerContext);
 
 /**
  * Auto-sync authenticated user to AdventurerProfile.
