@@ -214,45 +214,45 @@ export default function Messages() {
         {loading ? (
           <>{[1,2,3].map(i => <SkeletonConvo key={i} />)}</>
         ) : sortedUsers.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-3 py-16 text-slate-600">
-            <MessageCircle className="w-8 h-8 opacity-30" />
-            <p className="text-xs text-center px-4">No adventurers to message yet.<br />Send a message from someone's profile!</p>
-          </div>
-        ) : sortedUsers.map(u2 => {
-          const unread = getUnread(u2.email);
-          const last = getLastMsg(u2.email);
-          const isActive = selectedUser?.email === u2.email;
-          return (
-            <button key={u2.email} onClick={() => selectUser(u2)}
-              className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 transition-all text-left min-h-[64px]",
-                isActive ? "bg-purple-800/25" : "hover:bg-purple-900/15"
-              )}
-              style={{ borderBottom: '1px solid rgba(88,28,220,0.08)' }}>
-              <div className="relative shrink-0">
-                <Avatar name={u2.full_name || u2.email} size="md" />
-                {unread > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-500 text-black text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center">
-                    {unread > 9 ? '9+' : unread}
-                  </span>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-1">
-                  <span className={cn("text-sm font-semibold truncate", unread > 0 ? "text-white" : "text-purple-200")}>
-                    {u2.full_name || u2.email}
-                  </span>
-                  {last && <span className="text-[10px] text-slate-600 shrink-0">{formatTime(last.created_date)}</span>}
-                </div>
-                {last && (
-                  <p className={cn("text-xs truncate mt-0.5", unread > 0 ? "text-purple-300 font-medium" : "text-slate-600")}>
-                    {last.sender_email === user?.email ? 'You: ' : ''}{last.content}
-                  </p>
-                )}
-              </div>
-            </button>
-          );
-        })}
+           <div className="flex flex-col items-center justify-center h-full gap-3 py-16 text-slate-600">
+             <MessageCircle className="w-8 h-8 opacity-30" />
+             <p className="text-xs text-center px-4">No adventurers to message yet.<br />Send a message from someone's profile!</p>
+           </div>
+         ) : sortedUsers.map(u2 => {
+           const unread = getUnread(u2.id);
+           const last = getLastMsg(u2.id);
+           const isActive = selectedUser?.id === u2.id;
+           return (
+             <button key={u2.id} onClick={() => selectUser(u2)}
+               className={cn(
+                 "w-full flex items-center gap-3 px-4 py-3 transition-all text-left min-h-[64px]",
+                 isActive ? "bg-purple-800/25" : "hover:bg-purple-900/15"
+               )}
+               style={{ borderBottom: '1px solid rgba(88,28,220,0.08)' }}>
+               <div className="relative shrink-0">
+                 <Avatar name={u2.full_name || u2.id} size="md" />
+                 {unread > 0 && (
+                   <span className="absolute -top-1 -right-1 bg-amber-500 text-black text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center">
+                     {unread > 9 ? '9+' : unread}
+                   </span>
+                 )}
+               </div>
+               <div className="flex-1 min-w-0">
+                 <div className="flex items-center justify-between gap-1">
+                   <span className={cn("text-sm font-semibold truncate", unread > 0 ? "text-white" : "text-purple-200")}>
+                     {u2.full_name || u2.id}
+                   </span>
+                   {last && <span className="text-[10px] text-slate-600 shrink-0">{formatTime(last.created_date)}</span>}
+                 </div>
+                 {last && (
+                   <p className={cn("text-xs truncate mt-0.5", unread > 0 ? "text-purple-300 font-medium" : "text-slate-600")}>
+                     {last.sender_id === profile?.id ? 'You: ' : ''}{last.content}
+                   </p>
+                 )}
+               </div>
+             </button>
+           );
+         })}
       </div>
     </div>
   );
