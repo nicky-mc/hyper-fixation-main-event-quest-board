@@ -380,18 +380,17 @@ export default function Friends() {
                 </div>
 
                 {searchResults.length === 0 ? (
-                  <div className="text-center py-12 text-slate-600 text-sm">No adventurers found.</div>
+                  <div className="text-center py-12 text-slate-600 text-sm">
+                    {searchQuery.trim() ? 'No adventurers found.' : 'Start typing to search adventurers!'}
+                  </div>
                 ) : (
                   <div className="space-y-3">
-                    {searchResults.map(u2 => {
-                      const profile = allProfiles.find(p => p.adventurer_name === (u2.full_name || u2.email));
-                      return (
-                        <SearchCard key={u2.email}
-                          profile={{ ...u2, avatar_url: profile?.avatar_url, location: profile?.location }}
-                          friendStatus={getFriendStatus(u2.email)}
-                          onAdd={() => sendRequest(u2)} />
-                      );
-                    })}
+                    {searchResults.map(p => (
+                      <SearchCard key={p.id}
+                        profile={{ full_name: p.adventurer_name, email: p.email || '', avatar_url: p.avatar_url, location: p.location }}
+                        friendStatus={getFriendStatus(p.email)}
+                        onAdd={() => sendRequest({ full_name: p.adventurer_name, email: p.email || '' })} />
+                    ))}
                   </div>
                 )}
               </div>
