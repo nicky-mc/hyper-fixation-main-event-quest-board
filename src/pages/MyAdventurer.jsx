@@ -154,12 +154,15 @@ export default function MyAdventurer() {
   const savedQuestIds = savedRecords.map(s => s.quest_id);
   const savedQuests = allQuests.filter(q => savedQuestIds.includes(q.id));
 
-  const charClass = getCharacterClass(myQuests.length, comments.length);
+  const isAdmin = user?.role === 'admin';
+  const charClass = isAdmin
+    ? { title: 'Guild Hostess ✦ Legendary', color: 'text-amber-300', icon: Crown }
+    : getCharacterClass(myQuests.length, comments.length);
   const CharIcon = charClass.icon;
-  const xp = calcXP(myQuests.length, comments.length, savedQuests.length);
-  const level = Math.max(1, Math.floor(xp / 200) + 1);
-  const xpInLevel = xp % 200;
-  const xpPct = (xpInLevel / 200) * 100;
+  const xp = isAdmin ? 99999 : calcXP(myQuests.length, comments.length, savedQuests.length);
+  const level = isAdmin ? '∞' : Math.max(1, Math.floor(xp / 200) + 1);
+  const xpInLevel = isAdmin ? 200 : xp % 200;
+  const xpPct = isAdmin ? 100 : (xpInLevel / 200) * 100;
 
   const onAirCount = myQuests.filter(q => q.status === 'selected' || q.status === 'completed').length;
 
