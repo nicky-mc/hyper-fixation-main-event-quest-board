@@ -185,20 +185,21 @@ export default function QuestBoard() {
             <motion.h1
               animate={{ textShadow: ['0 0 30px rgba(251,191,36,0.3)', '0 0 70px rgba(251,191,36,0.55)', '0 0 30px rgba(251,191,36,0.3)'] }}
               transition={{ duration: 3.5, repeat: Infinity }}
-              className="font-cinzel font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 leading-tight"
-              style={{ fontSize: 'clamp(2.8rem, 8vw, 5.5rem)', letterSpacing: '0.02em' }}
+              className="font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 leading-tight"
+              style={{ fontSize: 'clamp(1.8rem, 6vw, 4rem)', fontFamily: "'Orbitron', sans-serif", letterSpacing: '0.04em' }}
             >
-              The Hyper-fixation
+              THE HYPER-FIXATION
             </motion.h1>
             <div className="flex items-center justify-center gap-3 mt-2">
               <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
-              <span className="font-cinzel font-bold tracking-[0.3em] uppercase text-sm"
-                style={{ color: '#ef4444', textShadow: '0 0 12px rgba(239,68,68,0.5)' }}>
+              <span className="font-bold tracking-[0.3em] uppercase text-sm"
+                style={{ fontFamily: "'Orbitron', sans-serif", color: '#ef4444', textShadow: '0 0 12px rgba(239,68,68,0.5)', fontSize: '0.65rem' }}>
                 ⚔ MAIN EVENT ⚔
               </span>
               <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
             </div>
-            <p className="font-cinzel font-semibold text-purple-300/70 mt-1 tracking-widest text-xl">
+            <p className="font-semibold text-purple-300/70 mt-1 tracking-[0.3em] uppercase"
+              style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.85rem' }}>
               Quest Board
             </p>
           </div>
