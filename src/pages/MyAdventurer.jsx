@@ -98,17 +98,29 @@ export default function MyAdventurer() {
 
   const loadAll = async (u) => {
     const name = u.full_name || u.email;
-    const [quests, comms, saved, profiles] = await Promise.all([
+    const [quests, comms, saved, profiles, incoming] = await Promise.all([
       base44.entities.Quest.list('-created_date', 200),
       base44.entities.QuestComment.filter({ author_name: name }),
       base44.entities.SavedQuest.filter({ saver_email: u.email }),
       base44.entities.AdventurerProfile.filter({ adventurer_name: name }),
+      base44.entities.Friendship.filter({ recipient_email: u.email, status: 'pending' }),
     ]);
     setAllQuests(quests);
     setComments(comms);
     setSavedRecords(saved);
     setProfile(profiles[0] || null);
+    setPendingRequests(incoming);
     setLoading(false);
+  };
+
+  const acceptRequest = async (req) => {
+    await base44.entities.Friendship.update(req.id, { status: 'accepted' });
+    setPendingRequests(prev => prev.filter(r => r.id !== req.id));
+  };
+
+  const declineRequest = async (req) => {
+    await base44.entities.Friendship.delete(req.id);
+    setPendingRequests(prev => prev.filter(r => r.id !== req.id));
   };
 
   const unsaveQuest = async (questId) => {
