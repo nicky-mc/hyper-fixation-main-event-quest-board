@@ -550,8 +550,13 @@ export default function AdventurerProfile() {
 
                         <div className="space-y-1">
                           <p className="text-[10px] text-purple-500 uppercase tracking-widest">Quest Level</p>
-                          <div className="flex items-center gap-1.5 text-slate-300">
-                            <Flame className="w-4 h-4 text-orange-400" />Level {Math.max(1, Math.floor((myQuests.length * 100 + comments.length * 25) / 200) + 1)}
+                          <div className="flex items-center gap-1.5">
+                            <Flame className="w-4 h-4 text-orange-400" />
+                            {isProfileAdmin ? (
+                              <span className="font-bold text-amber-300">MAX ✦ Guild Master</span>
+                            ) : (
+                              <span className="text-slate-300">Level {Math.max(1, Math.floor((myQuests.length * 100 + comments.length * 25) / 200) + 1)}</span>
+                            )}
                           </div>
                         </div>
                       </div>
