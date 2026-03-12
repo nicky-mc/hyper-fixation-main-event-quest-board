@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2, Camera, Shield, Crown, Zap, Trophy, Sword, UserPlus, UserMinus, UserCheck, Clock, MapPin, Star, Flame, Bookmark, CheckCircle2, Users, ShieldAlert, Trash2 } from 'lucide-react';
+import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2, Camera, Shield, Crown, Zap, Trophy, Sword, UserPlus, UserMinus, UserCheck, Clock, MapPin, Star, Flame, Bookmark, CheckCircle2, Users, ShieldAlert, Ban, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
@@ -104,18 +104,16 @@ export default function AdventurerProfile() {
       setQuests(map);
     }
 
-    // friend counts (accepted only) + profile user role
-    const [asRecipient, asRequester, allUsers] = await Promise.all([
+    // friend counts (accepted only) — role comes from the AdventurerProfile itself
+    const [asRecipient, asRequester] = await Promise.all([
       base44.entities.Friendship.filter({ recipient_name: adventurerName, status: 'accepted' }),
       base44.entities.Friendship.filter({ requester_name: adventurerName, status: 'accepted' }),
-      base44.entities.User.list('full_name', 500),
     ]);
     setFollowerCount(asRecipient.length);
     setFollowingCount(asRequester.length);
 
-    // Check if profile owner is admin (hostess)
-    const profileUser = allUsers.find(u => (u.full_name || u.email) === adventurerName);
-    setProfileUserRole(profileUser?.role || 'user');
+    // Role comes directly from the profile record
+    setProfileUserRole(prof?.role || 'user');
 
     setLoading(false);
   };
@@ -418,38 +416,6 @@ export default function AdventurerProfile() {
                 </div>
               </div>
             </motion.div>
-
-            {/* ── ADMIN ACTION PANEL ── */}
-            {isCurrentUserAdmin && !isOwnProfile && (
-              <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
-                className="mb-4 p-4 rounded-xl border border-red-700/40 bg-red-950/20 flex items-center justify-between gap-3 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <ShieldAlert className="w-4 h-4 text-red-400" />
-                  <span className="text-xs font-bold text-red-300 uppercase tracking-widest">Admin Actions</span>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  <button
-                    onClick={async () => {
-                      if (!window.confirm(`Delete ALL quests by ${adventurerName}?`)) return;
-                      const qs = await base44.entities.Quest.filter({ quest_giver: adventurerName });
-                      await Promise.all(qs.map(q => base44.entities.Quest.delete(q.id)));
-                      await loadAll();
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-900/40 border border-red-700/50 text-red-300 hover:bg-red-800/50 text-xs font-bold transition-all">
-                    <Trash2 className="w-3.5 h-3.5" /> Delete Quests
-                  </button>
-                  <button
-                    onClick={async () => {
-                      if (!window.confirm(`Delete AdventurerProfile for ${adventurerName}?`)) return;
-                      if (profile) await base44.entities.AdventurerProfile.delete(profile.id);
-                      await loadAll();
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-900/40 border border-red-700/50 text-red-300 hover:bg-red-800/50 text-xs font-bold transition-all">
-                    <Trash2 className="w-3.5 h-3.5" /> Delete Profile
-                  </button>
-                </div>
-              </motion.div>
-            )}
 
             {/* ── TABS ── */}
             <div className="flex gap-1 p-1 rounded-xl bg-purple-950/40 border border-purple-900/40 mb-4">
