@@ -379,11 +379,7 @@ export default function Friends() {
                   />
                 </div>
 
-                {allUsers.length === 0 ? (
-                  <div className="text-center py-12 text-slate-600 text-sm">
-                    <p>User search requires admin access. Visit adventurer profiles to add friends!</p>
-                  </div>
-                ) : searchResults.length === 0 ? (
+                {searchResults.length === 0 ? (
                   <div className="text-center py-12 text-slate-600 text-sm">No adventurers found.</div>
                 ) : (
                   <div className="space-y-3">
