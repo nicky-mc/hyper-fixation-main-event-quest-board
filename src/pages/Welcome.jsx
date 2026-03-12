@@ -54,24 +54,14 @@ export default function Welcome() {
         {/* Logo & Title */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
           className="flex flex-col items-center mb-10">
-          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5"
-            style={{
-              background: 'linear-gradient(135deg, #7f1d1d, #4c1d95)',
-              border: '1px solid rgba(251,191,36,0.4)',
-              boxShadow: '0 0 40px rgba(251,191,36,0.25), 0 0 80px rgba(239,68,68,0.15)',
-            }}>
-            <SwordsIcon className="w-10 h-10 text-amber-400" />
-          </div>
-
-          <h1 className="text-5xl sm:text-6xl font-black text-center leading-tight mb-3"
-            style={{
-              fontFamily: "'Orbitron', sans-serif",
-              background: 'linear-gradient(135deg, #fbbf24, #f97316)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-            HME
-          </h1>
+          <motion.img
+            src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg"
+            alt="The Hyper-Fixation Main Event"
+            animate={{ filter: ['drop-shadow(0 0 16px rgba(251,191,36,0.4))', 'drop-shadow(0 0 36px rgba(251,191,36,0.7))', 'drop-shadow(0 0 16px rgba(251,191,36,0.4))'] }}
+            transition={{ duration: 3.5, repeat: Infinity }}
+            className="w-44 h-44 sm:w-56 sm:h-56 rounded-full object-cover mb-5"
+            style={{ border: '3px solid rgba(251,191,36,0.45)', boxShadow: '0 0 60px rgba(251,191,36,0.2)' }}
+          />
           <p className="text-slate-400 text-center text-sm sm:text-base max-w-sm"
             style={{ fontFamily: "'Exo 2', sans-serif" }}>
             The Adventurer's Guild — where every episode is a quest
