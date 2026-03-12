@@ -219,7 +219,7 @@ export default function AdventurerProfile() {
               className="rounded-2xl border-2 border-purple-700/40 overflow-hidden mb-4">
 
               {/* Cover photo */}
-              <div className="relative h-44 sm:h-56 group">
+              <div className="relative h-44 sm:h-56">
                 {coverUrl ? (
                   <img src={coverUrl} alt="cover" className="w-full h-full object-cover" />
                 ) : (
@@ -233,12 +233,12 @@ export default function AdventurerProfile() {
                     </div>
                   </div>
                 )}
-                {/* Cover upload overlay */}
+                {/* Cover upload button — always visible for own profile */}
                 {isOwnProfile && (
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-end justify-end p-3 opacity-0 group-hover:opacity-100">
+                  <div className="absolute bottom-3 right-3">
                     <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
                     <button onClick={() => coverRef.current?.click()} disabled={uploadingCover}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 text-white text-xs font-semibold hover:bg-black/90 transition-all">
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-semibold hover:bg-black/90 transition-all backdrop-blur-sm">
                       {uploadingCover ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
                       {uploadingCover ? 'Uploading...' : 'Change Cover'}
                     </button>
