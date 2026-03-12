@@ -38,6 +38,7 @@ const NAV_ITEMS = [
 ];
 
 export default function Layout({ children, currentPageName }) {
+  const { profile, loading: syncLoading } = useAdventurerSync();
   const [user, setUser]             = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -46,9 +47,9 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     base44.auth.me().then(u => {
       setUser(u);
-      if (u) loadUnread(u.email);
+      if (u && profile) loadUnread(profile.id);
     }).catch(() => {});
-  }, []);
+  }, [profile]);
 
   const loadUnread = async (email) => {
     const msgs = await base44.entities.Message.filter({ recipient_email: email, read: false });
