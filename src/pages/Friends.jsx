@@ -128,25 +128,21 @@ const TABS = [
 ];
 
 export default function Friends() {
-  const [user, setUser] = useState(null);
+  const profile = useAdventurer();
   const [tab, setTab] = useState('friends');
   const [loading, setLoading] = useState(true);
 
   const [friends, setFriends] = useState([]);          // accepted friendship records
   const [friendProfiles, setFriendProfiles] = useState([]); // merged with AdventurerProfile
   const [pending, setPending] = useState([]);           // incoming pending requests
-  const [allUsers, setAllUsers] = useState([]);
   const [allProfiles, setAllProfiles] = useState([]);
   const [friendships, setFriendships] = useState([]);   // all my friendships (both directions)
 
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      setUser(u);
-      if (u) loadAll(u);
-    }).catch(() => setLoading(false));
-  }, []);
+    if (profile) loadAll(profile);
+  }, [profile]);
 
   const loadAll = async (u) => {
     setLoading(true);
