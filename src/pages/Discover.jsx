@@ -92,18 +92,35 @@ export default function Discover() {
 
   const loadData = async (u) => {
     setLoading(true);
-    const [allProfiles, sentFs, receivedFs] = await Promise.all([
+    const [allUsers, allProfiles, sentFs, receivedFs] = await Promise.all([
+      base44.entities.User.list('full_name', 500),
       base44.entities.AdventurerProfile.list('adventurer_name', 500),
       u ? base44.entities.Friendship.filter({ requester_email: u.email }) : Promise.resolve([]),
       u ? base44.entities.Friendship.filter({ recipient_email: u.email }) : Promise.resolve([]),
     ]);
 
-    // Exclude own profile
-    const filtered = u
-      ? allProfiles.filter(p => p.created_by !== u.email)
-      : allProfiles;
+    // Build profile map keyed by email (via created_by) and by name
+    const profileByName = {};
+    allProfiles.forEach(p => { profileByName[p.adventurer_name] = p; });
 
-    setProfiles(filtered);
+    // Merge users with their adventurer profiles, exclude self
+    const merged = allUsers
+      .filter(usr => usr.email !== u?.email)
+      .map(usr => {
+        const name = usr.full_name || usr.email;
+        const prof = profileByName[name] || {};
+        return {
+          id: usr.id,
+          adventurer_name: name,
+          avatar_url: prof.avatar_url,
+          location: prof.location,
+          favorite_segment: prof.favorite_segment,
+          created_by: usr.email,
+          _canAdd: !!u,
+        };
+      });
+
+    setProfiles(merged);
     setFriendships([...sentFs, ...receivedFs]);
     setLoading(false);
   };
