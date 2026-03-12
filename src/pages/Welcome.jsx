@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import SignInModal from '@/components/SignInModal';
 import SignUpModal from '@/components/SignUpModal';
+import { useAuth } from '@/components/AuthContext';
 
 const FEATURES = [
   { icon: '⚔️', title: 'Quest Board', desc: 'Submit and vote on show topics & side quests' },
