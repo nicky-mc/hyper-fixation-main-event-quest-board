@@ -22,16 +22,29 @@ export default function Messages() {
   }, []);
 
   const loadData = async (u) => {
-    const [msgs, users] = await Promise.all([
-      base44.entities.Message.list('-created_date', 200),
-      base44.entities.User.list(),
-    ]);
+    const msgs = await base44.entities.Message.list('-created_date', 200);
     setMessages(msgs);
     // Mark received as read
     const unread = msgs.filter(m => m.recipient_email === u.email && !m.read);
     unread.forEach(m => base44.entities.Message.update(m.id, { read: true }));
 
-    const others = users.filter(x => x.email !== u.email);
+    // Try to get all users (admin only), fall back to deriving from messages
+    let others = [];
+    try {
+      const users = await base44.entities.User.list();
+      others = users.filter(x => x.email !== u.email);
+    } catch {
+      const partnerMap = {};
+      msgs.forEach(m => {
+        if (m.sender_email !== u.email) {
+          partnerMap[m.sender_email] = partnerMap[m.sender_email] || { id: m.sender_email, email: m.sender_email, full_name: m.sender_name };
+        }
+        if (m.recipient_email !== u.email) {
+          partnerMap[m.recipient_email] = partnerMap[m.recipient_email] || { id: m.recipient_email, email: m.recipient_email, full_name: m.recipient_email };
+        }
+      });
+      others = Object.values(partnerMap);
+    }
     setAllUsers(others);
     setLoading(false);
   };
