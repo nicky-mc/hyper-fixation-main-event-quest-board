@@ -19,7 +19,8 @@ const statusConfig = {
   completed: { label: 'Done',      icon: CheckCircle2, color: 'text-green-400',  bg: 'bg-green-900/20 border-green-700/40' },
 };
 
-function getCharacterClass(commentCount) {
+function getCharacterClass(commentCount, isAdmin = false) {
+  if (isAdmin) return { title: 'Guild Hostess ✦ Legendary', color: 'text-amber-300', icon: Crown };
   if (commentCount >= 50) return { title: 'Legendary Lore Master', color: 'text-amber-300', icon: Crown };
   if (commentCount >= 25) return { title: 'Veteran Quester', color: 'text-purple-300', icon: Trophy };
   if (commentCount >= 10) return { title: 'Seasoned Adventurer', color: 'text-cyan-300', icon: Shield };
