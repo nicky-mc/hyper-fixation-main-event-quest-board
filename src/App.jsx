@@ -12,6 +12,7 @@ import EpisodeCalendar from './pages/EpisodeCalendar';
 import AdventurersDirectory from './pages/AdventurersDirectory';
 import Friends from './pages/Friends';
 import Welcome from './pages/Welcome';
+import Discover from './pages/Discover';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -67,6 +68,7 @@ const AuthenticatedApp = () => {
       <Route path="/EpisodeCalendar" element={<LayoutWrapper currentPageName="EpisodeCalendar"><EpisodeCalendar /></LayoutWrapper>} />
       <Route path="/AdventurersDirectory" element={<LayoutWrapper currentPageName="AdventurersDirectory"><AdventurersDirectory /></LayoutWrapper>} />
       <Route path="/Friends" element={<LayoutWrapper currentPageName="Friends"><Friends /></LayoutWrapper>} />
+      <Route path="/Discover" element={<LayoutWrapper currentPageName="Discover"><Discover /></LayoutWrapper>} />
       <Route path="/Welcome" element={<Welcome />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
