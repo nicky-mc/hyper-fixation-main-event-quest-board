@@ -123,34 +123,33 @@ export default function Messages() {
     setMobileView('chat');
     // Mark messages from this user as read
     setMessages(prev => prev.map(m =>
-      m.sender_email === u2.email && m.recipient_email === user?.email && !m.read
+      m.sender_id === u2.id && m.recipient_id === profile?.id && !m.read
         ? { ...m, read: true }
         : m
     ));
   };
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = profile?.role === 'admin';
   const conversation = selectedUser
     ? messages.filter(m => {
-        const involves = (email) => m.sender_email === email || m.recipient_email === email;
-        if (isAdmin && !involves(user.email)) {
-          // Admin viewing a thread they're not part of — show full thread involving selectedUser
-          return involves(selectedUser.email);
+        const involves = (id) => m.sender_id === id || m.recipient_id === id;
+        if (isAdmin && !involves(profile.id)) {
+          return involves(selectedUser.id);
         }
         return (
-          (m.sender_email === user.email && m.recipient_email === selectedUser.email) ||
-          (m.sender_email === selectedUser.email && m.recipient_email === user.email)
+          (m.sender_id === profile.id && m.recipient_id === selectedUser.id) ||
+          (m.sender_id === selectedUser.id && m.recipient_id === profile.id)
         );
       }).slice().reverse()
     : [];
 
-  const getUnread = (email) =>
-    messages.filter(m => m.sender_email === email && m.recipient_email === user?.email && !m.read).length;
+  const getUnread = (id) =>
+    messages.filter(m => m.sender_id === id && m.recipient_id === profile?.id && !m.read).length;
 
-  const getLastMsg = (email) =>
+  const getLastMsg = (id) =>
     messages.find(m =>
-      (m.sender_email === user?.email && m.recipient_email === email) ||
-      (m.sender_email === email && m.recipient_email === user?.email)
+      (m.sender_id === profile?.id && m.recipient_id === id) ||
+      (m.sender_id === id && m.recipient_id === profile?.id)
     );
 
   const sendMessage = async () => {
