@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Loader2, Eye, EyeOff, Chrome } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function SignInModal({ onClose, onSuccess }) {
@@ -29,6 +29,10 @@ export default function SignInModal({ onClose, onSuccess }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    base44.auth.redirectToLogin(window.location.pathname, { provider: 'google' });
   };
 
   return (
@@ -124,10 +128,36 @@ export default function SignInModal({ onClose, onSuccess }) {
               '⚔️ SIGN IN'
             )}
           </button>
-        </form>
 
-        {/* Close hint */}
-        <p className="text-center text-slate-600 text-xs mt-4">Press ESC to close</p>
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-x-0 top-1/2 h-px" style={{ background: 'rgba(139,92,246,0.2)' }} />
+            <div className="relative flex justify-center">
+              <span className="px-2 text-xs text-slate-500" style={{ background: 'rgba(8, 6, 24, 0.8)' }}>or</span>
+            </div>
+          </div>
+
+          {/* Google Sign In */}
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full py-3 rounded-xl font-black text-sm transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            style={{
+              fontFamily: "'Exo 2', sans-serif",
+              background: 'rgba(66,133,244,0.15)',
+              border: '1px solid rgba(66,133,244,0.4)',
+              boxShadow: '0 0 20px rgba(66,133,244,0.15)',
+              color: '#4285f4',
+              letterSpacing: '0.08em',
+            }}>
+            <Chrome className="w-4 h-4" />
+            SIGN IN WITH GOOGLE
+          </button>
+          </form>
+
+          {/* Close hint */}
+          <p className="text-center text-slate-600 text-xs mt-4">Press ESC to close</p>
       </div>
     </motion.div>
   );
