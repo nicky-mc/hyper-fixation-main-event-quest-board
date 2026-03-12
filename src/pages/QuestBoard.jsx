@@ -11,6 +11,7 @@ import QuestCategoryFilter, { CATEGORIES, filterQuestsByCategory } from '@/compo
 import QuestWorldMap from '@/components/QuestWorldMap';
 import RKOButton from '@/components/RKOButton';
 import ActivityStream from '@/components/ActivityStream';
+import QuestDetailModal from '@/components/QuestDetailModal';
 
 // Floating particle component for atmosphere
 function Particle({ style }) {

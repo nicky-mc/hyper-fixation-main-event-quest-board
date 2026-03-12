@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Rss, Plus, Send, Loader2, Trash2 } from 'lucide-react';
+import { Rss, Plus, Send, Loader2, Trash2, ImageIcon, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -12,6 +12,8 @@ export default function NewsFeed() {
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
