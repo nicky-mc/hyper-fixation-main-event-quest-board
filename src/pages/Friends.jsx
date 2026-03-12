@@ -214,19 +214,13 @@ export default function Friends() {
     return 'pending';
   };
 
-  const getMutualCount = (friendName) => {
-    const myFriendNames = friendProfiles.map(f => f.adventurer_name);
-    // Simple approximation — count shared connections
+  const getMutualCount = (friendId) => {
     return 0; // Would need deeper query; placeholder
   };
 
-  const profileMap = {};
-  allProfiles.forEach(p => { profileMap[p.adventurer_name] = p; });
-
   // Search results powered by AdventurerProfile (accessible to all authenticated users)
-  const myName = user?.full_name || user?.email;
   const searchResults = allProfiles
-    .filter(p => p.adventurer_name !== myName) // exclude self
+    .filter(p => p.id !== profile?.id) // exclude self
     .filter(p => {
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase();
@@ -235,8 +229,8 @@ export default function Friends() {
              (p.email || '').toLowerCase().includes(q);
     })
     .sort((a, b) => {
-      const aStatus = getFriendStatus(a.email);
-      const bStatus = getFriendStatus(b.email);
+      const aStatus = getFriendStatus(a.id);
+      const bStatus = getFriendStatus(b.id);
       if (aStatus === 'none' && bStatus !== 'none') return -1;
       if (aStatus !== 'none' && bStatus === 'none') return 1;
       return 0;
