@@ -353,6 +353,8 @@ export default function QuestBoard() {
               <QuestCard key={quest.id} quest={quest} index={i}
                 isSelected={selectedQuestId === quest.id && !isRolling}
                 isRolling={isRolling && rollingId === quest.id}
+                currentUser={user}
+                onDeleted={loadQuests}
               />
             ))}
           </div>
