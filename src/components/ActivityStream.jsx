@@ -73,6 +73,7 @@ export default function ActivityStream() {
   const [mediaType, setMediaType] = useState('image');
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting]   = useState(false);
+  const [profiles, setProfiles] = useState({});
   const imageRef = useRef(null);
   const videoRef = useRef(null);
   const audioRef = useRef(null);
@@ -80,6 +81,11 @@ export default function ActivityStream() {
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
     loadPosts();
+    base44.entities.AdventurerProfile.list('adventurer_name', 200).then(data => {
+      const map = {};
+      data.forEach(p => { map[p.adventurer_name] = p; });
+      setProfiles(map);
+    });
     const unsub = base44.entities.NewsPost.subscribe(event => {
       if (event.type === 'create') setPosts(p => [event.data, ...p]);
       if (event.type === 'delete') setPosts(p => p.filter(x => x.id !== event.id));
