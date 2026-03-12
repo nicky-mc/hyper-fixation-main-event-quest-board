@@ -10,7 +10,7 @@ import HostSettingsModal from '@/components/HostSettingsModal';
 import QuestCategoryFilter, { CATEGORIES, filterQuestsByCategory } from '@/components/QuestCategoryFilter';
 import QuestWorldMap from '@/components/QuestWorldMap';
 import RKOButton from '@/components/RKOButton';
-import ActivityStream from '@/components/ActivityStream';
+import ActivityDrawer from '@/components/ActivityDrawer';
 
 // Floating particle component for atmosphere
 function Particle({ style }) {
@@ -313,6 +313,7 @@ export default function QuestBoard() {
           </motion.button>
 
           <RKOButton userIsAdmin={user?.role === 'admin'} />
+          <ActivityDrawer />
         </motion.div>
 
         {/* ── CATEGORY FILTER ── */}
@@ -320,17 +321,8 @@ export default function QuestBoard() {
           <QuestCategoryFilter active={activeCategory} onChange={setActiveCategory} counts={categoryCounts} />
         )}
 
-        {/* ── ACTIVITY STREAM SIDEBAR + QUEST GRID ── */}
-        <div className="flex flex-col lg:flex-row gap-6">
-
-          {/* Activity Stream - sidebar on desktop, top section on mobile */}
-          <div className="lg:w-80 xl:w-96 shrink-0">
-            <div className="lg:sticky lg:top-20 rounded-xl border border-purple-900/40 bg-white/[0.02] p-4 max-h-[80vh] flex flex-col">
-              <ActivityStream />
-            </div>
-          </div>
-
-          {/* Quest Grid */}
+        {/* ── QUEST GRID ── */}
+        <div className="flex flex-col gap-6">
           <div className="flex-1 min-w-0">
 
         {/* ── QUEST GRID (inner) ── */}
@@ -373,7 +365,7 @@ export default function QuestBoard() {
         )}
 
           </div>{/* end flex-1 quest grid */}
-        </div>{/* end flex layout */}
+        </div>{/* end quest grid */}
 
         {/* ── SELECTED ANNOUNCEMENT ── */}
         <AnimatePresence>
