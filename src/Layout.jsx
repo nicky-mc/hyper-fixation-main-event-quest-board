@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -6,11 +6,7 @@ import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays,
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import MessageToast from '@/components/MessageToast';
-import { useAdventurerSync } from '@/components/useAdventurerSync';
-
-// Global adventurer context
-export const AdventurerContext = createContext(null);
-export const useAdventurer = () => useContext(AdventurerContext);
+import { useAdventurerSync, AdventurerContext } from '@/components/useAdventurerSync';
 
 function SwordsIcon({ className }) {
   return (
