@@ -25,18 +25,47 @@ export function useAdventurerSync() {
           return;
         }
 
-        // Find existing profile by system_user_id
-        const existing = await base44.entities.AdventurerProfile.filter({
-          system_user_id: authUser.id
+        // Step 1: Look up by email first (handles existing users with no auth_id)
+        let profiles = await base44.entities.AdventurerProfile.filter({
+          email: authUser.email
         });
 
-        if (existing.length > 0) {
-          // Already synced
-          setProfile(existing[0]);
+        let profile = null;
+
+        if (profiles.length > 0) {
+          // Deduplicate if multiple profiles with same email
+          if (profiles.length > 1) {
+            // Sort by data completeness, keep the most complete one
+            profiles.sort((a, b) => {
+              const aScore = Object.values(a).filter(v => v && v !== 'user').length;
+              const bScore = Object.values(b).filter(v => v && v !== 'user').length;
+              return bScore - aScore;
+            });
+            profile = profiles[0];
+            
+            // Delete duplicates
+            for (let i = 1; i < profiles.length; i++) {
+              await base44.entities.AdventurerProfile.delete(profiles[i].id);
+            }
+          } else {
+            profile = profiles[0];
+          }
+
+          // Update auth_id if missing or different
+          const isAdmin = authUser.email === ADMIN_EMAIL;
+          if (profile.auth_id !== authUser.id || profile.system_user_id !== authUser.id) {
+            profile = await base44.entities.AdventurerProfile.update(profile.id, {
+              auth_id: authUser.id,
+              system_user_id: authUser.id,
+              role: isAdmin ? 'admin' : profile.role // Keep existing role unless admin
+            });
+          }
+          setProfile(profile);
         } else {
-          // Auto-create profile
+          // Create new profile
           const isAdmin = authUser.email === ADMIN_EMAIL;
           const newProfile = await base44.entities.AdventurerProfile.create({
+            auth_id: authUser.id,
             system_user_id: authUser.id,
             adventurer_name: authUser.full_name || authUser.email.split('@')[0],
             email: authUser.email,
