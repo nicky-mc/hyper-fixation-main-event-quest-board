@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2, Camera, Shield, Crown, Zap, Trophy, Sword, UserPlus, UserMinus, UserCheck, Clock, MapPin, Star, Flame, Bookmark, CheckCircle2, Users, ShieldAlert, Ban, Eye } from 'lucide-react';
+import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2, Camera, Shield, Crown, Zap, Trophy, Sword, UserPlus, UserMinus, UserCheck, Clock, MapPin, Star, Flame, Bookmark, CheckCircle2, Users, ShieldAlert, Ban, Eye, Lock, UserX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
@@ -33,8 +33,20 @@ function getCharacterClass(commentCount, isAdmin = false) {
 function StatPill({ label, value, color = 'text-purple-300' }) {
   return (
     <div className="flex flex-col items-center px-4 py-2">
-      <span className={cn("text-2xl font-black", color)} style={{ fontFamily: "'Caveat', cursive" }}>{value}</span>
+      <span className={cn("text-2xl font-black", color)}>{value}</span>
       <span className="text-[10px] text-slate-500 uppercase tracking-wider">{label}</span>
+    </div>
+  );
+}
+
+function PrivacyGate({ privacyLevel, canSee, message }) {
+  if (canSee) return null;
+  const icons = { 'Private': Lock, 'Friends-Only': Users };
+  const Icon = icons[privacyLevel] || Shield;
+  return (
+    <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-600 border border-purple-900/30 rounded-xl">
+      <Icon className="w-10 h-10 opacity-20" />
+      <p className="text-sm font-semibold text-slate-500">{message}</p>
     </div>
   );
 }
@@ -53,15 +65,20 @@ export default function AdventurerProfile() {
   const [editName, setEditName] = useState('');
   const [editLocation, setEditLocation] = useState('');
   const [editFavSegment, setEditFavSegment] = useState('');
+  const [editPrivacy, setEditPrivacy] = useState('Public');
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [profileUserRole, setProfileUserRole] = useState(null); // role of the profile owner
-  const [friendshipRecord, setFriendshipRecord] = useState(null); // record where I requested or was requested
+  const [myProfile, setMyProfile] = useState(null); // current user's AdventurerProfile
+  const [profileUserRole, setProfileUserRole] = useState(null);
+  const [friendshipRecord, setFriendshipRecord] = useState(null);
+  const [blockRecord, setBlockRecord] = useState(null); // BlockedUser record where I blocked them
+  const [isBlockedByThem, setIsBlockedByThem] = useState(false);
   const [friendTogglingLoading, setFriendTogglingLoading] = useState(false);
-  const [followerCount, setFollowerCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
+  const [blockLoading, setBlockLoading] = useState(false);
+  const [friendCount, setFriendCount] = useState(0);
+  const [mutualCount, setMutualCount] = useState(0);
   const [activeTab, setActiveTab] = useState('quests');
   const avatarRef = useRef(null);
   const coverRef = useRef(null);
@@ -70,21 +87,29 @@ export default function AdventurerProfile() {
   const [coverDisplay, setCoverDisplay] = useState({ position: { x: 50, y: 50 }, zoom: 100 });
 
   useEffect(() => {
-    base44.auth.me().then(u => setCurrentUser(u)).catch(() => {});
+    base44.auth.me().then(async u => {
+      setCurrentUser(u);
+      if (u) {
+        const profs = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+        if (profs[0]) setMyProfile(profs[0]);
+      }
+    }).catch(() => {});
     if (!adventurerName) { setLoading(false); return; }
     loadAll();
   }, [adventurerName]);
 
-  // Load friendship once currentUser is known
   useEffect(() => {
-    if (currentUser && adventurerName) loadFriendship();
-  }, [currentUser, adventurerName]);
+    if (myProfile && profile) {
+      loadFriendshipAndBlock();
+      computeMutuals();
+    }
+  }, [myProfile?.id, profile?.id]);
 
   const loadAll = async () => {
     setLoading(true);
     const [profiles, allComments, submittedQuests] = await Promise.all([
       base44.entities.AdventurerProfile.filter({ adventurer_name: adventurerName }),
-      base44.entities.QuestComment.filter({ author_name: adventurerName }, '-created_date', 30),
+      base44.entities.QuestComment.filter({ adventurer_name: adventurerName }, '-created_date', 30),
       base44.entities.Quest.list('-created_date', 200),
     ]);
     const prof = profiles[0] || null;
@@ -93,89 +118,128 @@ export default function AdventurerProfile() {
     setEditName(prof?.adventurer_name || adventurerName);
     setEditLocation(prof?.location || '');
     setEditFavSegment(prof?.favorite_segment || '');
+    setEditPrivacy(prof?.privacy_level || 'Public');
     setCoverDisplay(prof?.cover_display || { position: { x: 50, y: 50 }, zoom: 100 });
     setComments(allComments);
 
-    const mine = submittedQuests.filter(q => q.quest_giver === adventurerName);
+    const mine = submittedQuests.filter(q => q.quest_giver === adventurerName || (prof && q.adventurer_id === prof.id));
     setMyQuests(mine);
 
-    const questIds = [...new Set(allComments.map(c => c.quest_id))];
-    if (questIds.length > 0) {
-      const map = {};
-      submittedQuests.forEach(q => { map[q.id] = q; });
-      setQuests(map);
-    } else {
-      const map = {};
-      submittedQuests.forEach(q => { map[q.id] = q; });
-      setQuests(map);
+    const map = {};
+    submittedQuests.forEach(q => { map[q.id] = q; });
+    setQuests(map);
+
+    // Friend count using adventurer_id
+    if (prof) {
+      const [asRecipient, asRequester] = await Promise.all([
+        base44.entities.Friendship.filter({ recipient_id: prof.id, status: 'accepted' }),
+        base44.entities.Friendship.filter({ requester_id: prof.id, status: 'accepted' }),
+      ]);
+      setFriendCount(asRecipient.length + asRequester.length);
     }
 
-    // friend counts (accepted only) — role comes from the AdventurerProfile itself
-    const [asRecipient, asRequester] = await Promise.all([
-      base44.entities.Friendship.filter({ recipient_name: adventurerName, status: 'accepted' }),
-      base44.entities.Friendship.filter({ requester_name: adventurerName, status: 'accepted' }),
-    ]);
-    setFollowerCount(asRecipient.length);
-    setFollowingCount(asRequester.length);
-
-    // Role comes directly from the profile record
     setProfileUserRole(prof?.role || 'user');
-
     setLoading(false);
   };
 
-  const loadFriendship = async () => {
-    if (!currentUser) return;
-    const myName = currentUser.full_name || currentUser.email;
-    // Check both directions
-    const [sent, received] = await Promise.all([
-      base44.entities.Friendship.filter({ requester_email: currentUser.email, recipient_name: adventurerName }),
-      base44.entities.Friendship.filter({ recipient_email: currentUser.email, requester_name: adventurerName }),
+  const loadFriendshipAndBlock = async () => {
+    if (!myProfile || !profile || myProfile.id === profile.id) return;
+    const [sent, received, myBlocks, theirBlocks] = await Promise.all([
+      base44.entities.Friendship.filter({ requester_id: myProfile.id, recipient_id: profile.id }),
+      base44.entities.Friendship.filter({ requester_id: profile.id, recipient_id: myProfile.id }),
+      base44.entities.BlockedUser.filter({ blocker_id: myProfile.id, blocked_id: profile.id }),
+      base44.entities.BlockedUser.filter({ blocker_id: profile.id, blocked_id: myProfile.id }),
     ]);
     setFriendshipRecord(sent[0] || received[0] || null);
+    setBlockRecord(myBlocks[0] || null);
+    setIsBlockedByThem(theirBlocks.length > 0);
+  };
+
+  const computeMutuals = async () => {
+    if (!myProfile || !profile || myProfile.id === profile.id) return;
+    // Get my friends
+    const [mySent, myReceived, theirSent, theirReceived] = await Promise.all([
+      base44.entities.Friendship.filter({ requester_id: myProfile.id, status: 'accepted' }),
+      base44.entities.Friendship.filter({ recipient_id: myProfile.id, status: 'accepted' }),
+      base44.entities.Friendship.filter({ requester_id: profile.id, status: 'accepted' }),
+      base44.entities.Friendship.filter({ recipient_id: profile.id, status: 'accepted' }),
+    ]);
+    const myFriendIds = new Set([
+      ...mySent.map(f => f.recipient_id),
+      ...myReceived.map(f => f.requester_id),
+    ]);
+    const theirFriendIds = new Set([
+      ...theirSent.map(f => f.recipient_id),
+      ...theirReceived.map(f => f.requester_id),
+    ]);
+    let mutual = 0;
+    myFriendIds.forEach(id => { if (theirFriendIds.has(id)) mutual++; });
+    setMutualCount(mutual);
   };
 
   const handleFriendAction = async () => {
-    if (!currentUser) { base44.auth.redirectToLogin(window.location.pathname); return; }
-    const myName = currentUser.full_name || currentUser.email;
-    if (myName === adventurerName) return;
+    if (!myProfile) { base44.auth.redirectToLogin(window.location.pathname); return; }
+    if (myProfile.id === profile?.id) return;
     setFriendTogglingLoading(true);
 
     if (!friendshipRecord) {
-      // Send request — use email stored on the AdventurerProfile record
-      const recipientEmail = profile?.email || '';
       const rec = await base44.entities.Friendship.create({
-        requester_email: currentUser.email,
-        requester_name: myName,
-        recipient_name: adventurerName,
-        recipient_email: recipientEmail,
+        requester_id: myProfile.id,
+        requester_name: myProfile.adventurer_name,
+        recipient_id: profile.id,
+        recipient_name: profile.adventurer_name,
         status: 'pending',
       });
       setFriendshipRecord(rec);
-    } else if (friendshipRecord.status === 'pending' && friendshipRecord.requester_email === currentUser.email) {
-      // Cancel sent request
+    } else if (friendshipRecord.status === 'pending' && friendshipRecord.requester_id === myProfile.id) {
       await base44.entities.Friendship.delete(friendshipRecord.id);
       setFriendshipRecord(null);
-    } else if (friendshipRecord.status === 'pending' && friendshipRecord.requester_email !== currentUser.email) {
-      // Accept incoming request
+    } else if (friendshipRecord.status === 'pending' && friendshipRecord.requester_id !== myProfile.id) {
       const updated = await base44.entities.Friendship.update(friendshipRecord.id, { status: 'accepted' });
       setFriendshipRecord(updated);
-      setFollowerCount(c => c + 1);
+      setFriendCount(c => c + 1);
     } else if (friendshipRecord.status === 'accepted') {
-      // Unfriend
       await base44.entities.Friendship.delete(friendshipRecord.id);
       setFriendshipRecord(null);
-      setFollowerCount(c => Math.max(0, c - 1));
+      setFriendCount(c => Math.max(0, c - 1));
     }
     setFriendTogglingLoading(false);
   };
 
+  const handleBlockToggle = async () => {
+    if (!myProfile || !profile) return;
+    setBlockLoading(true);
+    if (blockRecord) {
+      await base44.entities.BlockedUser.delete(blockRecord.id);
+      setBlockRecord(null);
+    } else {
+      // Also unfriend if friends
+      if (friendshipRecord) {
+        await base44.entities.Friendship.delete(friendshipRecord.id);
+        setFriendshipRecord(null);
+      }
+      const rec = await base44.entities.BlockedUser.create({
+        blocker_id: myProfile.id,
+        blocked_id: profile.id,
+      });
+      setBlockRecord(rec);
+    }
+    setBlockLoading(false);
+  };
+
   const saveProfile = async () => {
     setSaving(true);
-    // Also persist the user's email + role onto their profile so others can look it up
     const emailToSave = currentUser?.email || '';
     const roleToSave = currentUser?.role || 'user';
-    const data = { adventurer_name: editName, bio: editBio, location: editLocation, favorite_segment: editFavSegment, email: emailToSave, role: roleToSave };
+    const data = {
+      adventurer_name: editName,
+      bio: editBio,
+      location: editLocation,
+      favorite_segment: editFavSegment,
+      privacy_level: editPrivacy,
+      email: emailToSave,
+      role: roleToSave,
+    };
     if (profile) {
       await base44.entities.AdventurerProfile.update(profile.id, data);
     } else {
@@ -210,9 +274,7 @@ export default function AdventurerProfile() {
   const handleSaveCoverPosition = async (data) => {
     setCoverDisplay(data);
     setEditingCoverPosition(false);
-    if (profile) {
-      await base44.entities.AdventurerProfile.update(profile.id, { cover_display: data });
-    }
+    if (profile) await base44.entities.AdventurerProfile.update(profile.id, { cover_display: data });
   };
 
   const formatTime = (iso) => {
@@ -226,12 +288,20 @@ export default function AdventurerProfile() {
   const isCurrentUserAdmin = currentUser?.role === 'admin';
   const charClass = getCharacterClass(comments.length, isProfileAdmin);
   const CharIcon = charClass.icon;
-  const myName = currentUser ? (currentUser.full_name || currentUser.email) : null;
-  const isOwnProfile = myName === adventurerName;
+  const isOwnProfile = myProfile?.id === profile?.id;
   const isFriend = friendshipRecord?.status === 'accepted';
-  // Admins bypass friend gate
-  const canSeePrivate = isOwnProfile || isFriend || isCurrentUserAdmin;
-  const canMessage = !isOwnProfile && (isFriend || isCurrentUserAdmin);
+  const privacyLevel = profile?.privacy_level || 'Public';
+
+  // Privacy gate logic
+  const canSeePrivate = isOwnProfile || isCurrentUserAdmin ||
+    privacyLevel === 'Public' ||
+    (privacyLevel === 'Friends-Only' && isFriend);
+
+  const canMessage = !isOwnProfile && (isFriend || isCurrentUserAdmin) && !blockRecord && !isBlockedByThem;
+
+  const privacyGateMessage = privacyLevel === 'Private'
+    ? 'This adventurer keeps their details private.'
+    : 'Add as friend to see more.';
 
   const handleAdminBan = async () => {
     if (!profile) return;
@@ -260,12 +330,40 @@ export default function AdventurerProfile() {
     { id: 'about', label: 'About', icon: Star },
   ];
 
+  // If I've blocked them or they've blocked me, show a minimal blocked view
+  if (!loading && !isOwnProfile && (blockRecord || isBlockedByThem)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center"
+        style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 30%, #080d1a 60%, #050a10 100%)' }}>
+        <div className="text-center max-w-sm mx-auto px-4">
+          <UserX className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+          <h2 className="text-xl font-black text-slate-500 mb-2">Profile Unavailable</h2>
+          <p className="text-sm text-slate-600 mb-6">
+            {isBlockedByThem ? "You cannot view this profile." : "You have blocked this adventurer."}
+          </p>
+          {blockRecord && (
+            <button onClick={handleBlockToggle} disabled={blockLoading}
+              className="px-5 py-2 rounded-xl bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-white text-sm font-bold transition-all">
+              {blockLoading ? <Loader2 className="w-4 h-4 animate-spin inline mr-1" /> : null}
+              Unblock
+            </button>
+          )}
+          <div className="mt-4">
+            <Link to={createPageUrl('QuestBoard')} className="text-xs text-purple-500 hover:text-purple-300">
+              ← Back to Quest Board
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen"
       style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 30%, #080d1a 60%, #050a10 100%)' }}>
 
-      <ImageViewerModal 
-        imageUrl={viewingImage?.url} 
+      <ImageViewerModal
+        imageUrl={viewingImage?.url}
         alt={viewingImage?.alt}
         isOpen={!!viewingImage}
         onClose={() => setViewingImage(null)}
@@ -302,26 +400,24 @@ export default function AdventurerProfile() {
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
               className="rounded-2xl border-2 border-purple-700/40 overflow-hidden mb-4">
 
-              {/* Cover photo */}
-              <div 
+              <div
                 className="relative h-44 sm:h-56 overflow-hidden cursor-pointer group"
                 onClick={() => coverUrl && setViewingImage({ url: coverUrl, alt: 'cover' })}
               >
                 {coverUrl ? (
-                   <img 
-                     src={coverUrl} 
-                     alt="cover" 
-                     className="w-full h-full object-cover group-hover:brightness-75 transition-all"
-                     style={{
-                       objectPosition: `${coverDisplay.position.x}% ${coverDisplay.position.y}%`,
-                       transform: `scale(${coverDisplay.zoom / 100})`,
-                       transformOrigin: `${coverDisplay.position.x}% ${coverDisplay.position.y}%`,
-                     }}
-                   />
+                  <img
+                    src={coverUrl}
+                    alt="cover"
+                    className="w-full h-full object-cover group-hover:brightness-75 transition-all"
+                    style={{
+                      objectPosition: `${coverDisplay.position.x}% ${coverDisplay.position.y}%`,
+                      transform: `scale(${coverDisplay.zoom / 100})`,
+                      transformOrigin: `${coverDisplay.position.x}% ${coverDisplay.position.y}%`,
+                    }}
+                  />
                 ) : (
                   <div className="w-full h-full"
                     style={{ background: 'linear-gradient(135deg, #1a0533 0%, #0d1a3a 40%, #1a1033 70%, #0a0a1a 100%)' }}>
-                    {/* Decorative pattern */}
                     <div className="absolute inset-0 opacity-20"
                       style={{ backgroundImage: 'repeating-linear-gradient(45deg, rgba(168,85,247,0.3) 0px, rgba(168,85,247,0.3) 1px, transparent 1px, transparent 20px)', backgroundSize: '20px 20px' }} />
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -329,45 +425,43 @@ export default function AdventurerProfile() {
                     </div>
                   </div>
                 )}
-                {/* Cover upload button — always visible for own profile */}
                 {isOwnProfile && (
-                   <div className="absolute top-3 right-3 flex gap-2">
-                     {coverUrl && (
-                       <button
-                         onClick={() => setEditingCoverPosition(true)}
-                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-semibold hover:bg-black/90 transition-all backdrop-blur-sm"
-                       >
-                         📍 Position
-                       </button>
-                     )}
-                     <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-semibold hover:bg-black/90 transition-all backdrop-blur-sm cursor-pointer">
-                       {uploadingCover ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                       {uploadingCover ? 'Uploading...' : 'Change Cover'}
-                       <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} disabled={uploadingCover} />
-                     </label>
-                   </div>
-                 )}
+                  <div className="absolute top-3 right-3 flex gap-2">
+                    {coverUrl && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setEditingCoverPosition(true); }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-semibold hover:bg-black/90 transition-all backdrop-blur-sm"
+                      >
+                        📍 Position
+                      </button>
+                    )}
+                    <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-semibold hover:bg-black/90 transition-all backdrop-blur-sm cursor-pointer"
+                      onClick={e => e.stopPropagation()}>
+                      {uploadingCover ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                      {uploadingCover ? 'Uploading...' : 'Change Cover'}
+                      <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} disabled={uploadingCover} />
+                    </label>
+                  </div>
+                )}
               </div>
 
-              {/* Profile info below cover */}
               <div className="relative px-5 pb-5"
                 style={{ background: 'linear-gradient(180deg, #0d0d1a, #0a0d1e)' }}>
 
-                {/* Avatar — overlapping the cover */}
                 <div className="flex items-end justify-between -mt-12 mb-4">
-                   <div className="relative">
-                     <div 
-                       className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#0d0d1a] shadow-2xl shadow-black/60 cursor-pointer hover:opacity-80 transition-opacity"
-                       onClick={() => avatarUrl && setViewingImage({ url: avatarUrl, alt: 'avatar' })}
-                     >
-                       {avatarUrl ? (
-                         <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                       ) : (
-                         <div className="w-full h-full bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 flex items-center justify-center text-4xl font-black text-white">
-                           {adventurerName.charAt(0).toUpperCase()}
-                         </div>
-                       )}
-                     </div>
+                  <div className="relative">
+                    <div
+                      className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#0d0d1a] shadow-2xl shadow-black/60 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => avatarUrl && setViewingImage({ url: avatarUrl, alt: 'avatar' })}
+                    >
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 flex items-center justify-center text-4xl font-black text-white">
+                          {adventurerName.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
                     {isOwnProfile && (
                       <>
                         <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
@@ -380,7 +474,7 @@ export default function AdventurerProfile() {
                   </div>
 
                   {/* Action buttons */}
-                  <div className="flex gap-2 mt-4 flex-wrap">
+                  <div className="flex gap-2 mt-4 flex-wrap justify-end">
                     {isOwnProfile ? (
                       !editing ? (
                         <button onClick={() => setEditing(true)}
@@ -389,7 +483,7 @@ export default function AdventurerProfile() {
                         </button>
                       ) : (
                         <div className="flex gap-2">
-                          <button onClick={() => { setEditing(false); }}
+                          <button onClick={() => setEditing(false)}
                             className="px-3 py-2 rounded-xl border border-slate-700 text-slate-400 hover:text-slate-200 text-sm transition-all">
                             <X className="w-4 h-4" />
                           </button>
@@ -401,31 +495,43 @@ export default function AdventurerProfile() {
                       )
                     ) : (
                       <>
-                        <button onClick={handleFriendAction} disabled={friendTogglingLoading}
+                        <button onClick={handleFriendAction} disabled={friendTogglingLoading || !!blockRecord}
                           className={cn(
                             "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300",
                             !friendshipRecord
                               ? "bg-purple-700 border border-purple-500/50 text-white hover:bg-purple-600"
-                              : friendshipRecord.status === 'pending' && friendshipRecord.requester_email === currentUser?.email
+                              : friendshipRecord.status === 'pending' && friendshipRecord.requester_id === myProfile?.id
                               ? "bg-slate-800/60 border border-slate-600/50 text-slate-400 hover:border-red-600/50 hover:text-red-400"
                               : friendshipRecord.status === 'pending'
                               ? "bg-green-900/40 border border-green-600/50 text-green-300 hover:bg-green-800/60"
-                              : "bg-purple-900/40 border border-purple-700/50 text-purple-300 hover:bg-red-900/30 hover:border-red-700/50 hover:text-red-300"
+                              : "bg-purple-900/40 border border-purple-700/50 text-purple-300 hover:bg-red-900/30 hover:border-red-700/50 hover:text-red-300",
+                            blockRecord && "opacity-40 cursor-not-allowed"
                           )}>
                           {friendTogglingLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> :
                             !friendshipRecord ? <><UserPlus className="w-3.5 h-3.5" /> Add Friend</> :
-                            friendshipRecord.status === 'pending' && friendshipRecord.requester_email === currentUser?.email ? <><Clock className="w-3.5 h-3.5" /> Pending</> :
+                            friendshipRecord.status === 'pending' && friendshipRecord.requester_id === myProfile?.id ? <><Clock className="w-3.5 h-3.5" /> Pending</> :
                             friendshipRecord.status === 'pending' ? <><UserCheck className="w-3.5 h-3.5" /> Accept</> :
                             <><UserMinus className="w-3.5 h-3.5" /> Unfriend</>
                           }
                         </button>
-                        {/* Message button — only visible if friends */}
                         {canMessage && (
                           <Link to={createPageUrl('Messages')}
                             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-700/60 border border-indigo-500/50 text-indigo-200 hover:bg-indigo-600/70 text-sm font-bold transition-all">
                             <MessageCircle className="w-3.5 h-3.5" /> Message
                           </Link>
                         )}
+                        {/* Block button */}
+                        <button onClick={handleBlockToggle} disabled={blockLoading}
+                          className={cn(
+                            "flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border",
+                            blockRecord
+                              ? "bg-red-900/40 border-red-700/60 text-red-300 hover:bg-red-800/50"
+                              : "bg-slate-800/40 border-slate-700/40 text-slate-500 hover:border-red-700/40 hover:text-red-400"
+                          )}
+                          title={blockRecord ? "Unblock user" : "Block user"}>
+                          {blockLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserX className="w-3.5 h-3.5" />}
+                          <span className="hidden sm:inline">{blockRecord ? 'Unblock' : 'Block'}</span>
+                        </button>
                       </>
                     )}
                   </div>
@@ -434,16 +540,27 @@ export default function AdventurerProfile() {
                 {/* Name + title */}
                 {editing ? (
                   <input value={editName} onChange={e => setEditName(e.target.value)} maxLength={40}
-                    className="bg-transparent border-b-2 border-purple-500 text-amber-300 text-3xl font-black outline-none w-full mb-1"
-                    style={{ fontFamily: "'Caveat', cursive" }} />
+                    className="bg-transparent border-b-2 border-purple-500 text-amber-300 text-3xl font-black outline-none w-full mb-1" />
                 ) : (
-                  <h1 className="text-4xl font-black text-amber-300 leading-tight"
-                    style={{ fontFamily: "'Caveat', cursive" }}>{profile?.adventurer_name || adventurerName}</h1>
+                  <h1 className="text-4xl font-black text-amber-300 leading-tight">
+                    {profile?.adventurer_name || adventurerName}
+                  </h1>
                 )}
 
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                   <CharIcon className={cn("w-4 h-4", charClass.color)} />
                   <span className={cn("text-sm font-bold", charClass.color)}>{charClass.title}</span>
+                  {/* Privacy badge */}
+                  {!isOwnProfile && privacyLevel !== 'Public' && (
+                    <span className="flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full bg-slate-800/60 border border-slate-700/40 text-slate-500">
+                      <Lock className="w-2.5 h-2.5" /> {privacyLevel}
+                    </span>
+                  )}
+                  {mutualCount > 0 && !isOwnProfile && (
+                    <span className="flex items-center gap-1 text-[10px] text-purple-500">
+                      <Users className="w-3 h-3" /> {mutualCount} mutual
+                    </span>
+                  )}
                   {(profile?.location || editing) && (
                     <span className="flex items-center gap-1 text-[11px] text-slate-500">
                       <MapPin className="w-3 h-3" />
@@ -468,19 +585,30 @@ export default function AdventurerProfile() {
                   )}
                 </div>
 
-                {/* Favourite segment edit */}
+                {/* Edit: fav segment + privacy */}
                 {editing && (
-                  <div className="mt-2">
-                    <label className="text-[10px] text-purple-500 uppercase tracking-widest">Favourite Segment</label>
-                    <select value={editFavSegment} onChange={e => setEditFavSegment(e.target.value)}
-                      className="mt-1 w-full bg-purple-950/40 border border-purple-800/40 rounded-lg px-3 py-2 text-sm text-purple-100 focus:outline-none">
-                      <option value="">— None selected —</option>
-                      {SEGMENTS.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] text-purple-500 uppercase tracking-widest">Favourite Segment</label>
+                      <select value={editFavSegment} onChange={e => setEditFavSegment(e.target.value)}
+                        className="mt-1 w-full bg-purple-950/40 border border-purple-800/40 rounded-lg px-3 py-2 text-sm text-purple-100 focus:outline-none">
+                        <option value="">— None selected —</option>
+                        {SEGMENTS.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-purple-500 uppercase tracking-widest">Profile Privacy</label>
+                      <select value={editPrivacy} onChange={e => setEditPrivacy(e.target.value)}
+                        className="mt-1 w-full bg-purple-950/40 border border-purple-800/40 rounded-lg px-3 py-2 text-sm text-purple-100 focus:outline-none">
+                        <option value="Public">🌐 Public</option>
+                        <option value="Friends-Only">👥 Friends-Only</option>
+                        <option value="Private">🔒 Private</option>
+                      </select>
+                    </div>
                   </div>
                 )}
 
-                {/* ── ADMIN ACTION PANEL ── */}
+                {/* Admin Panel */}
                 {isCurrentUserAdmin && !isOwnProfile && (
                   <div className="mt-4 p-3 rounded-xl border border-amber-700/40 bg-amber-900/10">
                     <p className="text-[10px] text-amber-500 uppercase tracking-widest font-bold mb-2 flex items-center gap-1">
@@ -501,7 +629,7 @@ export default function AdventurerProfile() {
                       </button>
                     </div>
                     <p className="text-[9px] text-slate-600 mt-2">
-                      Role on record: <span className="text-slate-400 font-semibold">{profileUserRole}</span>
+                      Role: <span className="text-slate-400 font-semibold">{profileUserRole}</span>
                       {profile?.email && <> · Email: <span className="text-slate-400">{profile.email}</span></>}
                     </p>
                   </div>
@@ -511,8 +639,10 @@ export default function AdventurerProfile() {
                 <div className="flex items-center mt-4 border-t border-purple-900/30 pt-3 divide-x divide-purple-900/30">
                   <StatPill label="Quests" value={myQuests.length} color="text-red-400" />
                   <StatPill label="Comments" value={comments.length} color="text-cyan-400" />
-                  <StatPill label="Friends" value={followerCount + followingCount} color="text-amber-400" />
-                  <StatPill label="Quests" value={myQuests.length} color="text-purple-400" />
+                  <StatPill label="Friends" value={friendCount} color="text-amber-400" />
+                  {mutualCount > 0 && !isOwnProfile && (
+                    <StatPill label="Mutual" value={mutualCount} color="text-purple-400" />
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -544,7 +674,7 @@ export default function AdventurerProfile() {
             <AnimatePresence mode="wait">
               <motion.div key={activeTab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
 
-                {/* QUESTS TAB */}
+                {/* QUESTS TAB — always visible */}
                 {activeTab === 'quests' && (
                   <div className="space-y-2">
                     {myQuests.length === 0 ? (
@@ -560,7 +690,7 @@ export default function AdventurerProfile() {
                           className="flex items-center gap-3 p-4 rounded-xl border border-purple-900/30 bg-purple-950/20 hover:border-purple-700/50 transition-all">
                           <div className="w-1.5 h-10 rounded-full bg-gradient-to-b from-purple-500 to-indigo-600 shrink-0" />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-purple-100 truncate" style={{ fontFamily: "'Caveat', cursive", fontSize: '1rem' }}>{q.title}</p>
+                            <p className="text-sm font-bold text-purple-100 truncate">{q.title}</p>
                             <p className="text-[9px] text-slate-600 truncate">{q.segment} · DC {q.difficulty_class}</p>
                           </div>
                           <span className={cn("inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border", cfg.bg, cfg.color)}>
@@ -572,12 +702,9 @@ export default function AdventurerProfile() {
                   </div>
                 )}
 
-                {/* LORE DROPS TAB */}
+                {/* LORE DROPS — gated by privacy */}
                 {activeTab === 'lore' && !canSeePrivate && (
-                  <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-600 border border-purple-900/30 rounded-xl">
-                    <Shield className="w-10 h-10 opacity-20" />
-                    <p className="text-sm font-semibold text-slate-500">Add as friend to see more.</p>
-                  </div>
+                  <PrivacyGate privacyLevel={privacyLevel} canSee={false} message={privacyGateMessage} />
                 )}
                 {activeTab === 'lore' && canSeePrivate && (
                   <div className="space-y-2">
@@ -607,17 +734,14 @@ export default function AdventurerProfile() {
                   </div>
                 )}
 
-                {/* ABOUT TAB */}
+                {/* ABOUT — gated by privacy */}
                 {activeTab === 'about' && !canSeePrivate && (
-                  <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-600 border border-purple-900/30 rounded-xl">
-                    <Shield className="w-10 h-10 opacity-20" />
-                    <p className="text-sm font-semibold text-slate-500">Add as friend to see more.</p>
-                  </div>
+                  <PrivacyGate privacyLevel={privacyLevel} canSee={false} message={privacyGateMessage} />
                 )}
                 {activeTab === 'about' && canSeePrivate && (
                   <div className="space-y-4">
                     <div className="rounded-xl border border-purple-900/30 bg-purple-950/20 p-5 space-y-4">
-                      <h3 className="text-lg font-black text-amber-300" style={{ fontFamily: "'Caveat', cursive" }}>Character Sheet</h3>
+                      <h3 className="text-lg font-black text-amber-300">Character Sheet</h3>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div className="space-y-1">
@@ -666,7 +790,6 @@ export default function AdventurerProfile() {
                         </div>
                       )}
 
-                      {/* Milestone badges */}
                       <div className="pt-3 border-t border-purple-900/30">
                         <p className="text-[10px] text-purple-500 uppercase tracking-widest mb-3">Achievements</p>
                         <div className="flex flex-wrap gap-2">
@@ -674,7 +797,7 @@ export default function AdventurerProfile() {
                           {myQuests.length >= 5 && <span className="px-3 py-1 rounded-full bg-amber-900/30 border border-amber-700/40 text-amber-300 text-xs font-bold">🏆 5 Quests</span>}
                           {comments.length >= 1 && <span className="px-3 py-1 rounded-full bg-purple-900/30 border border-purple-700/40 text-purple-300 text-xs font-bold">📜 First Lore Drop</span>}
                           {comments.length >= 10 && <span className="px-3 py-1 rounded-full bg-cyan-900/30 border border-cyan-700/40 text-cyan-300 text-xs font-bold">💬 Lore Weaver</span>}
-                          {followerCount >= 5 && <span className="px-3 py-1 rounded-full bg-green-900/30 border border-green-700/40 text-green-300 text-xs font-bold">👥 Popular Hero</span>}
+                          {friendCount >= 5 && <span className="px-3 py-1 rounded-full bg-green-900/30 border border-green-700/40 text-green-300 text-xs font-bold">👥 Popular Hero</span>}
                           {myQuests.some(q => q.status === 'completed') && <span className="px-3 py-1 rounded-full bg-emerald-900/30 border border-emerald-700/40 text-emerald-300 text-xs font-bold">✅ Quest Completed</span>}
                           {myQuests.length === 0 && comments.length === 0 && (
                             <span className="text-xs text-slate-600 italic">Complete quests and drop lore to earn badges!</span>
