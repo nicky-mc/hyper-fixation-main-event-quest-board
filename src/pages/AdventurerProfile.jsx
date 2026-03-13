@@ -359,7 +359,7 @@ export default function AdventurerProfile() {
   }
 
   return (
-    <div className="min-h-screen"
+    <div className="min-h-screen flex"
       style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 30%, #080d1a 60%, #050a10 100%)' }}>
 
       <ImageViewerModal
@@ -384,10 +384,24 @@ export default function AdventurerProfile() {
       <div className="fixed inset-0 opacity-20 pointer-events-none"
         style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)', backgroundSize: '45px 45px' }} />
 
-      <div className="relative max-w-3xl mx-auto px-4 pt-6 pb-12">
+      {/* LCARS ELBOW STRUCTURE — Desktop only */}
+      <div className="hidden md:flex flex-col shrink-0 relative w-24 gap-3 p-3"
+        style={{ background: 'rgba(139,69,19,0.25)' }}>
+        {/* Top elbow — thick sweeping corner */}
+        <div className="absolute top-0 -right-6 w-24 h-24 rounded-br-[3rem]"
+          style={{ background: 'linear-gradient(135deg, rgba(217,119,6,0.4), rgba(139,69,19,0.3))' }} />
+        {/* Vertical color bar */}
+        <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full bg-gradient-to-b from-amber-500 via-red-500 to-purple-500" />
+      </div>
+
+      {/* GAP between elbow and content */}
+      <div className="hidden md:block w-3" style={{ background: 'transparent' }} />
+
+      {/* MAIN CONTENT AREA */}
+      <div className="flex-1 relative px-4 md:px-6 pt-6 md:pt-8 pb-12 overflow-y-auto">
 
         <Link to={createPageUrl('QuestBoard')}
-          className="inline-flex items-center gap-1.5 text-purple-500 hover:text-purple-300 text-xs mb-4 transition-colors">
+          className="font-lcars inline-flex items-center gap-1.5 text-purple-500 hover:text-purple-300 text-[10px] mb-4 transition-colors uppercase tracking-widest">
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Quest Board
         </Link>
 
@@ -498,9 +512,9 @@ export default function AdventurerProfile() {
                       <>
                         <button onClick={handleFriendAction} disabled={friendTogglingLoading || !!blockRecord}
                           className={cn(
-                            "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300",
+                            "font-lcars flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-black transition-all duration-300 uppercase tracking-widest",
                             !friendshipRecord
-                              ? "bg-purple-700 border border-purple-500/50 text-white hover:bg-purple-600"
+                              ? "bg-purple-700/70 border border-purple-500/40 text-white hover:bg-purple-600"
                               : friendshipRecord.status === 'pending' && friendshipRecord.requester_id === myProfile?.id
                               ? "bg-slate-800/60 border border-slate-600/50 text-slate-400 hover:border-red-600/50 hover:text-red-400"
                               : friendshipRecord.status === 'pending'
@@ -525,7 +539,7 @@ export default function AdventurerProfile() {
                         {/* Block button */}
                         <button onClick={handleBlockToggle} disabled={blockLoading}
                           className={cn(
-                            "flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border",
+                            "font-lcars flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-bold transition-all border uppercase tracking-widest",
                             blockRecord
                               ? "bg-red-900/40 border-red-700/60 text-red-300 hover:bg-red-800/50"
                               : "bg-slate-800/40 border-slate-700/40 text-slate-500 hover:border-red-700/40 hover:text-red-400"
