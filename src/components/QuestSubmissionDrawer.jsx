@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { X, Scroll, Dice6, Send, Sparkles, Fish, ImagePlus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,22 +37,15 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [adventurerId, setAdventurerId] = useState(null);
+  const [myProfile, setMyProfile] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        const u = await base44.auth.me();
-        if (!u) return;
-        const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
-        if (profiles.length > 0) {
-          setAdventurerId(profiles[0].id);
-          setFormData(f => ({ ...f, quest_giver: f.quest_giver || profiles[0].adventurer_name || '' }));
-        }
-      } catch (_) {}
-    };
-    init();
+    base44.auth.me().then(async u => {
+      if (!u) return;
+      const profs = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+      if (profs[0]) setMyProfile(profs[0]);
+    }).catch(() => {});
   }, []);
 
   const handleImageChange = (e) => {
@@ -85,12 +78,18 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
       setUploadingImage(false);
     }
 
-    const quest = await base44.entities.Quest.create({ ...formData, difficulty_class: dc, status: 'pending', ...(adventurerId && { adventurer_id: adventurerId }), ...(image_url && { image_url }) });
+    const quest = await base44.entities.Quest.create({
+      ...formData,
+      difficulty_class: dc,
+      status: 'pending',
+      ...(image_url && { image_url }),
+      ...(myProfile && { adventurer_id: myProfile.id }),
+    });
 
     // Log to Activity Stream
     await base44.entities.Activity.create({
       type: 'quest_submitted',
-      adventurer_id: adventurerId || undefined,
+      adventurer_id: myProfile?.id,
       quest_id: quest.id,
       quest_title: formData.title,
       content: formData.description,
