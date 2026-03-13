@@ -258,52 +258,55 @@ export default function Layout({ children, currentPageName }) {
         <SidebarContent onNav={() => {}} />
       </motion.aside>
 
-      {/* ── MOBILE HEADER ── */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-50 h-14 flex items-center justify-between px-4"
+      {/* ── MOBILE TOP BAR (slim, just logo) ── */}
+      <div className="md:hidden fixed top-0 inset-x-0 z-50 h-12 flex items-center justify-center px-4"
         style={{
-          backdropFilter: 'blur(15px)',
-          WebkitBackdropFilter: 'blur(15px)',
-          background: 'rgba(8, 6, 24, 0.85)',
-          borderBottom: '1px solid rgba(239,68,68,0.18)',
+          backdropFilter: 'blur(20px) saturate(1.8)',
+          WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
+          background: 'rgba(8, 6, 24, 0.75)',
+          borderBottom: '1px solid rgba(239,68,68,0.15)',
         }}>
         <div className="h-0.5 absolute inset-x-0 top-0"
-          style={{ background: 'linear-gradient(90deg, transparent, #dc2626, #fbbf24, #dc2626, transparent)' }} />
+          style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)' }} />
         <Link to={createPageUrl('QuestBoard')} className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full overflow-hidden"
-            style={{ border: '1px solid rgba(251,191,36,0.4)', boxShadow: '0 0 8px rgba(251,191,36,0.2)' }}>
+            style={{ border: '1px solid rgba(255,191,0,0.5)', boxShadow: '0 0 10px rgba(255,191,0,0.25)' }}>
             <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="font-black text-base text-amber-400" style={{ fontFamily: "'Orbitron', sans-serif" }}>HME</span>
+          <span className="font-black text-base" style={{ fontFamily: "'Orbitron', sans-serif", background: 'linear-gradient(90deg, #CC0000, #FFBF00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>HME</span>
         </Link>
-        <button onClick={() => setMobileOpen(o => !o)} className="p-2 text-slate-400 hover:text-red-400 transition-all duration-500">
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
       </div>
 
-      {/* Mobile slide-in menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="md:hidden fixed inset-0 z-40 bg-black/60" onClick={() => setMobileOpen(false)} />
-            <motion.div
-              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-              className="md:hidden fixed left-0 top-0 bottom-0 w-64 z-50 flex flex-col rounded-r-2xl overflow-hidden"
-              style={{
-                backdropFilter: 'blur(15px)',
-                background: 'rgba(8, 6, 24, 0.95)',
-                border: '1px solid rgba(239,68,68,0.2)',
-              }}>
-              <div className="h-0.5 absolute inset-x-0 top-0"
-                style={{ background: 'linear-gradient(90deg, transparent, #dc2626, #fbbf24, #dc2626, transparent)' }} />
-              <div className="pt-4">
-                <SidebarContent onNav={() => setMobileOpen(false)} />
+      {/* ── MOBILE FLOATING BOTTOM DOCK ── */}
+      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50 flex items-center justify-around px-3 py-2 rounded-2xl"
+        style={{
+          backdropFilter: 'blur(24px) saturate(2)',
+          WebkitBackdropFilter: 'blur(24px) saturate(2)',
+          background: 'rgba(8, 6, 24, 0.82)',
+          border: '1px solid rgba(204,0,0,0.25)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(204,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05)',
+        }}>
+        {NAV_ITEMS.slice(0, 6).map(({ label, page, icon: Icon }) => {
+          const active = currentPageName === page;
+          const badge = page === 'Messages' ? unreadCount : 0;
+          return (
+            <Link key={page} to={createPageUrl(page)}
+              className="relative flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl transition-all duration-300"
+              style={active ? { color: '#FFBF00', filter: 'drop-shadow(0 0 6px rgba(255,191,0,0.7))' } : { color: 'rgba(148,163,184,0.7)' }}>
+              <div className="relative">
+                <Icon className="w-5 h-5" />
+                {badge > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[8px] font-black rounded-full w-3.5 h-3.5 flex items-center justify-center">
+                    {badge > 9 ? '9+' : badge}
+                  </span>
+                )}
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+              <span className="text-[8px] font-semibold tracking-wide">{label.split(' ')[0]}</span>
+              {active && <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-amber-400" />}
+            </Link>
+          );
+        })}
+      </div>
 
       {/* ── MAIN CONTENT ── */}
       <main className="flex-1 relative z-10 md:pl-24 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen">
