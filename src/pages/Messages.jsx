@@ -295,13 +295,14 @@ export default function Messages() {
                )}
                style={{ borderBottom: '1px solid rgba(88,28,220,0.08)' }}>
                <div className="relative shrink-0">
-                 <Avatar name={u2.full_name || u2.id} size="md" />
-                 {unread > 0 && (
-                   <span className="absolute -top-1 -right-1 bg-amber-500 text-black text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center">
-                     {unread > 9 ? '9+' : unread}
-                   </span>
-                 )}
-               </div>
+                  <Avatar name={u2.full_name || u2.id} size="md" />
+                  <OnlineDot lastActive={partnerProfiles[u2.id]?.last_active} className="absolute bottom-0 right-0" />
+                  {unread > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-amber-500 text-black text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center">
+                      {unread > 9 ? '9+' : unread}
+                    </span>
+                  )}
+                </div>
                <div className="flex-1 min-w-0">
                  <div className="flex items-center justify-between gap-1">
                    <span className={cn("text-sm font-semibold truncate", unread > 0 ? "text-white" : "text-purple-200")}>
