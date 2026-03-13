@@ -281,6 +281,11 @@ export default function Layout({ children, currentPageName }) {
           </div>
           <span className="font-black text-base" style={{ background: 'linear-gradient(90deg, #CC0000, #FFBF00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>HME</span>
         </Link>
+        {profile && (
+          <div className="absolute right-3">
+            <NotificationCenter profile={profile} />
+          </div>
+        )}
       </div>
 
       {/* ── MOBILE FLOATING BOTTOM DOCK ── */}
