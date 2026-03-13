@@ -394,7 +394,7 @@ export default function AdventurerProfile() {
         <div className="flex-1 flex flex-col min-w-0 gap-3">
           
           {/* Top Horizontal Arm */}
-          <div className="hidden md:flex h-12 bg-amber-500 rounded-r-[4rem] rounded-tl-[2rem] items-center px-6 shrink-0">
+          <div className="hidden md:flex sticky top-24 z-40 h-12 bg-amber-500 rounded-r-[4rem] rounded-tl-[2rem] items-center px-6 shrink-0">
             <span className="font-lcars text-black text-xl font-black tracking-widest">PERSONNEL RECORD</span>
           </div>
 
