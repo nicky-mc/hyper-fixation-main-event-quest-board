@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Send, Loader2, MessageCircle, ArrowLeft, Smile, Paperclip, Search } from 'lucide-react';
 import OnlineDot from '@/components/OnlineDot';
@@ -8,8 +8,7 @@ import { cn } from '@/lib/utils';
 function Avatar({ name, src, size = 'md' }) {
   const sizes = { sm: 'w-8 h-8 text-xs', md: 'w-10 h-10 text-sm', lg: 'w-12 h-12 text-base' };
   return (
-    <div className={cn("rounded-full shrink-0 flex items-center justify-center font-black text-white overflow-hidden",
-      "bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900", sizes[size])}>
+    <div className={cn("rounded-full shrink-0 flex items-center justify-center font-black text-white overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900", sizes[size])}>
       {src ? <img src={src} alt={name} className="w-full h-full object-cover" /> : (name || '?').charAt(0).toUpperCase()}
     </div>
   );
@@ -18,10 +17,10 @@ function Avatar({ name, src, size = 'md' }) {
 function SkeletonConvo() {
   return (
     <div className="flex items-center gap-3 px-4 py-3 animate-pulse">
-      <div className="w-10 h-10 rounded-full bg-purple-900/40 shrink-0" />
+      <div className="w-10 h-10 rounded-full bg-white/10 shrink-0" />
       <div className="flex-1 space-y-1.5">
-        <div className="h-3 bg-purple-900/40 rounded w-1/2" />
-        <div className="h-2.5 bg-purple-900/30 rounded w-3/4" />
+        <div className="h-3 bg-white/10 rounded w-1/2" />
+        <div className="h-2.5 bg-white/5 rounded w-3/4" />
       </div>
     </div>
   );
@@ -42,14 +41,14 @@ export default function Messages() {
   const [profile, setProfile] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [partnerProfiles, setPartnerProfiles] = useState({}); // id -> AdventurerProfile
-  const [blockedIds, setBlockedIds] = useState(new Set()); // IDs I've blocked or who blocked me
+  const [partnerProfiles, setPartnerProfiles] = useState({});
+  const [blockedIds, setBlockedIds] = useState(new Set());
   const [selectedUser, setSelectedUser] = useState(null);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [search, setSearch] = useState('');
-  const [mobileView, setMobileView] = useState('list'); // 'list' | 'chat'
+  const [mobileView, setMobileView] = useState('list');
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
   const textareaRef = useRef(null);
@@ -64,7 +63,6 @@ export default function Messages() {
           if (prof) {
             setProfile(prof);
             await loadData(prof);
-            // Load block lists (both directions)
             const [myBlocks, theirBlocks] = await Promise.all([
               base44.entities.BlockedUser.filter({ blocker_id: prof.id }),
               base44.entities.BlockedUser.filter({ blocked_id: prof.id }),
@@ -74,8 +72,6 @@ export default function Messages() {
               ...theirBlocks.map(b => b.blocker_id),
             ]);
             setBlockedIds(ids);
-          } else {
-            console.warn('Profile not found for user:', user.email);
           }
         }
       } catch (e) {
@@ -90,8 +86,7 @@ export default function Messages() {
   const loadData = async (prof) => {
     const isAdmin = prof.role === 'admin';
     let msgs = await base44.entities.Message.list('-created_date', 500);
-    
-    // Migrate old messages with email fields to new ID-based format
+
     msgs = await Promise.all(msgs.map(async (m) => {
       if (!m.sender_id && m.sender_email) {
         const senderProf = (await base44.entities.AdventurerProfile.filter({ email: m.sender_email }))[0];
@@ -102,27 +97,19 @@ export default function Messages() {
             sender_name: senderProf.adventurer_name,
             recipient_id: recipProf.id,
             recipient_name: recipProf.adventurer_name,
-          }).then(() => ({
-            ...m,
-            sender_id: senderProf.id,
-            sender_name: senderProf.adventurer_name,
-            recipient_id: recipProf.id,
-            recipient_name: recipProf.adventurer_name,
-          }));
+          }).then(() => ({ ...m, sender_id: senderProf.id, sender_name: senderProf.adventurer_name, recipient_id: recipProf.id, recipient_name: recipProf.adventurer_name }));
         }
       }
       return m;
     }));
-    
+
     setMessages(msgs);
 
-    // Mark my unread messages as read
     const unread = msgs.filter(m => m.recipient_id === prof.id && !m.read);
     for (const m of unread) {
       await base44.entities.Message.update(m.id, { read: true });
     }
 
-    // Derive conversation partners from messages (works for all users, admins see everyone)
     const partnerMap = {};
     msgs.forEach(m => {
       const addPartner = (partId, name) => {
@@ -141,7 +128,6 @@ export default function Messages() {
 
     const users = Object.values(partnerMap);
     setAllUsers(users);
-    // Fetch AdventurerProfiles for online status
     if (users.length > 0) {
       const allProfs = await base44.entities.AdventurerProfile.list('adventurer_name', 200);
       const profMap = {};
@@ -174,7 +160,6 @@ export default function Messages() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, selectedUser]);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -185,11 +170,9 @@ export default function Messages() {
   const selectUser = (u2) => {
     setSelectedUser(u2);
     setMobileView('chat');
-    // Mark messages from this user as read
     setMessages(prev => prev.map(m =>
       m.sender_id === u2.id && m.recipient_id === profile?.id && !m.read
-        ? { ...m, read: true }
-        : m
+        ? { ...m, read: true } : m
     ));
   };
 
@@ -197,9 +180,7 @@ export default function Messages() {
   const conversation = selectedUser
     ? messages.filter(m => {
         const involves = (id) => m.sender_id === id || m.recipient_id === id;
-        if (isAdmin && !involves(profile.id)) {
-          return involves(selectedUser.id);
-        }
+        if (isAdmin && !involves(profile.id)) return involves(selectedUser.id);
         return (
           (m.sender_id === profile.id && m.recipient_id === selectedUser.id) ||
           (m.sender_id === selectedUser.id && m.recipient_id === profile.id)
@@ -238,7 +219,6 @@ export default function Messages() {
     (u2.full_name || u2.id).toLowerCase().includes(search.toLowerCase())
   );
 
-  // Sort by last message time
   const sortedUsers = [...filteredUsers].sort((a, b) => {
     const la = getLastMsg(a.id);
     const lb = getLastMsg(b.id);
@@ -258,8 +238,8 @@ export default function Messages() {
   const ConversationList = (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-4 pt-5 pb-3 shrink-0" style={{ borderBottom: '1px solid rgba(139,92,246,0.15)' }}>
-        <h2 className="text-xl font-black text-amber-300 mb-3" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '1.1rem' }}>
+      <div className="px-4 pt-5 pb-3 shrink-0 border-b border-white/10">
+        <h2 className="text-lg font-black text-amber-400 mb-3 uppercase tracking-widest">
           📬 Tavern Mail
         </h2>
         <div className="relative">
@@ -268,8 +248,7 @@ export default function Messages() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search adventurers..."
-            className="w-full pl-8 pr-3 py-2 rounded-xl text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-600"
-            style={{ background: 'rgba(88,28,220,0.08)', border: '1px solid rgba(139,92,246,0.2)', fontSize: '0.8rem' }}
+            className="w-full pl-8 pr-3 py-2 rounded-xl text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-600 bg-black/40 border border-white/10 backdrop-blur-md"
           />
         </div>
       </div>
@@ -279,46 +258,47 @@ export default function Messages() {
         {loading ? (
           <>{[1,2,3].map(i => <SkeletonConvo key={i} />)}</>
         ) : sortedUsers.length === 0 ? (
-           <div className="flex flex-col items-center justify-center h-full gap-3 py-16 text-slate-600">
-             <MessageCircle className="w-8 h-8 opacity-30" />
-             <p className="text-xs text-center px-4">No adventurers to message yet.<br />Send a message from someone's profile!</p>
-           </div>
-         ) : sortedUsers.map(u2 => {
-           const unread = getUnread(u2.id);
-           const last = getLastMsg(u2.id);
-           const isActive = selectedUser?.id === u2.id;
-           return (
-             <button key={u2.id} onClick={() => selectUser(u2)}
-               className={cn(
-                 "w-full flex items-center gap-3 px-4 py-3 transition-all text-left min-h-[64px]",
-                 isActive ? "bg-purple-800/25" : "hover:bg-purple-900/15"
-               )}
-               style={{ borderBottom: '1px solid rgba(88,28,220,0.08)' }}>
-               <div className="relative shrink-0">
-                  <Avatar name={u2.full_name || u2.id} size="md" />
-                  <OnlineDot lastActive={partnerProfiles[u2.id]?.last_active} className="absolute bottom-0 right-0" />
-                  {unread > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-amber-500 text-black text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center">
-                      {unread > 9 ? '9+' : unread}
-                    </span>
-                  )}
+          <div className="flex flex-col items-center justify-center h-full gap-3 py-16 text-slate-600">
+            <MessageCircle className="w-8 h-8 opacity-30" />
+            <p className="text-xs text-center px-4">No adventurers to message yet.<br />Send a message from someone's profile!</p>
+          </div>
+        ) : sortedUsers.map(u2 => {
+          const unread = getUnread(u2.id);
+          const last = getLastMsg(u2.id);
+          const isActive = selectedUser?.id === u2.id;
+          return (
+            <button key={u2.id} onClick={() => selectUser(u2)}
+              className={cn(
+                "w-full flex items-center gap-3 px-4 py-3 transition-all text-left min-h-[64px] border-b border-white/5",
+                isActive
+                  ? "bg-purple-900/40 border-l-4 border-l-amber-400"
+                  : "hover:bg-white/5 border-l-4 border-l-transparent"
+              )}>
+              <div className="relative shrink-0">
+                <Avatar name={u2.full_name || u2.id} size="md" />
+                <OnlineDot lastActive={partnerProfiles[u2.id]?.last_active} className="absolute bottom-0 right-0" />
+                {unread > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-amber-500 text-black text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center">
+                    {unread > 9 ? '9+' : unread}
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-1">
+                  <span className={cn("text-sm font-semibold truncate", unread > 0 ? "text-white" : "text-purple-200")}>
+                    {u2.full_name || u2.id}
+                  </span>
+                  {last && <span className="text-[10px] text-slate-500 shrink-0 uppercase tracking-wider">{formatTime(last.created_date)}</span>}
                 </div>
-               <div className="flex-1 min-w-0">
-                 <div className="flex items-center justify-between gap-1">
-                   <span className={cn("text-sm font-semibold truncate", unread > 0 ? "text-white" : "text-purple-200")}>
-                     {u2.full_name || u2.id}
-                   </span>
-                   {last && <span className="text-[10px] text-slate-600 shrink-0">{formatTime(last.created_date)}</span>}
-                 </div>
-                 {last && (
-                   <p className={cn("text-xs truncate mt-0.5", unread > 0 ? "text-purple-300 font-medium" : "text-slate-600")}>
-                     {last.sender_id === profile?.id ? 'You: ' : ''}{last.content}
-                   </p>
-                 )}
-               </div>
-             </button>
-           );
-         })}
+                {last && (
+                  <p className={cn("text-xs truncate mt-0.5", unread > 0 ? "text-purple-300 font-medium" : "text-slate-600")}>
+                    {last.sender_id === profile?.id ? 'You: ' : ''}{last.content}
+                  </p>
+                )}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -327,25 +307,23 @@ export default function Messages() {
     <div className="flex flex-col h-full">
       {/* Chat Header */}
       {selectedUser ? (
-        <div className="flex items-center gap-3 px-4 py-3 shrink-0"
-          style={{ borderBottom: '1px solid rgba(139,92,246,0.15)', background: 'rgba(8,6,24,0.6)', minHeight: 64 }}>
+        <div className="flex items-center gap-3 px-4 py-3 shrink-0 border-b border-white/10 bg-black/40 backdrop-blur-md min-h-[64px]">
           <button onClick={() => setMobileView('list')}
             className="md:hidden p-2 -ml-1 text-purple-400 hover:text-purple-200 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <Avatar name={selectedUser.full_name || selectedUser.id} size="md" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-purple-100 truncate">{selectedUser.full_name || selectedUser.id}</p>
+            <p className="text-sm font-bold text-purple-300 truncate">{selectedUser.full_name || selectedUser.id}</p>
             {isAdmin && !conversation.some(m => m.sender_id === profile.id || m.recipient_id === profile.id) ? (
-              <p className="text-[10px] text-amber-400 flex items-center gap-1">👁 Admin moderation view</p>
+              <p className="text-[10px] text-amber-400 uppercase tracking-widest">👁 Admin view</p>
             ) : (
-              <p className="text-[10px] text-green-400">Online</p>
+              <p className="text-[10px] text-green-400 uppercase tracking-widest">Online</p>
             )}
           </div>
         </div>
       ) : (
-        <div className="hidden md:flex items-center px-4 py-3 shrink-0"
-          style={{ borderBottom: '1px solid rgba(139,92,246,0.15)', minHeight: 64 }}>
+        <div className="hidden md:flex items-center px-4 py-3 shrink-0 border-b border-white/10 min-h-[64px]">
           <span className="text-sm text-slate-600">Select a conversation</span>
         </div>
       )}
@@ -354,8 +332,7 @@ export default function Messages() {
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
         {!selectedUser ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-600">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center"
-              style={{ background: 'rgba(88,28,220,0.1)', border: '1px solid rgba(139,92,246,0.2)' }}>
+            <div className="w-20 h-20 rounded-2xl flex items-center justify-center bg-black/40 border border-white/10 backdrop-blur-md">
               <MessageCircle className="w-8 h-8 opacity-40" />
             </div>
             <div className="text-center">
@@ -377,8 +354,7 @@ export default function Messages() {
                 <div key={m.id}>
                   {showTimestamp && (
                     <div className="flex justify-center my-3">
-                      <span className="text-[10px] text-slate-600 px-3 py-1 rounded-full"
-                        style={{ background: 'rgba(88,28,220,0.1)' }}>
+                      <span className="text-[10px] text-slate-500 px-3 py-1 rounded-full bg-black/40 border border-white/10 uppercase tracking-widest">
                         {formatTime(m.created_date)}
                       </span>
                     </div>
@@ -392,17 +368,9 @@ export default function Messages() {
                     <div className={cn(
                       "max-w-[72%] sm:max-w-[60%] px-4 py-2.5 text-sm leading-relaxed",
                       isMe
-                        ? "text-white rounded-2xl rounded-br-md"
-                        : "text-slate-200 rounded-2xl rounded-bl-md"
-                    )}
-                    style={isMe ? {
-                      background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-                      boxShadow: '0 2px 12px rgba(124,58,237,0.4)',
-                    } : {
-                      background: 'rgba(30,20,50,0.8)',
-                      border: '1px solid rgba(139,92,246,0.2)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                    }}>
+                        ? "text-white rounded-2xl rounded-br-md bg-gradient-to-br from-purple-700 to-indigo-900 shadow-md border border-purple-500/30"
+                        : "text-slate-200 rounded-2xl rounded-bl-md bg-white/10 border border-white/5"
+                    )}>
                       {m.content}
                     </div>
                     {isMe && <Avatar name={profile.adventurer_name || profile.id} size="sm" />}
@@ -417,8 +385,7 @@ export default function Messages() {
 
       {/* Input Footer */}
       {selectedUser && (
-        <div className="shrink-0 px-3 py-3"
-          style={{ borderTop: '1px solid rgba(139,92,246,0.15)', background: 'rgba(8,6,24,0.7)' }}>
+        <div className="shrink-0 px-3 py-3 border-t border-white/10 bg-black/40 backdrop-blur-md">
           <div className="flex items-end gap-2">
             <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-purple-400 transition-colors rounded-xl shrink-0">
               <Smile className="w-5 h-5" />
@@ -433,52 +400,36 @@ export default function Messages() {
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
               placeholder="Type a message..."
               rows={1}
-              className="flex-1 resize-none rounded-2xl px-4 py-2.5 text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all"
-              style={{
-                background: 'rgba(88,28,220,0.1)',
-                border: '1px solid rgba(139,92,246,0.25)',
-                maxHeight: '120px',
-                fontFamily: "'Inter', system-ui, sans-serif",
-                lineHeight: '1.5',
-              }}
+              className="flex-1 resize-none rounded-2xl px-4 py-2.5 text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all bg-black/40 border border-white/10 backdrop-blur-md"
+              style={{ maxHeight: '120px', lineHeight: '1.5' }}
             />
             <button
               onClick={sendMessage}
               disabled={sending || !input.trim()}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-2xl transition-all shrink-0 disabled:opacity-40"
-              style={{
-                background: input.trim() ? 'linear-gradient(135deg, #7c3aed, #4f46e5)' : 'rgba(88,28,220,0.2)',
-                boxShadow: input.trim() ? '0 2px 12px rgba(124,58,237,0.4)' : 'none',
-              }}>
+              className={cn(
+                "min-w-[44px] min-h-[44px] flex items-center justify-center rounded-2xl transition-all shrink-0 disabled:opacity-40",
+                input.trim()
+                  ? "bg-gradient-to-br from-purple-700 to-indigo-900 shadow-md border border-purple-500/30"
+                  : "bg-white/5 border border-white/10"
+              )}>
               {sending ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Send className="w-4 h-4 text-white" />}
             </button>
           </div>
-          <p className="text-[10px] text-slate-700 text-center mt-1.5">Enter to send · Shift+Enter for new line</p>
+          <p className="text-[10px] text-slate-600 text-center mt-1.5 uppercase tracking-widest">Enter to send · Shift+Enter for new line</p>
         </div>
       )}
     </div>
   );
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] md:h-screen flex flex-col"
-      style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 50%, #050a10 100%)' }}>
-
-      {/* Desktop: dual-column layout */}
-      <div className="flex-1 flex overflow-hidden md:pt-0">
-
-        {/* Sidebar — always visible on desktop, only shown on mobile when mobileView==='list' */}
+    <div className="h-[calc(100vh-3.5rem)] md:h-screen flex flex-col">
+      <div className="flex-1 flex overflow-hidden">
         <div className={cn(
-          "w-full md:w-[300px] md:flex flex-col shrink-0",
+          "w-full md:w-[300px] md:flex flex-col shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-md",
           mobileView === 'list' ? 'flex' : 'hidden md:flex'
-        )}
-        style={{
-          borderRight: '1px solid rgba(139,92,246,0.15)',
-          background: 'rgba(8,6,24,0.5)',
-        }}>
+        )}>
           {ConversationList}
         </div>
-
-        {/* Chat Panel */}
         <div className={cn(
           "flex-1 flex-col min-w-0",
           mobileView === 'chat' ? 'flex' : 'hidden md:flex'
