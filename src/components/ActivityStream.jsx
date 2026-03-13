@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Send, X, Trash2, Music, Video, Image } from 'lucide-react';
+import { Loader2, Send, X, Trash2, Music, Video, Image, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
@@ -8,18 +8,15 @@ import { createPageUrl } from '@/utils';
 
 function MediaPreview({ url, type }) {
   if (!url) return null;
-  if (type === 'video') return (
-    <video src={url} controls className="mt-2 rounded-lg w-full max-h-48 object-contain bg-black/40" />
-  );
-  if (type === 'audio') return (
-    <audio src={url} controls className="mt-2 w-full rounded-lg" />
-  );
+  if (type === 'video') return <video src={url} controls className="mt-2 rounded-lg w-full max-h-48 object-contain bg-black/40" />;
+  if (type === 'audio') return <audio src={url} controls className="mt-2 w-full rounded-lg" />;
   return <img src={url} alt="" className="mt-2 rounded-lg max-h-44 object-cover w-full" />;
 }
 
 function Avatar({ name, url, size = 7 }) {
   return url ? (
-    <img src={url} alt={name} className={`w-${size} h-${size} rounded-full object-cover shrink-0`} style={{ border: '2px solid rgba(255,191,0,0.35)', boxShadow: '0 0 10px rgba(255,191,0,0.2)' }} />
+    <img src={url} alt={name} className={`w-${size} h-${size} rounded-full object-cover shrink-0`}
+      style={{ border: '2px solid rgba(255,191,0,0.35)', boxShadow: '0 0 10px rgba(255,191,0,0.2)' }} />
   ) : (
     <div className={`w-${size} h-${size} rounded-full bg-gradient-to-br from-purple-700 to-indigo-900 border border-purple-600/40 flex items-center justify-center text-[11px] font-black text-purple-200 shrink-0`}>
       {(name || '?').charAt(0).toUpperCase()}
@@ -27,8 +24,83 @@ function Avatar({ name, url, size = 7 }) {
   );
 }
 
-function PostItem({ post, user, onDelete, profiles }) {
+function PostComments({ postId, myProfile, profiles }) {
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [text, setText] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    base44.entities.ActivityComment.filter({ activity_id: postId }, 'created_date').then(data => {
+      setComments(data);
+      setLoading(false);
+    });
+    const unsub = base44.entities.ActivityComment.subscribe(e => {
+      if (e.data?.activity_id !== postId) return;
+      if (e.type === 'create') setComments(prev => [...prev, e.data]);
+    });
+    return unsub;
+  }, [postId]);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!text.trim() || !myProfile) return;
+    setSubmitting(true);
+    await base44.entities.ActivityComment.create({
+      activity_id: postId,
+      adventurer_id: myProfile.id,
+      content: text.trim(),
+    });
+    setText('');
+    setSubmitting(false);
+  };
+
+  return (
+    <div className="border-t border-purple-900/30 px-4 py-3 space-y-2">
+      {loading ? (
+        <Loader2 className="w-3.5 h-3.5 text-purple-600 animate-spin mx-auto" />
+      ) : comments.length === 0 ? (
+        <p className="text-[10px] text-slate-600 text-center">No replies yet</p>
+      ) : (
+        <div className="space-y-2">
+          {comments.map(c => {
+            const prof = Object.values(profiles).find(p => p.id === c.adventurer_id);
+            const name = prof?.adventurer_name || 'Adventurer';
+            return (
+              <div key={c.id} className="flex gap-2">
+                <Avatar name={name} url={prof?.avatar_url} size={5} />
+                <div className="flex-1 bg-purple-950/40 border border-purple-900/30 rounded-lg px-2.5 py-1.5">
+                  <p className="text-[10px] font-bold text-purple-300">{name}</p>
+                  <p className="text-[11px] text-slate-300 leading-relaxed">{c.content}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {myProfile && (
+        <form onSubmit={submit} className="flex gap-1.5 mt-2">
+          <input
+            value={text}
+            onChange={e => setText(e.target.value)}
+            placeholder="Reply..."
+            maxLength={200}
+            className="flex-1 px-2.5 py-1.5 rounded-lg bg-[#0d0820]/70 border border-purple-800/40 text-purple-100 placeholder:text-slate-600 text-[11px] focus:outline-none focus:border-purple-500"
+          />
+          <button type="submit" disabled={submitting || !text.trim()}
+            className="p-1.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white border border-purple-500/40 transition-all disabled:opacity-40">
+            {submitting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
+
+function PostItem({ post, user, myProfile, onDelete, profiles }) {
+  const [showComments, setShowComments] = useState(false);
   const profile = profiles?.[post.author_name];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
@@ -37,6 +109,7 @@ function PostItem({ post, user, onDelete, profiles }) {
       className="rounded-xl overflow-hidden hover-lift"
       style={{ background: 'rgba(8,6,24,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.06)' }}
     >
+      {/* Post header */}
       <div className="px-4 py-2.5 flex items-center justify-between border-b border-purple-900/30">
         <div className="flex items-center gap-2">
           <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(post.author_name || '')}`}>
@@ -57,36 +130,76 @@ function PostItem({ post, user, onDelete, profiles }) {
           </button>
         )}
       </div>
+
+      {/* Post body */}
       <div className="px-4 py-3">
         <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">{post.content}</p>
         <MediaPreview url={post.image_url} type={post.media_type} />
       </div>
+
+      {/* Comment toggle */}
+      <button
+        onClick={() => setShowComments(v => !v)}
+        className="w-full flex items-center gap-1.5 px-4 py-2 text-[10px] text-purple-600 hover:text-purple-400 hover:bg-purple-900/20 transition-colors border-t border-purple-900/20"
+      >
+        <MessageCircle className="w-3 h-3" />
+        Reply
+        {showComments ? <ChevronUp className="w-3 h-3 ml-auto" /> : <ChevronDown className="w-3 h-3 ml-auto" />}
+      </button>
+
+      {/* Comments section */}
+      <AnimatePresence>
+        {showComments && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <PostComments postId={post.id} myProfile={myProfile} profiles={profiles} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
 
 export default function ActivityStream() {
-  const [posts, setPosts]       = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [user, setUser]         = useState(null);
-  const [content, setContent]   = useState('');
-  const [mediaUrl, setMediaUrl] = useState('');
+  const [posts, setPosts]         = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const [user, setUser]           = useState(null);
+  const [myProfile, setMyProfile] = useState(null);
+  const [content, setContent]     = useState('');
+  const [mediaUrl, setMediaUrl]   = useState('');
   const [mediaType, setMediaType] = useState('image');
   const [uploading, setUploading] = useState(false);
-  const [posting, setPosting]   = useState(false);
-  const [profiles, setProfiles] = useState({});
+  const [posting, setPosting]     = useState(false);
+  const [profiles, setProfiles]   = useState({}); // adventurer_name -> profile
   const imageRef = useRef(null);
   const videoRef = useRef(null);
   const audioRef = useRef(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(async u => {
+      setUser(u);
+      if (u) {
+        const profs = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+        if (profs[0]) setMyProfile(profs[0]);
+      }
+    }).catch(() => {});
+
     loadPosts();
+
     base44.entities.AdventurerProfile.list('adventurer_name', 200).then(data => {
       const map = {};
-      data.forEach(p => { map[p.adventurer_name] = p; });
+      data.forEach(p => {
+        map[p.adventurer_name] = p;
+        // Also index by id for comment lookups
+        map[p.id] = p;
+      });
       setProfiles(map);
     });
+
     const unsub = base44.entities.NewsPost.subscribe(event => {
       if (event.type === 'create') setPosts(p => [event.data, ...p]);
       if (event.type === 'delete') setPosts(p => p.filter(x => x.id !== event.id));
@@ -142,8 +255,6 @@ export default function ActivityStream() {
             maxLength={500} rows={2}
             className="w-full px-3 py-2 rounded-lg bg-[#0d0820]/70 border border-purple-800/40 text-purple-100 placeholder:text-slate-600 text-xs focus:outline-none focus:border-purple-500 resize-none"
           />
-
-          {/* Media preview */}
           {mediaUrl && (
             <div className="relative rounded-lg overflow-hidden border border-purple-700/30">
               <MediaPreview url={mediaUrl} type={mediaType} />
@@ -153,8 +264,6 @@ export default function ActivityStream() {
               </button>
             </div>
           )}
-
-          {/* Upload buttons + send */}
           <div className="flex items-center gap-1.5">
             <input ref={imageRef} type="file" accept="image/*" className="hidden" onChange={e => handleUpload(e, 'image')} />
             <input ref={videoRef} type="file" accept="video/*" className="hidden" onChange={e => handleUpload(e, 'video')} />
@@ -196,7 +305,9 @@ export default function ActivityStream() {
           <p className="text-center text-xs text-slate-600 py-6">No posts yet — be the first!</p>
         ) : (
           <AnimatePresence initial={false}>
-            {posts.map(p => <PostItem key={p.id} post={p} user={user} onDelete={deletePost} profiles={profiles} />)}
+            {posts.map(p => (
+              <PostItem key={p.id} post={p} user={user} myProfile={myProfile} onDelete={deletePost} profiles={profiles} />
+            ))}
           </AnimatePresence>
         )}
       </div>
