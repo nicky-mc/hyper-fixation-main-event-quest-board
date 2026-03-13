@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── EXPERT SPOUSES CUSTOM FONTS ── */
+@font-face {
+  font-family: 'ITC Serif Gothic';
+  /* Using %20 to safely handle the space in the filename */
+  src: url('/fonts/ITC%20SerifGotLig.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Univers Ultra Condensed';
+  src: url('/fonts/univers-ultra-condensed.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@400;600;700;800;900&family=Exo+2:wght@400;600;700;800;900&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=Cormorant+SC:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -37,6 +57,10 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --command-red: #CC0000;
+    --command-red-bright: #EF4444;
+    --magic-gold: #FFBF00;
+    --magic-gold-glow: rgba(255, 191, 0, 0.45);
   }
 
   .dark {
@@ -73,15 +97,6 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-}
-
-@layer base {
-  :root {
-    --command-red: #CC0000;
-    --command-red-bright: #EF4444;
-    --magic-gold: #FFBF00;
-    --magic-gold-glow: rgba(255, 191, 0, 0.45);
-  }
 
   * {
     @apply border-border outline-ring/50;
@@ -89,13 +104,15 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Barlow Condensed', 'Universe Ultra Condensed', 'Inter', system-ui, sans-serif;
+    /* Pushed Univers Ultra Condensed to the absolute front! */
+    font-family: 'Univers Ultra Condensed', 'Barlow Condensed', 'Inter', system-ui, sans-serif !important;
     font-weight: 400;
     letter-spacing: 0.01em;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cormorant SC', 'ITC Serif Gothic', Georgia, serif;
+  h1, h2, h3, h4, h5, h6, .font-cinzel, .quest-title {
+    /* Pushed ITC Serif Gothic to the front! */
+    font-family: 'ITC Serif Gothic', 'Cormorant SC', 'Cinzel', Georgia, serif !important;
     letter-spacing: 0.03em;
   }
 }
@@ -106,18 +123,8 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
-}
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@400;600;700;800;900&family=Exo+2:wght@400;600;700;800;900&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=Cormorant+SC:wght@300;400;500;600;700&display=swap');
-
-@layer utilities {
   /* ── Global Glassmorphism ── */
-  .glass-card,
-  [class*="rounded-xl"],
-  [class*="rounded-2xl"] {
-    /* Applied selectively via explicit class - see below */
-  }
-
   .glass {
     background: rgba(8, 6, 24, 0.55) !important;
     backdrop-filter: blur(20px) saturate(1.6) !important;
@@ -162,19 +169,20 @@
     -webkit-backdrop-filter: blur(20px) saturate(1.5);
     border: 1px solid rgba(255, 255, 255, 0.07);
   }
-  .font-cinzel {
-    font-family: 'Cinzel', Georgia, serif;
-  }
+  
   .glow-gold {
     box-shadow: 0 0 24px rgba(251, 191, 36, 0.45), 0 0 64px rgba(251, 191, 36, 0.15);
   }
+  
   .glow-red {
     box-shadow: 0 0 30px rgba(239, 68, 68, 0.5), 0 0 80px rgba(239,68,68,0.2);
   }
+  
   .artifact-btn {
     background: radial-gradient(ellipse at 50% 0%, #7f1d1d 0%, #450a0a 50%, #1a0505 100%);
     box-shadow: 0 0 0 1px rgba(239,68,68,0.25), 0 0 28px rgba(239,68,68,0.2), 0 10px 36px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.07);
   }
+  
   .artifact-btn-rolling {
     background: radial-gradient(ellipse at 50% 0%, #ef4444 0%, #b91c1c 50%, #7f1d1d 100%);
     box-shadow: 0 0 0 2px rgba(239,68,68,0.6), 0 0 60px rgba(239,68,68,0.55), 0 0 120px rgba(234,88,12,0.25), inset 0 1px 0 rgba(255,255,255,0.12);
