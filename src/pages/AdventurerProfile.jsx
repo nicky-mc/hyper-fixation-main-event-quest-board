@@ -315,14 +315,22 @@ export default function AdventurerProfile() {
                 )}
                 {/* Cover upload button — always visible for own profile */}
                 {isOwnProfile && (
-                  <div className="absolute top-3 right-3">
-                    <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-semibold hover:bg-black/90 transition-all backdrop-blur-sm cursor-pointer">
-                      {uploadingCover ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                      {uploadingCover ? 'Uploading...' : 'Change Cover'}
-                      <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} disabled={uploadingCover} />
-                    </label>
-                  </div>
-                )}
+                   <div className="absolute top-3 right-3 flex gap-2">
+                     {coverUrl && (
+                       <button
+                         onClick={() => setEditingCoverPosition(true)}
+                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-semibold hover:bg-black/90 transition-all backdrop-blur-sm"
+                       >
+                         📍 Position
+                       </button>
+                     )}
+                     <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-semibold hover:bg-black/90 transition-all backdrop-blur-sm cursor-pointer">
+                       {uploadingCover ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                       {uploadingCover ? 'Uploading...' : 'Change Cover'}
+                       <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} disabled={uploadingCover} />
+                     </label>
+                   </div>
+                 )}
               </div>
 
               {/* Profile info below cover */}
