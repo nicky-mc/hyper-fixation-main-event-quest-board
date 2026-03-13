@@ -8,18 +8,12 @@ import { createPageUrl } from '@/utils';
 import { useAdventurer } from '@/layout.jsx';
 import OnlineDot from '@/components/OnlineDot';
 
-function Avatar({ name, src, size = 'lg', online }) {
+function Avatar({ name, src, size = 'lg' }) {
   const sizes = { sm: 'w-9 h-9 text-sm', md: 'w-12 h-12 text-base', lg: 'w-16 h-16 text-xl' };
   return (
-    <div className="relative inline-block shrink-0">
-      <div className={cn("rounded-full flex items-center justify-center font-black text-white overflow-hidden",
-        "bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 border-2 border-purple-700/40", sizes[size])}>
-        {src ? <img src={src} alt={name} className="w-full h-full object-cover" /> : (name || '?').charAt(0).toUpperCase()}
-      </div>
-      {online !== undefined && (
-        <span className={cn("absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full border-2 border-[#0a0518]",
-          online ? "bg-green-400" : "bg-slate-600")} />
-      )}
+    <div className={cn("rounded-full flex items-center justify-center font-black text-white overflow-hidden",
+      "bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 border-2 border-purple-700/40", sizes[size])}>
+      {src ? <img src={src} alt={name} className="w-full h-full object-cover" /> : (name || '?').charAt(0).toUpperCase()}
     </div>
   );
 }
