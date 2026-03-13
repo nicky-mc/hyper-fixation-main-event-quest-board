@@ -119,7 +119,7 @@ export default function AdventurerProfile() {
     setEditLocation(prof?.location || '');
     setEditFavSegment(prof?.favorite_segment || '');
     setEditPrivacy(prof?.privacy_level || 'Public');
-    setCoverDisplay(prof?.cover_display || { position: { x: 50, y: 50 }, zoom: 100 });
+    setCoverDisplay(prof?.cover_display ?? { position: { x: 50, y: 50 }, zoom: 100 });
     setComments(allComments);
 
     const mine = submittedQuests.filter(q => q.quest_giver === adventurerName || (prof && q.adventurer_id === prof.id));
@@ -268,7 +268,7 @@ export default function AdventurerProfile() {
     else await base44.entities.AdventurerProfile.create({ adventurer_name: adventurerName, cover_url: file_url });
     await loadAll(); setUploadingCover(false);
     if (coverRef.current) coverRef.current.value = '';
-    setCoverDisplay({ position: { x: 50, y: 50 }, zoom: 100 });
+    // reset position on new cover upload
   };
 
   const handleSaveCoverPosition = async (data) => {
@@ -370,10 +370,11 @@ export default function AdventurerProfile() {
       />
 
       <CoverPositionEditor
+        key={editingCoverPosition ? 'open' : 'closed'}
         isOpen={editingCoverPosition}
         coverUrl={coverUrl}
-        initialPosition={coverDisplay.position}
-        initialZoom={coverDisplay.zoom}
+        initialPosition={coverDisplay?.position || { x: 50, y: 50 }}
+        initialZoom={coverDisplay?.zoom || 100}
         onSave={handleSaveCoverPosition}
         onCancel={() => setEditingCoverPosition(false)}
       />
