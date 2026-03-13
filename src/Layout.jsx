@@ -241,11 +241,11 @@ export default function Layout({ children, currentPageName }) {
         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
         className="hidden md:flex fixed left-4 top-4 bottom-4 z-50 flex-col overflow-hidden rounded-2xl"
         style={{
-          backdropFilter: 'blur(15px) saturate(1.8)',
-          WebkitBackdropFilter: 'blur(15px) saturate(1.8)',
-          background: 'rgba(8, 6, 24, 0.72)',
-          border: '1px solid rgba(239,68,68,0.18)',
-          boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(239,68,68,0.08)',
+          backdropFilter: 'blur(24px) saturate(2)',
+          WebkitBackdropFilter: 'blur(24px) saturate(2)',
+          background: 'rgba(8, 6, 24, 0.65)',
+          border: '1px solid rgba(204,0,0,0.2)',
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(204,0,0,0.08)',
         }}
       >
         {/* Command Red top accent */}
