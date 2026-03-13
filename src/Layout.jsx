@@ -90,7 +90,6 @@ export default function Layout({ children, currentPageName }) {
               exit={{ opacity: 0, x: -8, width: 0 }}
               className="font-black text-lg tracking-wide overflow-hidden whitespace-nowrap"
               style={{
-                fontFamily: "'Orbitron', sans-serif",
                 background: 'linear-gradient(135deg, #fbbf24, #f97316)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -139,7 +138,7 @@ export default function Layout({ children, currentPageName }) {
                     animate={{ opacity: 1, x: 0, width: 'auto' }}
                     exit={{ opacity: 0, x: -8, width: 0 }}
                     className="text-xs font-semibold whitespace-nowrap overflow-hidden"
-                    style={{ fontFamily: "'Exo 2', sans-serif", letterSpacing: '0.05em' }}>
+                    style={{ letterSpacing: '0.05em' }}>
                     {label}
                   </motion.span>
                 )}
@@ -158,8 +157,7 @@ export default function Layout({ children, currentPageName }) {
               {expanded && (
                 <motion.p
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="text-[9px] text-slate-600 text-center mb-1.5 px-2 truncate"
-                  style={{ fontFamily: "'Exo 2', sans-serif" }}>
+                  className="text-[9px] text-slate-600 text-center mb-1.5 px-2 truncate">
                   {user.full_name || user.email}
                 </motion.p>
               )}
@@ -171,7 +169,7 @@ export default function Layout({ children, currentPageName }) {
               <AnimatePresence>
                 {expanded && (
                   <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }} exit={{ opacity: 0, width: 0 }}
-                    className="text-xs font-semibold overflow-hidden whitespace-nowrap" style={{ fontFamily: "'Exo 2', sans-serif" }}>
+                    className="text-xs font-semibold overflow-hidden whitespace-nowrap">
                     Logout
                   </motion.span>
                 )}
@@ -186,7 +184,7 @@ export default function Layout({ children, currentPageName }) {
             <AnimatePresence>
               {expanded && (
                 <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }} exit={{ opacity: 0, width: 0 }}
-                  className="text-xs font-semibold overflow-hidden whitespace-nowrap" style={{ fontFamily: "'Exo 2', sans-serif" }}>
+                  className="text-xs font-semibold overflow-hidden whitespace-nowrap">
                   Login
                 </motion.span>
               )}
