@@ -30,11 +30,11 @@ function getCharacterClass(commentCount, isAdmin = false) {
   return { title: 'Novice Adventurer', color: 'text-slate-400', icon: Zap };
 }
 
-function StatPill({ label, value, color = 'text-purple-300' }) {
+function StatPill({ label, value, color = 'text-purple-300', bg = 'bg-purple-900/30 border-purple-700/30' }) {
   return (
-    <div className="flex flex-col items-center px-4 py-2">
-      <span className={cn("text-2xl font-black", color)}>{value}</span>
-      <span className="text-[10px] text-slate-500 uppercase tracking-wider">{label}</span>
+    <div className={cn("flex items-center gap-2 px-4 py-2 rounded-full border font-lcars", bg)}>
+      <span className={cn("text-xl font-black", color)}>{value}</span>
+      <span className="text-[10px] text-slate-400 uppercase tracking-widest">{label}</span>
     </div>
   );
 }
@@ -478,7 +478,7 @@ export default function AdventurerProfile() {
                     {isOwnProfile ? (
                       !editing ? (
                         <button onClick={() => setEditing(true)}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-purple-700/50 text-purple-300 hover:border-purple-500 hover:text-purple-100 text-sm font-semibold transition-all">
+                          className="font-lcars flex items-center gap-1.5 px-5 py-2 rounded-full border border-amber-500/40 text-amber-400 hover:border-amber-400 hover:bg-amber-500/10 text-xs font-semibold transition-all uppercase tracking-widest">
                           <Edit2 className="w-3.5 h-3.5" /> Edit Profile
                         </button>
                       ) : (
@@ -488,7 +488,8 @@ export default function AdventurerProfile() {
                             <X className="w-4 h-4" />
                           </button>
                           <button onClick={saveProfile} disabled={saving}
-                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-700 text-white text-sm font-semibold hover:bg-purple-600 transition-all disabled:opacity-50">
+                           className="font-lcars flex items-center gap-1.5 px-5 py-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-black text-xs font-black hover:from-amber-400 hover:to-orange-400 transition-all disabled:opacity-50 uppercase tracking-widest"
+                           style={{ boxShadow: '0 0 16px rgba(251,191,36,0.3)' }}>
                             {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save
                           </button>
                         </div>
@@ -516,7 +517,8 @@ export default function AdventurerProfile() {
                         </button>
                         {canMessage && (
                           <Link to={createPageUrl('Messages')}
-                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-700/60 border border-indigo-500/50 text-indigo-200 hover:bg-indigo-600/70 text-sm font-bold transition-all">
+                            className="font-lcars flex items-center gap-1.5 px-5 py-2 rounded-full bg-cyan-900/40 border border-cyan-500/40 text-cyan-300 hover:border-cyan-400 hover:bg-cyan-900/60 text-xs font-bold transition-all uppercase tracking-widest"
+                            style={{ boxShadow: '0 0 12px rgba(34,211,238,0.15)' }}>
                             <MessageCircle className="w-3.5 h-3.5" /> Message
                           </Link>
                         )}
@@ -635,39 +637,47 @@ export default function AdventurerProfile() {
                   </div>
                 )}
 
-                {/* Stats bar */}
-                <div className="flex items-center mt-4 border-t border-purple-900/30 pt-3 divide-x divide-purple-900/30">
-                  <StatPill label="Quests" value={myQuests.length} color="text-red-400" />
-                  <StatPill label="Comments" value={comments.length} color="text-cyan-400" />
-                  <StatPill label="Friends" value={friendCount} color="text-amber-400" />
+                {/* Stats bar — LCARS pill buttons */}
+                <div className="flex flex-wrap items-center gap-2 mt-4 border-t border-white/10 pt-3">
+                  <StatPill label="Quests" value={myQuests.length} color="text-red-400" bg="bg-red-900/20 border-red-700/30" />
+                  <StatPill label="Comments" value={comments.length} color="text-cyan-400" bg="bg-cyan-900/20 border-cyan-700/30" />
+                  <StatPill label="Friends" value={friendCount} color="text-amber-400" bg="bg-amber-900/20 border-amber-700/30" />
                   {mutualCount > 0 && !isOwnProfile && (
-                    <StatPill label="Mutual" value={mutualCount} color="text-purple-400" />
+                    <StatPill label="Mutual" value={mutualCount} color="text-purple-400" bg="bg-purple-900/30 border-purple-700/30" />
                   )}
                 </div>
               </div>
             </motion.div>
 
             {/* ── TABS ── */}
-            <div className="flex gap-1 p-1 rounded-xl bg-black/40 backdrop-blur-sm border border-white/10 mb-4">
-              {tabs.map(tab => {
-                const Icon = tab.icon;
-                return (
-                  <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      "flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs sm:text-sm font-semibold transition-all",
-                      activeTab === tab.id ? "bg-purple-700/60 text-purple-100 shadow" : "text-purple-500 hover:text-purple-300"
-                    )}>
-                    <Icon className="w-3.5 h-3.5" />
-                    {tab.label}
-                    {tab.count !== undefined && (
-                      <span className={cn("text-[9px] px-1.5 py-0.5 rounded-full font-bold hidden sm:inline",
-                        activeTab === tab.id ? "bg-purple-500/30 text-purple-200" : "bg-purple-900/50 text-purple-600")}>
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+            {/* LCARS Tab Bar */}
+            <div className="flex gap-1 mb-4">
+              {/* Left accent bar */}
+              <div className="w-1.5 rounded-full bg-gradient-to-b from-amber-500 via-purple-500 to-cyan-500 shrink-0" />
+              <div className="flex gap-1 flex-1 p-1 bg-black/40 backdrop-blur-sm border border-white/10 rounded-2xl">
+                {tabs.map(tab => {
+                  const Icon = tab.icon;
+                  return (
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                      className={cn(
+                        "font-lcars flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-full text-[10px] sm:text-xs font-black transition-all uppercase tracking-widest",
+                        activeTab === tab.id
+                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                          : "text-slate-500 hover:text-purple-300"
+                      )}
+                      style={activeTab === tab.id ? { boxShadow: '0 0 12px rgba(251,191,36,0.2)' } : {}}>
+                      <Icon className="w-3.5 h-3.5" />
+                      {tab.label}
+                      {tab.count !== undefined && (
+                        <span className={cn("text-[9px] px-1.5 py-0.5 rounded-full font-bold hidden sm:inline",
+                          activeTab === tab.id ? "bg-amber-500/20 text-amber-300" : "bg-white/5 text-slate-600")}>
+                          {tab.count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* ── TAB CONTENT ── */}
@@ -740,12 +750,12 @@ export default function AdventurerProfile() {
                 )}
                 {activeTab === 'about' && canSeePrivate && (
                   <div className="space-y-4">
-                    <div className="rounded-xl border border-purple-900/30 bg-purple-950/20 p-5 space-y-4">
-                      <h3 className="text-lg font-black text-amber-300">Character Sheet</h3>
+                    <div className="rounded-xl border border-white/10 bg-black/50 backdrop-blur-md p-5 space-y-4">
+                      <h3 className="font-lcars text-sm font-black text-amber-400 uppercase tracking-widest">◈ Personnel File</h3>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div className="space-y-1">
-                          <p className="text-[10px] text-purple-500 uppercase tracking-widest">Class / Rank</p>
+                          <p className="font-lcars text-[9px] text-purple-400 uppercase tracking-widest">Class / Rank</p>
                           <div className="flex items-center gap-1.5">
                             <CharIcon className={cn("w-4 h-4", charClass.color)} />
                             <span className={cn("font-bold", charClass.color)}>{charClass.title}</span>
@@ -754,7 +764,7 @@ export default function AdventurerProfile() {
 
                         {profile?.location && (
                           <div className="space-y-1">
-                            <p className="text-[10px] text-purple-500 uppercase tracking-widest">Realm</p>
+                            <p className="font-lcars text-[9px] text-purple-400 uppercase tracking-widest">Realm</p>
                             <div className="flex items-center gap-1.5 text-slate-300">
                               <MapPin className="w-4 h-4 text-purple-500" />{profile.location}
                             </div>
@@ -763,7 +773,7 @@ export default function AdventurerProfile() {
 
                         {profile?.favorite_segment && (
                           <div className="space-y-1">
-                            <p className="text-[10px] text-purple-500 uppercase tracking-widest">Favourite Segment</p>
+                            <p className="font-lcars text-[9px] text-purple-400 uppercase tracking-widest">Favourite Segment</p>
                             <div className="flex items-center gap-1.5 text-slate-300">
                               <Star className="w-4 h-4 text-amber-400" />{profile.favorite_segment}
                             </div>
@@ -771,7 +781,7 @@ export default function AdventurerProfile() {
                         )}
 
                         <div className="space-y-1">
-                          <p className="text-[10px] text-purple-500 uppercase tracking-widest">Quest Level</p>
+                          <p className="font-lcars text-[9px] text-purple-400 uppercase tracking-widest">Quest Level</p>
                           <div className="flex items-center gap-1.5">
                             <Flame className="w-4 h-4 text-orange-400" />
                             {isProfileAdmin ? (
@@ -785,13 +795,13 @@ export default function AdventurerProfile() {
 
                       {profile?.bio && (
                         <div className="pt-3 border-t border-purple-900/30">
-                          <p className="text-[10px] text-purple-500 uppercase tracking-widest mb-1.5">Adventurer Lore</p>
+                          <p className="font-lcars text-[9px] text-purple-400 uppercase tracking-widest mb-1.5">Adventurer Lore</p>
                           <p className="text-sm text-slate-300 leading-relaxed">{profile.bio}</p>
                         </div>
                       )}
 
                       <div className="pt-3 border-t border-purple-900/30">
-                        <p className="text-[10px] text-purple-500 uppercase tracking-widest mb-3">Achievements</p>
+                        <p className="font-lcars text-[9px] text-purple-400 uppercase tracking-widest mb-3">Achievements</p>
                         <div className="flex flex-wrap gap-2">
                           {myQuests.length >= 1 && <span className="px-3 py-1 rounded-full bg-red-900/30 border border-red-700/40 text-red-300 text-xs font-bold">⚔️ First Quest</span>}
                           {myQuests.length >= 5 && <span className="px-3 py-1 rounded-full bg-amber-900/30 border border-amber-700/40 text-amber-300 text-xs font-bold">🏆 5 Quests</span>}
