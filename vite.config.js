@@ -5,6 +5,12 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   logLevel: 'error', // Suppress warnings, only show errors
+  server: {
+    // This allows the specific host from your error message
+    allowedHosts: [
+      'ta-01kkkr3jfmpb63g4z4tc4zqvq3-5173-qu6g6nadpjxzemc6148sk6ny5.w.modal.host'
+    ]
+  },
   plugins: [
     base44({
       // Support for legacy code that imports the base44 SDK with @/integrations, @/entities, etc.
