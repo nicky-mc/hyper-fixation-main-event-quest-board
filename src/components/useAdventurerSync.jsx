@@ -49,13 +49,11 @@ export function useAdventurerSync() {
             profile = profiles[0];
           }
 
-          // Update auth_id if missing or different
-          const isAdmin = authUser.email === ADMIN_EMAIL;
+          // Update auth_id if missing or different, but never touch role
           if (profile.auth_id !== authUser.id || profile.system_user_id !== authUser.id) {
             profile = await base44.entities.AdventurerProfile.update(profile.id, {
               auth_id: authUser.id,
               system_user_id: authUser.id,
-              role: isAdmin ? 'admin' : profile.role // Keep existing role unless admin
             });
           }
           setProfile(profile);
