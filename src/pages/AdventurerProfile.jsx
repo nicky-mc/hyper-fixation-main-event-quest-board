@@ -388,7 +388,7 @@ export default function AdventurerProfile() {
       <div className="flex w-full max-w-6xl mx-auto gap-3 pt-24 px-4 pb-12">
         
         {/* Left Vertical Spine */}
-        <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-24 h-[calc(100vh-8rem)]"></div>
+        <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-24 z-40 h-[calc(100vh-8rem)]"></div>
 
         {/* Right Column (Top Arm + Content) */}
         <div className="flex-1 flex flex-col min-w-0 gap-3">
