@@ -63,7 +63,7 @@ export default function SignUpModal({ onClose, onSuccess }) {
   };
 
   const handleGoogleSignUp = () => {
-    base44.auth.redirectToSignUp(window.location.pathname, { provider: 'google' });
+    base44.auth.redirectToLogin(window.location.pathname);
   };
 
   return (
