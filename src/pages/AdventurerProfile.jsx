@@ -272,13 +272,13 @@ export default function AdventurerProfile() {
       />
 
       <CoverPositionEditor
+        isOpen={editingCoverPosition}
         coverUrl={coverUrl}
         initialPosition={coverDisplay.position}
         initialZoom={coverDisplay.zoom}
         onSave={handleSaveCoverPosition}
         onCancel={() => setEditingCoverPosition(false)}
       />
-      {editingCoverPosition && <div className="hidden" />}
 
       <div className="fixed left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-500 via-purple-500 to-red-500 opacity-40 pointer-events-none z-40" />
       <div className="fixed right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 via-amber-500 to-cyan-500 opacity-40 pointer-events-none z-40" />
