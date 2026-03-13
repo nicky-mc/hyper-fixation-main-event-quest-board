@@ -76,12 +76,12 @@ export default function QuestDetailModal({ quest, currentUser, onClose, onDelete
         <div className="p-6 space-y-5">
           {/* Title + DC */}
           <div className="flex items-start gap-4">
-            <h2 className="flex-1 text-3xl font-black text-amber-300 leading-tight" style={{ fontFamily: "'Caveat', cursive" }}>
+            <h2 className="flex-1 text-3xl font-black text-amber-300 leading-tight">
               {quest.title}
             </h2>
             <div className="w-14 h-14 rounded-full shrink-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#1a1040] to-[#0d0820] border-2 border-purple-700/70 shadow-lg">
               <span className="text-[9px] text-purple-400/80 font-bold -mb-0.5 tracking-widest">DC</span>
-              <span className="text-xl font-black text-purple-300" style={{ fontFamily: 'Georgia, serif' }}>
+              <span className="text-xl font-black text-purple-300">
                 {quest.difficulty_class}
               </span>
             </div>
@@ -105,7 +105,7 @@ export default function QuestDetailModal({ quest, currentUser, onClose, onDelete
             </div>
             <div className="flex-1 min-w-0">
               <span className="text-[10px] text-purple-600/70 block">Quest Giver</span>
-              <span className="text-sm font-medium text-purple-200 truncate block" style={{ fontFamily: "'Caveat', cursive" }}>
+              <span className="text-sm font-medium text-purple-200 truncate block">
                 {quest.quest_giver}
               </span>
             </div>

@@ -126,7 +126,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
                       <Scroll className="w-5 h-5 text-purple-400" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-amber-300" style={{ fontFamily: "'Caveat', cursive" }}>
+                      <h2 className="text-2xl font-bold text-amber-300">
                         Post a Quest
                       </h2>
                       <p className="text-xs text-purple-400/70">Submit to The Hyper-fixation Main Event</p>
@@ -221,7 +221,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
                       <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-900/50 to-[#0d0820]/80 rounded-xl border border-amber-500/50">
                         <Dice6 className="w-6 h-6 text-amber-400 animate-bounce" />
                         <span className="text-purple-300 text-sm">Your DC:</span>
-                        <span className="text-3xl font-black text-amber-400" style={{ fontFamily: 'Georgia, serif' }}>{rolledDC}</span>
+                        <span className="text-3xl font-black text-amber-400">{rolledDC}</span>
                         <Sparkles className="w-5 h-5 text-amber-500" />
                       </div>
                     </motion.div>
@@ -231,7 +231,6 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
                 <Button type="submit"
                   disabled={isSubmitting || !formData.quest_giver || !formData.title || !formData.description || !formData.segment}
                   className="w-full py-6 text-xl font-black bg-gradient-to-r from-red-700 via-red-600 to-orange-600 hover:from-red-600 hover:to-orange-500 border-2 border-red-500/50 text-white shadow-lg shadow-red-900/40 disabled:opacity-50"
-                  style={{ fontFamily: "'Caveat', cursive" }}
                 >
                   {isSubmitting
                     ? <span className="flex items-center gap-2"><Dice6 className="w-5 h-5 animate-spin" /> Rolling DC...</span>
