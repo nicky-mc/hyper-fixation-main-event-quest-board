@@ -6,11 +6,19 @@ import { cn } from '@/lib/utils';
 
 export default function VoteButton({ questId, isSelected }) {
   const [votes, setVotes] = useState([]);
-  const [userEmail, setUserEmail] = useState(null);
+  const [adventurerId, setAdventurerId] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(u => setUserEmail(u?.email ?? null)).catch(() => {});
+    const init = async () => {
+      try {
+        const u = await base44.auth.me();
+        if (!u) return;
+        const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+        if (profiles.length > 0) setAdventurerId(profiles[0].id);
+      } catch (_) {}
+    };
+    init();
     loadVotes();
 
     const unsub = base44.entities.QuestVote.subscribe((event) => {
@@ -26,31 +34,27 @@ export default function VoteButton({ questId, isSelected }) {
     setVotes(data);
   };
 
-  const hasVoted = userEmail && votes.some(v => v.voter_email === userEmail);
+  const hasVoted = adventurerId && votes.some(v => v.adventurer_id === adventurerId);
   const voteCount = votes.length;
 
   const handleVote = async (e) => {
     e.stopPropagation();
-    if (!userEmail || loading) return;
+    if (!adventurerId || loading) return;
     setLoading(true);
     if (hasVoted) {
-      const myVote = votes.find(v => v.voter_email === userEmail);
+      const myVote = votes.find(v => v.adventurer_id === adventurerId);
       if (myVote) await base44.entities.QuestVote.delete(myVote.id);
-      // Remove the corresponding activity entry
       try {
-        const acts = await base44.entities.Activity.filter({ type: 'quest_voted', quest_id: questId, user_email: userEmail });
+        const acts = await base44.entities.Activity.filter({ type: 'quest_voted', quest_id: questId, adventurer_id: adventurerId });
         await Promise.all(acts.map(a => base44.entities.Activity.delete(a.id)));
       } catch (_) {}
     } else {
-      await base44.entities.QuestVote.create({ quest_id: questId, voter_email: userEmail });
-      // Log to Activity Stream
+      await base44.entities.QuestVote.create({ quest_id: questId, adventurer_id: adventurerId });
       try {
-        const u = await base44.auth.me();
         const quests = await base44.entities.Quest.filter({ id: questId });
         await base44.entities.Activity.create({
           type: 'quest_voted',
-          user_name: u?.full_name || userEmail,
-          user_email: userEmail,
+          adventurer_id: adventurerId,
           quest_id: questId,
           quest_title: quests[0]?.title || '',
         });
@@ -62,20 +66,17 @@ export default function VoteButton({ questId, isSelected }) {
   return (
     <button
       onClick={handleVote}
-      disabled={!userEmail || loading}
+      disabled={!adventurerId || loading}
       className={cn(
         "flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-lg border transition-all duration-200 min-w-[48px]",
         hasVoted
           ? "bg-amber-500/20 border-amber-500/60 text-amber-400 hover:bg-amber-500/30"
           : "bg-purple-900/20 border-purple-700/40 text-purple-400 hover:bg-purple-800/40 hover:border-purple-500/60",
-        (!userEmail || loading) && "opacity-50 cursor-not-allowed"
+        (!adventurerId || loading) && "opacity-50 cursor-not-allowed"
       )}
       title={hasVoted ? "Remove vote" : "Upvote this quest"}
     >
-      <motion.div
-        animate={hasVoted ? { y: [-3, 0] } : {}}
-        transition={{ type: 'spring', stiffness: 400 }}
-      >
+      <motion.div animate={hasVoted ? { y: [-3, 0] } : {}} transition={{ type: 'spring', stiffness: 400 }}>
         <ChevronUp className={cn("w-4 h-4", hasVoted && "fill-amber-400")} />
       </motion.div>
       <AnimatePresence mode="wait">

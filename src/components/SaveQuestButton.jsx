@@ -4,34 +4,41 @@ import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 
 export default function SaveQuestButton({ questId }) {
-  const [userEmail, setUserEmail] = useState(null);
+  const [adventurerId, setAdventurerId] = useState(null);
   const [savedRecord, setSavedRecord] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      if (!u) return;
-      setUserEmail(u.email);
-      base44.entities.SavedQuest.filter({ quest_id: questId, saver_email: u.email })
-        .then(recs => setSavedRecord(recs[0] || null));
-    }).catch(() => {});
+    const init = async () => {
+      try {
+        const u = await base44.auth.me();
+        if (!u) return;
+        const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+        if (profiles.length === 0) return;
+        const profileId = profiles[0].id;
+        setAdventurerId(profileId);
+        const recs = await base44.entities.SavedQuest.filter({ quest_id: questId, adventurer_id: profileId });
+        setSavedRecord(recs[0] || null);
+      } catch (_) {}
+    };
+    init();
   }, [questId]);
 
   const toggle = async (e) => {
     e.stopPropagation();
-    if (!userEmail || loading) return;
+    if (!adventurerId || loading) return;
     setLoading(true);
     if (savedRecord) {
       await base44.entities.SavedQuest.delete(savedRecord.id);
       setSavedRecord(null);
     } else {
-      const rec = await base44.entities.SavedQuest.create({ quest_id: questId, saver_email: userEmail });
+      const rec = await base44.entities.SavedQuest.create({ quest_id: questId, adventurer_id: adventurerId });
       setSavedRecord(rec);
     }
     setLoading(false);
   };
 
-  if (!userEmail) return null;
+  if (!adventurerId) return null;
 
   return (
     <button
