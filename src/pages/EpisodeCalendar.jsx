@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, Edit } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
   format, startOfMonth, endOfMonth, eachDayOfInterval,
   isSameDay, isSameMonth, isToday, addMonths, subMonths,
@@ -50,16 +51,14 @@ function LBtn({ onClick, color = C.orange, children, className = '', disabled = 
   };
   return (
     <button onClick={go} disabled={disabled}
-      className={`uppercase font-black tracking-widest transition-all duration-200 disabled:opacity-40 ${className}`}
+      className={cn(
+        "font-lcars uppercase font-black tracking-widest transition-all duration-200 disabled:opacity-40 rounded-full text-black",
+        small ? "px-3 py-1 text-[10px]" : "px-5 py-2 text-[11px]",
+        className
+      )}
       style={{
         background: pulse ? '#fff' : color,
-        color: C.black,
-        borderRadius: small ? '20px' : '30px',
-        padding: small ? '4px 14px' : '8px 24px',
-        fontSize: small ? '10px' : '12px',
-        letterSpacing: '0.15em',
-        border: 'none',
-        boxShadow: pulse ? `0 0 20px ${color}` : 'none',
+        boxShadow: pulse ? `0 0 24px ${color}` : `0 0 8px ${color}33`,
       }}>
       {children}
     </button>
@@ -69,12 +68,10 @@ function LBtn({ onClick, color = C.orange, children, className = '', disabled = 
 function LField({ label, value, onChange, type = 'text', placeholder = '' }) {
   return (
     <div>
-      <div className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: C.mauve }}>{label}</div>
+      <div className="font-lcars text-[9px] uppercase tracking-[0.2em] mb-1 text-purple-300">{label}</div>
       <input type={type} value={value} onChange={onChange} placeholder={placeholder}
-        className="w-full px-3 py-2 text-sm focus:outline-none uppercase tracking-wide"
-        style={{ background: '#1a1a2e', border: `1px solid ${C.blue}55`, borderLeft: `3px solid ${C.blue}`, color: C.cyan, colorScheme: 'dark', borderRadius: '2px' }}
-        onFocus={e => e.target.style.borderColor = C.orange}
-        onBlur={e => { e.target.style.borderLeft = `3px solid ${C.blue}`; e.target.style.borderColor = `${C.blue}55`; e.target.style.borderLeftColor = C.blue; }}
+        className="w-full px-3 py-2 text-sm focus:outline-none font-lcars uppercase tracking-wide bg-black/40 border border-white/10 focus:border-amber-500/60 text-cyan-300 rounded-lg backdrop-blur-sm transition-colors"
+        style={{ colorScheme: 'dark' }}
       />
     </div>
   );
@@ -83,10 +80,10 @@ function LField({ label, value, onChange, type = 'text', placeholder = '' }) {
 function LSelect({ label, value, onChange, children }) {
   return (
     <div>
-      <div className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: C.mauve }}>{label}</div>
+      <div className="font-lcars text-[9px] uppercase tracking-[0.2em] mb-1 text-purple-300">{label}</div>
       <select value={value} onChange={onChange}
-        className="w-full px-3 py-2 text-sm focus:outline-none uppercase tracking-wide"
-        style={{ background: '#1a1a2e', border: `1px solid ${C.blue}55`, borderLeft: `3px solid ${C.blue}`, color: C.cyan, colorScheme: 'dark', borderRadius: '2px' }}>
+        className="w-full px-3 py-2 text-sm focus:outline-none font-lcars uppercase tracking-wide bg-black/40 border border-white/10 text-cyan-300 rounded-lg backdrop-blur-sm"
+        style={{ colorScheme: 'dark' }}>
         {children}
       </select>
     </div>
@@ -189,18 +186,15 @@ export default function EpisodeCalendar() {
 
   const TABS = ['CALENDAR', 'UPCOMING', ...(isAdmin ? ['SCHEDULE'] : [])];
 
-  // ── SHARED TAB CONTENT ────────────────────────────────────────────────────
   const renderContent = () => {
     if (activeTab === 'CALENDAR') return (
       <div>
         {/* Month nav */}
         <div className="flex items-center gap-3 mb-4">
           <LBtn small onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} color={C.mauve}>◀ PREV</LBtn>
-          <div className="flex-1 text-center font-black uppercase tracking-widest" style={{ color: C.orange, fontSize: '14px', letterSpacing: '0.2em' }}>
+          <div className="flex-1 text-center font-lcars font-black uppercase tracking-widest text-amber-400 text-sm">
             {format(currentMonth, 'MMMM yyyy')}
-            <span style={{ color: C.blue, marginLeft: '12px', fontSize: '10px' }}>
-              SD {format(currentMonth, 'yyyy')}.{format(currentMonth, 'MM')}
-            </span>
+            <span className="text-blue-400 ml-3 text-[10px]">SD {format(currentMonth, 'yyyy')}.{format(currentMonth, 'MM')}</span>
           </div>
           <LBtn small onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} color={C.mauve}>NEXT ▶</LBtn>
         </div>
@@ -208,8 +202,8 @@ export default function EpisodeCalendar() {
         {/* Day headers */}
         <div className="grid grid-cols-7 mb-1 gap-0.5">
           {['MON','TUE','WED','THU','FRI','SAT','SUN'].map(d => (
-            <div key={d} className="text-center py-1 font-black uppercase text-[9px] tracking-widest"
-              style={{ background: C.mauve, color: C.black, borderRadius: '4px' }}>{d}</div>
+            <div key={d} className="text-center py-1 font-lcars font-black uppercase text-[9px] tracking-widest rounded"
+              style={{ background: C.mauve, color: C.black }}>{d}</div>
           ))}
         </div>
 
@@ -223,22 +217,23 @@ export default function EpisodeCalendar() {
             const clickable = eps.length > 0 || isAdmin;
             return (
               <button key={i} onClick={() => handleDayClick(day)} disabled={!clickable}
-                className="relative min-h-[64px] sm:min-h-[80px] p-1 text-left transition-all"
-                style={{ background: today ? '#1a1400' : eps.length > 0 ? '#0d001a' : '#0a0a0a', border: today ? `1px solid ${C.orange}` : eps.length > 0 ? `1px solid ${C.mauve}44` : '1px solid #1a1a1a', cursor: clickable ? 'pointer' : 'default', borderRadius: '2px' }}
-                onMouseEnter={e => { if (clickable) e.currentTarget.style.background = '#1a1a00'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = today ? '#1a1400' : eps.length > 0 ? '#0d001a' : '#0a0a0a'; }}
-              >
-                <span className="font-black text-xs" style={{ color: today ? C.orange : !inMonth ? '#333' : eps.length > 0 ? C.mauve : '#666', background: today ? C.orange + '22' : 'transparent', borderRadius: '10px', padding: '1px 4px' }}>
+                className={cn("relative min-h-[64px] sm:min-h-[80px] p-1 text-left transition-all rounded-sm", clickable && "hover:brightness-125")}
+                style={{
+                  background: today ? '#1a1400' : eps.length > 0 ? '#0d001a' : '#0a0a0a',
+                  border: today ? `1px solid ${C.orange}` : eps.length > 0 ? `1px solid ${C.mauve}44` : '1px solid #1a1a1a',
+                  cursor: clickable ? 'pointer' : 'default',
+                }}>
+                <span className="font-lcars font-black text-xs" style={{ color: today ? C.orange : !inMonth ? '#333' : eps.length > 0 ? C.mauve : '#666', background: today ? C.orange + '22' : 'transparent', borderRadius: '10px', padding: '1px 4px' }}>
                   {format(day, 'd')}
                 </span>
                 {eps.map((ep, ei) => (
-                  <div key={ei} className="truncate text-[7px] sm:text-[8px] px-1 py-0.5 mt-0.5 font-black uppercase tracking-wide"
+                  <div key={ei} className="truncate text-[7px] sm:text-[8px] px-1 py-0.5 mt-0.5 font-lcars font-black uppercase tracking-wide"
                     style={{ background: C.mauve + '33', borderLeft: `2px solid ${C.mauve}`, color: C.mauve }}>
                     ▶ {ep.title}
                   </div>
                 ))}
                 {deadlines.length > 0 && (
-                  <div className="truncate text-[7px] sm:text-[8px] px-1 py-0.5 mt-0.5 font-black uppercase tracking-wide"
+                  <div className="truncate text-[7px] sm:text-[8px] px-1 py-0.5 mt-0.5 font-lcars font-black uppercase tracking-wide"
                     style={{ background: C.orange + '22', borderLeft: `2px solid ${C.orange}`, color: C.orange }}>
                     ⏰ DEADLINE
                   </div>
@@ -249,56 +244,55 @@ export default function EpisodeCalendar() {
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap items-center gap-4 mt-3 text-[9px] uppercase tracking-widest">
-          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm" style={{ background: C.orange }} /><span style={{ color: C.orange }}>Today</span></div>
-          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm" style={{ background: C.mauve }} /><span style={{ color: C.mauve }}>Recording</span></div>
-          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm" style={{ background: C.blue }} /><span style={{ color: C.blue }}>Deadline</span></div>
+        <div className="flex flex-wrap items-center gap-4 mt-3">
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm" style={{ background: C.orange }} /><span className="font-lcars text-[9px] uppercase tracking-widest" style={{ color: C.orange }}>Today</span></div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm" style={{ background: C.mauve }} /><span className="font-lcars text-[9px] uppercase tracking-widest" style={{ color: C.mauve }}>Recording</span></div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm" style={{ background: C.blue }} /><span className="font-lcars text-[9px] uppercase tracking-widest" style={{ color: C.blue }}>Deadline</span></div>
         </div>
       </div>
     );
 
     if (activeTab === 'UPCOMING') return (
       <div className="space-y-2">
-        <div className="uppercase font-black tracking-widest text-xs mb-4" style={{ color: C.blue, letterSpacing: '0.2em' }}>◈ ACTIVE MISSION LOGS</div>
+        <div className="font-lcars uppercase font-black tracking-widest text-xs mb-4 text-blue-400">◈ ACTIVE MISSION LOGS</div>
         {loading ? (
-          <div className="uppercase" style={{ color: C.mauve, fontSize: '11px', letterSpacing: '0.1em' }}>ACCESSING DATABASE...</div>
+          <div className="font-lcars uppercase text-purple-300 text-[11px] tracking-widest">ACCESSING DATABASE...</div>
         ) : upcoming.length === 0 ? (
-          <div className="uppercase text-center p-6" style={{ color: '#444', fontSize: '11px', letterSpacing: '0.1em', border: `1px solid #222` }}>
+          <div className="font-lcars uppercase text-center p-6 text-slate-600 text-[11px] tracking-widest border border-white/10 rounded-lg bg-black/20">
             NO UPCOMING MISSIONS LOGGED
           </div>
         ) : upcoming.map((ep, i) => (
           <motion.button key={ep.id} onClick={() => setSelectedEp(ep)}
             initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-            className="w-full text-left flex items-stretch transition-all hover:brightness-125"
-            style={{ border: `1px solid ${STATUS[ep.status]?.color || C.blue}44`, borderRadius: '3px', overflow: 'hidden' }}
+            className="w-full text-left flex items-stretch transition-all hover:brightness-125 rounded-lg overflow-hidden"
+            style={{ border: `1px solid ${STATUS[ep.status]?.color || C.blue}44` }}
           >
             <div style={{ width: '6px', background: STATUS[ep.status]?.color || C.blue, flexShrink: 0 }} />
-            <div className="flex-1 flex items-center justify-between px-4 py-3" style={{ background: '#0d0d0d' }}>
+            <div className="flex-1 flex items-center justify-between px-4 py-3 bg-black/60 backdrop-blur-sm">
               <div className="flex-1 min-w-0">
-                <div className="uppercase font-black text-sm tracking-wide truncate" style={{ color: STATUS[ep.status]?.color || C.blue }}>{ep.title}</div>
+                <div className="font-lcars uppercase font-black text-sm tracking-wide truncate" style={{ color: STATUS[ep.status]?.color || C.blue }}>{ep.title}</div>
                 {ep.recording_date && (
-                  <div className="text-[10px] uppercase tracking-widest mt-0.5" style={{ color: '#666' }}>
+                  <div className="font-lcars text-[10px] uppercase tracking-widest mt-0.5 text-slate-500">
                     STARDATE {toStardate(ep.recording_date)} · {format(parseISO(ep.recording_date), 'MMM d, yyyy')}
                   </div>
                 )}
                 {ep.main_quest_topic && (
-                  <div className="text-[10px] uppercase tracking-wide mt-0.5 truncate" style={{ color: C.mauve }}>◈ {ep.main_quest_topic}</div>
+                  <div className="font-lcars text-[10px] uppercase tracking-wide mt-0.5 truncate" style={{ color: C.mauve }}>◈ {ep.main_quest_topic}</div>
                 )}
               </div>
-              {/* Right-aligned date + status block */}
               <div className="shrink-0 ml-3 flex flex-col items-end gap-1">
                 {ep.recording_date && (
-                  <div className="px-3 py-1.5 text-right" style={{ background: (STATUS[ep.status]?.color || C.blue) + '1a', borderRadius: '4px', borderRight: `3px solid ${STATUS[ep.status]?.color || C.blue}` }}>
-                    <div className="font-black text-[11px] uppercase tracking-wide" style={{ color: STATUS[ep.status]?.color || C.blue }}>
+                  <div className="px-3 py-1.5 text-right rounded-lg" style={{ background: (STATUS[ep.status]?.color || C.blue) + '1a', borderRight: `3px solid ${STATUS[ep.status]?.color || C.blue}` }}>
+                    <div className="font-lcars font-black text-[11px] uppercase tracking-wide" style={{ color: STATUS[ep.status]?.color || C.blue }}>
                       {format(parseISO(ep.recording_date), 'MMM d')}
                     </div>
-                    <div className="text-[9px] uppercase tracking-wider" style={{ color: '#555' }}>
+                    <div className="font-lcars text-[9px] uppercase tracking-wider text-slate-600">
                       {format(parseISO(ep.recording_date), 'yyyy')}
                     </div>
                   </div>
                 )}
-                <div className="font-black text-[9px] px-3 py-1 uppercase tracking-widest"
-                  style={{ background: (STATUS[ep.status]?.color || C.blue) + '22', color: STATUS[ep.status]?.color || C.blue, borderRadius: '20px' }}>
+                <div className="font-lcars font-black text-[9px] px-3 py-1 uppercase tracking-widest rounded-full"
+                  style={{ background: (STATUS[ep.status]?.color || C.blue) + '22', color: STATUS[ep.status]?.color || C.blue }}>
                   {STATUS[ep.status]?.label || ep.status}
                 </div>
               </div>
@@ -310,26 +304,26 @@ export default function EpisodeCalendar() {
 
     if (activeTab === 'SCHEDULE' && isAdmin) return (
       <div>
-        <div className="uppercase font-black tracking-widest text-xs mb-4" style={{ color: C.orange, letterSpacing: '0.2em' }}>◈ ALL MISSION LOGS</div>
+        <div className="font-lcars uppercase font-black tracking-widest text-xs mb-4 text-amber-400">◈ ALL MISSION LOGS</div>
         <LBtn onClick={() => openForm(null)} color={C.orange} className="mb-4">+ LOG NEW EPISODE</LBtn>
         <div className="space-y-2">
           {episodes.map(ep => (
-            <div key={ep.id} className="flex items-stretch" style={{ border: `1px solid #222`, borderRadius: '3px', overflow: 'hidden' }}>
+            <div key={ep.id} className="flex items-stretch rounded-lg overflow-hidden border border-white/10">
               <div style={{ width: '6px', background: STATUS[ep.status]?.color || C.blue, flexShrink: 0 }} />
-              <div className="flex-1 flex items-center justify-between px-4 py-2" style={{ background: '#0d0d0d' }}>
+              <div className="flex-1 flex items-center justify-between px-4 py-2 bg-black/60 backdrop-blur-sm">
                 <div className="flex-1 min-w-0">
-                  <div className="uppercase font-black text-xs tracking-wide truncate" style={{ color: C.cyan }}>{ep.title}</div>
+                  <div className="font-lcars uppercase font-black text-xs tracking-wide truncate text-cyan-400">{ep.title}</div>
                   {ep.recording_date && (
-                    <div className="text-[9px] uppercase tracking-widest" style={{ color: '#555' }}>SD {toStardate(ep.recording_date)}</div>
+                    <div className="font-lcars text-[9px] uppercase tracking-widest text-slate-600">SD {toStardate(ep.recording_date)}</div>
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-[9px] uppercase tracking-widest font-black px-2 py-0.5"
-                    style={{ background: (STATUS[ep.status]?.color || C.blue) + '22', color: STATUS[ep.status]?.color || C.blue, borderRadius: '20px' }}>
+                  <span className="font-lcars text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-full"
+                    style={{ background: (STATUS[ep.status]?.color || C.blue) + '22', color: STATUS[ep.status]?.color || C.blue }}>
                     {STATUS[ep.status]?.label || ep.status}
                   </span>
-                  <button onClick={() => openForm(ep)} className="p-1 hover:opacity-70" style={{ color: C.orange }}><Edit className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => handleDelete(ep.id)} className="p-1 hover:opacity-70" style={{ color: C.red }}><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => openForm(ep)} className="p-1 hover:opacity-70 text-amber-400"><Edit className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => handleDelete(ep.id)} className="p-1 hover:opacity-70 text-red-400"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
               </div>
             </div>
@@ -341,28 +335,25 @@ export default function EpisodeCalendar() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: C.black }}>
+    <div className="min-h-screen bg-black">
 
       {/* ══ MOBILE LAYOUT ══════════════════════════════════════════════════ */}
       <div className="md:hidden">
-        {/* Title bar */}
+        {/* Horizontal LCARS bar */}
         <div className="px-4 py-3" style={{ background: C.orange }}>
-          <div className="font-black tracking-widest text-base uppercase" style={{ color: C.black }}>EPISODE CALENDAR</div>
-          <div className="text-[9px] tracking-widest mt-0.5 uppercase" style={{ color: 'rgba(0,0,0,0.55)' }}>STARFLEET MEDIA DIVISION</div>
+          <div className="font-lcars font-black tracking-widest text-base uppercase text-black">EPISODE CALENDAR</div>
+          <div className="font-lcars text-[9px] tracking-widest mt-0.5 uppercase text-black/55">STARFLEET MEDIA DIVISION</div>
         </div>
-
-        {/* Multi-color stripe separator */}
         <div className="flex h-1.5">
           {[C.mauve, C.blue, C.cyan, C.yellow, C.orange].map((col, i) => (
             <div key={i} className="flex-1" style={{ background: col }} />
           ))}
         </div>
-
-        {/* Tab pills row */}
-        <div className="flex gap-2 px-3 py-2.5 overflow-x-auto" style={{ background: '#111' }}>
+        {/* Tab pills */}
+        <div className="flex gap-2 px-3 py-2.5 overflow-x-auto bg-black/80">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className="shrink-0 px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest transition-all"
+              className={cn("font-lcars shrink-0 px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest transition-all")}
               style={{
                 background: activeTab === tab ? C.orange : 'rgba(255,153,0,0.12)',
                 color: activeTab === tab ? C.black : C.orange,
@@ -373,45 +364,40 @@ export default function EpisodeCalendar() {
           ))}
           {isAdmin && (
             <button onClick={() => openForm(null)}
-              className="shrink-0 ml-auto px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest"
+              className="font-lcars shrink-0 ml-auto px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest"
               style={{ background: 'rgba(153,153,255,0.15)', color: C.blue, border: `1px solid ${C.blue}44` }}>
               + LOG
             </button>
           )}
         </div>
-
-        {/* Multi-color stripe separator */}
         <div className="flex h-1.5">
           {[C.orange, C.yellow, C.cyan, C.blue, C.mauve].map((col, i) => (
             <div key={i} className="flex-1" style={{ background: col }} />
           ))}
         </div>
-
-        {/* Content */}
-        <div className="p-4 uppercase">{renderContent()}</div>
+        <div className="p-4">{renderContent()}</div>
       </div>
 
       {/* ══ DESKTOP LCARS LAYOUT ═══════════════════════════════════════════ */}
-      <div className="hidden md:flex min-h-screen">
+      <div className="hidden md:flex min-h-screen gap-3">
 
-        {/* LEFT BRACKET ── */}
-        <div className="flex flex-col" style={{ width: '148px', minWidth: '148px' }}>
+        {/* LEFT STRUCTURAL BAR ── */}
+        <div className="flex flex-col shrink-0" style={{ width: '148px', minWidth: '148px' }}>
 
-          {/* TOP ELBOW: orange block with bottom-right curve creating L-shape junction */}
-          <div className="flex flex-col justify-end pb-3 items-center"
-            style={{ background: C.orange, height: '160px', borderRadius: '0 0 3rem 0' }}>
-            <div className="uppercase font-black text-[8px] tracking-widest text-center"
-              style={{ color: C.black, writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+          {/* TOP ELBOW — amber block sweeping into content */}
+          <div className="flex flex-col justify-end pb-3 items-center rounded-br-[3rem]"
+            style={{ background: C.orange, height: '160px', boxShadow: `0 0 40px ${C.orange}33` }}>
+            <div className="font-lcars uppercase font-black text-[8px] tracking-widest text-center text-black"
+              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
               STARFLEET HME
             </div>
           </div>
 
-          {/* Black notch gap (signature LCARS detail) */}
-          <div style={{ height: '10px', background: C.black }} />
+          {/* Black notch */}
+          <div className="bg-black" style={{ height: '10px' }} />
 
-          {/* NAV AREA on black bg */}
-          <div className="flex flex-col px-2 py-3 gap-1.5" style={{ background: C.black }}>
-            {/* Decorative colored row */}
+          {/* NAV AREA */}
+          <div className="flex flex-col px-2 py-3 gap-1.5 bg-black">
             <div className="flex gap-0.5 mb-2">
               {[C.orange, C.mauve, C.blue, C.cyan].map((col, i) => (
                 <div key={i} className="flex-1 rounded-full" style={{ background: col, height: '5px', opacity: 0.75 }} />
@@ -419,61 +405,60 @@ export default function EpisodeCalendar() {
             </div>
             {TABS.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className="w-full text-left uppercase font-black text-[10px] tracking-widest py-2 px-3 transition-all"
+                className={cn("font-lcars w-full text-left uppercase font-black text-[10px] tracking-widest py-2 px-3 rounded-full transition-all")}
                 style={{
                   background: activeTab === tab ? C.orange : 'rgba(255,153,0,0.1)',
                   color: activeTab === tab ? C.black : C.orange,
-                  borderRadius: '20px',
                   border: `1px solid ${activeTab === tab ? C.orange : C.orange + '30'}`,
+                  boxShadow: activeTab === tab ? `0 0 12px ${C.orange}55` : 'none',
                 }}>
                 {tab}
               </button>
             ))}
           </div>
 
-          {/* Decorative color blocks */}
-          <div className="flex flex-col gap-1 px-2 mt-4" style={{ background: C.black }}>
+          {/* Decorative colored blocks */}
+          <div className="flex flex-col gap-1 px-2 mt-4 bg-black">
             {[C.orange, C.mauve, C.blue, C.cyan, C.yellow, C.mauve, C.orange].map((col, i) => (
               <div key={i} style={{ background: col, height: '15px', borderRadius: '10px', opacity: 0.55 + i * 0.05 }} />
             ))}
           </div>
 
           {isAdmin && (
-            <div className="px-2 mt-3" style={{ background: C.black }}>
+            <div className="px-2 mt-3 bg-black">
               <LBtn onClick={() => openForm(null)} color={C.blue} className="w-full text-center">+ LOG EP</LBtn>
             </div>
           )}
 
-          <div className="flex-1" style={{ background: C.black }} />
+          <div className="flex-1 bg-black" />
 
           {/* Bottom decorative blocks */}
-          <div className="flex flex-col gap-1 px-2 pb-2" style={{ background: C.black }}>
+          <div className="flex flex-col gap-1 px-2 pb-2 bg-black">
             {[C.blue, C.mauve, C.orange].map((col, i) => (
               <div key={i} style={{ background: col, height: '22px', borderRadius: '12px' }} />
             ))}
           </div>
 
-          {/* Black notch gap */}
-          <div style={{ height: '10px', background: C.black }} />
+          {/* Black notch */}
+          <div className="bg-black" style={{ height: '10px' }} />
 
-          {/* BOTTOM CAP: orange block with top-right curve */}
-          <div style={{ background: C.orange, height: '70px', borderRadius: '0 3rem 0 0' }} />
+          {/* BOTTOM CAP */}
+          <div className="rounded-tr-[3rem]" style={{ background: C.orange, height: '70px', boxShadow: `0 0 40px ${C.orange}33` }} />
         </div>
 
         {/* MAIN CONTENT AREA ── */}
-        <div className="flex-1 flex flex-col" style={{ background: C.black }}>
+        <div className="flex-1 flex flex-col bg-black/60 backdrop-blur-md border-l border-white/10">
 
-          {/* TOP HEADER BAR — left-indented to create the LCARS notch effect */}
+          {/* TOP HEADER BAR */}
           <div style={{ paddingLeft: '18px' }}>
-            <div className="flex items-center justify-between px-6"
-              style={{ background: C.orange, height: '62px', borderRadius: '0 0 0 2rem' }}>
+            <div className="flex items-center justify-between px-6 rounded-bl-[2rem]"
+              style={{ background: C.orange, height: '62px', boxShadow: `0 4px 24px ${C.orange}44` }}>
               <div>
-                <div className="font-black tracking-widest uppercase" style={{ color: C.black, fontSize: '1.1rem' }}>EPISODE CALENDAR</div>
-                <div className="text-[9px] tracking-widest uppercase" style={{ color: 'rgba(0,0,0,0.5)' }}>STARFLEET MEDIA DIVISION · MISSION LOG INTERFACE</div>
+                <div className="font-lcars font-black tracking-widest uppercase text-black text-lg">EPISODE CALENDAR</div>
+                <div className="font-lcars text-[9px] tracking-widest uppercase text-black/50">STARFLEET MEDIA DIVISION · MISSION LOG INTERFACE</div>
               </div>
               {isAdmin && (
-                <span className="text-[9px] tracking-widest uppercase px-3 py-1 rounded-full font-black"
-                  style={{ background: 'rgba(0,0,0,0.2)', color: C.black }}>◈ ADMIN ACCESS GRANTED</span>
+                <span className="font-lcars text-[9px] tracking-widest uppercase px-3 py-1 rounded-full font-black bg-black/20 text-black">◈ ADMIN ACCESS GRANTED</span>
               )}
             </div>
           </div>
@@ -486,7 +471,7 @@ export default function EpisodeCalendar() {
           </div>
 
           {/* Content */}
-          <div className="flex-1 p-6 overflow-auto uppercase">{renderContent()}</div>
+          <div className="flex-1 p-6 overflow-auto">{renderContent()}</div>
 
           {/* Bottom stripe */}
           <div className="flex h-1.5" style={{ marginLeft: '18px' }}>
@@ -501,65 +486,64 @@ export default function EpisodeCalendar() {
       <AnimatePresence>
         {selectedEp && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.88)' }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/88"
             onClick={() => setSelectedEp(null)}>
             <motion.div initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 20 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-lg overflow-hidden"
-              style={{ background: C.black, border: `2px solid ${C.orange}`, borderRadius: '4px' }}>
+              className="w-full max-w-lg overflow-hidden rounded-xl bg-black/90 backdrop-blur-xl border border-white/10"
+              style={{ boxShadow: `0 0 60px ${C.orange}33` }}>
 
-              <div className="flex items-center justify-between px-4 py-3" style={{ background: C.orange }}>
-                <div className="uppercase font-black text-xs tracking-widest" style={{ color: C.black, letterSpacing: '0.2em' }}>MISSION BRIEFING</div>
+              <div className="flex items-center justify-between px-4 py-3 rounded-t-xl" style={{ background: C.orange }}>
+                <div className="font-lcars uppercase font-black text-xs tracking-widest text-black">MISSION BRIEFING</div>
                 <div className="flex items-center gap-2">
                   {isAdmin && (
                     <>
-                      <button onClick={() => openForm(selectedEp)} className="p-1 hover:opacity-70" style={{ color: C.black }}><Edit className="w-4 h-4" /></button>
-                      <button onClick={() => handleDelete(selectedEp.id)} className="p-1 hover:opacity-70" style={{ color: C.black }}><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => openForm(selectedEp)} className="p-1 hover:opacity-70 text-black"><Edit className="w-4 h-4" /></button>
+                      <button onClick={() => handleDelete(selectedEp.id)} className="p-1 hover:opacity-70 text-black"><Trash2 className="w-4 h-4" /></button>
                     </>
                   )}
-                  <button onClick={() => setSelectedEp(null)} className="p-1 hover:opacity-70" style={{ color: C.black }}><X className="w-4 h-4" /></button>
+                  <button onClick={() => setSelectedEp(null)} className="p-1 hover:opacity-70 text-black"><X className="w-4 h-4" /></button>
                 </div>
               </div>
 
-              <div className="p-5 space-y-4 uppercase">
-                {selectedEp.image_url && <img src={selectedEp.image_url} alt="" className="w-full h-40 object-cover" style={{ borderRadius: '2px' }} />}
+              <div className="p-5 space-y-4">
+                {selectedEp.image_url && <img src={selectedEp.image_url} alt="" className="w-full h-40 object-cover rounded-lg" />}
                 <div>
-                  <div className="font-black text-lg tracking-wide" style={{ color: C.cyan }}>{selectedEp.title}</div>
+                  <div className="font-lcars font-black text-lg tracking-wide uppercase text-cyan-400">{selectedEp.title}</div>
                   {selectedEp.recording_date && (
-                    <div className="text-xs tracking-widest mt-1" style={{ color: C.mauve }}>
+                    <div className="font-lcars text-xs tracking-widest mt-1 uppercase text-purple-300">
                       STARDATE {toStardate(selectedEp.recording_date)} · {format(parseISO(selectedEp.recording_date), 'MMMM d, yyyy').toUpperCase()}
                     </div>
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {selectedEp.recording_date && (
-                    <div className="p-3" style={{ background: '#0d0d0d', borderLeft: `3px solid ${C.orange}` }}>
-                      <div className="text-[9px] tracking-widest mb-1" style={{ color: C.orange }}>RECORDING</div>
-                      <div className="text-sm font-black" style={{ color: C.orange }}>{format(parseISO(selectedEp.recording_date), 'MMM d, yyyy').toUpperCase()}</div>
+                    <div className="p-3 rounded-lg bg-black/40 border-l-4" style={{ borderLeftColor: C.orange }}>
+                      <div className="font-lcars text-[9px] tracking-widest mb-1 uppercase text-amber-400">RECORDING</div>
+                      <div className="font-lcars text-sm font-black uppercase text-amber-400">{format(parseISO(selectedEp.recording_date), 'MMM d, yyyy').toUpperCase()}</div>
                     </div>
                   )}
                   {selectedEp.submission_deadline && (
-                    <div className="p-3" style={{ background: '#0d0d0d', borderLeft: `3px solid ${C.blue}` }}>
-                      <div className="text-[9px] tracking-widest mb-1" style={{ color: C.blue }}>DEADLINE</div>
-                      <div className="text-sm font-black" style={{ color: C.blue }}>{format(parseISO(selectedEp.submission_deadline), 'MMM d, yyyy').toUpperCase()}</div>
+                    <div className="p-3 rounded-lg bg-black/40 border-l-4" style={{ borderLeftColor: C.blue }}>
+                      <div className="font-lcars text-[9px] tracking-widest mb-1 uppercase text-blue-400">DEADLINE</div>
+                      <div className="font-lcars text-sm font-black uppercase text-blue-400">{format(parseISO(selectedEp.submission_deadline), 'MMM d, yyyy').toUpperCase()}</div>
                     </div>
                   )}
                 </div>
                 {selectedEp.main_quest_topic && (
-                  <div className="p-3" style={{ background: '#0d0d0d', borderLeft: `3px solid ${C.mauve}` }}>
-                    <div className="text-[9px] tracking-widest mb-1" style={{ color: C.mauve }}>MAIN QUEST</div>
-                    <div className="text-sm font-black" style={{ color: C.mauve }}>{selectedEp.main_quest_topic}</div>
+                  <div className="p-3 rounded-lg bg-black/40 border-l-4" style={{ borderLeftColor: C.mauve }}>
+                    <div className="font-lcars text-[9px] tracking-widest mb-1 uppercase text-purple-300">MAIN QUEST</div>
+                    <div className="font-lcars text-sm font-black uppercase text-purple-300">{selectedEp.main_quest_topic}</div>
                   </div>
                 )}
                 {selectedEp.segment && (
-                  <div className="text-xs tracking-widest" style={{ color: C.cyan }}>◈ SEGMENT: {selectedEp.segment}</div>
+                  <div className="font-lcars text-xs tracking-widest uppercase text-cyan-400">◈ SEGMENT: {selectedEp.segment}</div>
                 )}
                 {selectedEp.description && (
-                  <div className="text-sm leading-relaxed tracking-wide" style={{ color: '#888' }}>{selectedEp.description}</div>
+                  <div className="text-sm leading-relaxed text-slate-400">{selectedEp.description}</div>
                 )}
-                <span className="font-black text-[10px] px-4 py-1.5 tracking-widest"
-                  style={{ background: (STATUS[selectedEp.status]?.color || C.blue) + '22', color: STATUS[selectedEp.status]?.color || C.blue, borderRadius: '20px' }}>
+                <span className="font-lcars font-black text-[10px] px-4 py-1.5 tracking-widest rounded-full inline-block"
+                  style={{ background: (STATUS[selectedEp.status]?.color || C.blue) + '22', color: STATUS[selectedEp.status]?.color || C.blue }}>
                   {STATUS[selectedEp.status]?.label || selectedEp.status}
                 </span>
               </div>
@@ -572,22 +556,21 @@ export default function EpisodeCalendar() {
       <AnimatePresence>
         {showForm && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.92)' }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/92"
             onClick={() => setShowForm(false)}>
             <motion.div initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 20 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-lg overflow-y-auto max-h-[90vh]"
-              style={{ background: C.black, border: `2px solid ${C.blue}`, borderRadius: '4px' }}>
+              className="w-full max-w-lg overflow-y-auto max-h-[90vh] rounded-xl bg-black/90 backdrop-blur-xl border border-white/10"
+              style={{ boxShadow: `0 0 60px ${C.blue}33` }}>
 
-              <div className="flex items-center justify-between px-4 py-3" style={{ background: C.blue }}>
-                <div className="uppercase font-black text-xs tracking-widest" style={{ color: C.black, letterSpacing: '0.2em' }}>
+              <div className="flex items-center justify-between px-4 py-3 rounded-t-xl" style={{ background: C.blue }}>
+                <div className="font-lcars uppercase font-black text-xs tracking-widest text-black">
                   {editingEp ? 'EDIT MISSION LOG' : 'LOG NEW MISSION'}
                 </div>
-                <button onClick={() => setShowForm(false)} style={{ color: C.black }}><X className="w-4 h-4" /></button>
+                <button onClick={() => setShowForm(false)} className="text-black"><X className="w-4 h-4" /></button>
               </div>
 
-              <div className="p-5 space-y-4 uppercase">
+              <div className="p-5 space-y-4">
                 <LField label="Episode Title *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Ep. 42 — The Hyper-fixation Rises" />
                 <LField label="Recording Date *" value={form.recording_date} onChange={e => setForm(f => ({ ...f, recording_date: e.target.value }))} type="date" />
                 <LField label="Submission Deadline" value={form.submission_deadline} onChange={e => setForm(f => ({ ...f, submission_deadline: e.target.value }))} type="date" />
@@ -603,11 +586,10 @@ export default function EpisodeCalendar() {
                   <option value="aired">LOGGED</option>
                 </LSelect>
                 <div>
-                  <div className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: C.mauve }}>Episode Notes</div>
+                  <div className="font-lcars text-[9px] uppercase tracking-[0.2em] mb-1 text-purple-300">Episode Notes</div>
                   <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                     placeholder="Any extra notes..." rows={3}
-                    className="w-full px-3 py-2 text-sm focus:outline-none resize-none uppercase tracking-wide"
-                    style={{ background: '#1a1a2e', border: `1px solid ${C.blue}55`, borderLeft: `3px solid ${C.blue}`, color: C.cyan, borderRadius: '2px', colorScheme: 'dark' }}
+                    className="w-full px-3 py-2 text-sm focus:outline-none resize-none bg-black/40 border border-white/10 text-slate-300 rounded-lg backdrop-blur-sm"
                   />
                 </div>
                 <LBtn onClick={handleSave} disabled={saving || !form.title || !form.recording_date} color={C.orange} className="w-full text-center">

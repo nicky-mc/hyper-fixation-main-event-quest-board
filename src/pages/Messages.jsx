@@ -1,15 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Send, Loader2, MessageCircle, ArrowLeft, Smile, Paperclip, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import OnlineDot from '@/components/OnlineDot';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-function Avatar({ name, src, size = 'md' }) {
+function Avatar({ name, avatarUrl, size = 'md' }) {
   const sizes = { sm: 'w-8 h-8 text-xs', md: 'w-10 h-10 text-sm', lg: 'w-12 h-12 text-base' };
   return (
     <div className={cn("rounded-full shrink-0 flex items-center justify-center font-black text-white overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900", sizes[size])}>
-      {src ? <img src={src} alt={name} className="w-full h-full object-cover" /> : (name || '?').charAt(0).toUpperCase()}
+      {avatarUrl
+        ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+        : (name || '?').charAt(0).toUpperCase()
+      }
     </div>
   );
 }
@@ -93,10 +98,8 @@ export default function Messages() {
         const recipProf = (await base44.entities.AdventurerProfile.filter({ email: m.recipient_email }))[0];
         if (senderProf && recipProf) {
           return base44.entities.Message.update(m.id, {
-            sender_id: senderProf.id,
-            sender_name: senderProf.adventurer_name,
-            recipient_id: recipProf.id,
-            recipient_name: recipProf.adventurer_name,
+            sender_id: senderProf.id, sender_name: senderProf.adventurer_name,
+            recipient_id: recipProf.id, recipient_name: recipProf.adventurer_name,
           }).then(() => ({ ...m, sender_id: senderProf.id, sender_name: senderProf.adventurer_name, recipient_id: recipProf.id, recipient_name: recipProf.adventurer_name }));
         }
       }
@@ -171,8 +174,7 @@ export default function Messages() {
     setSelectedUser(u2);
     setMobileView('chat');
     setMessages(prev => prev.map(m =>
-      m.sender_id === u2.id && m.recipient_id === profile?.id && !m.read
-        ? { ...m, read: true } : m
+      m.sender_id === u2.id && m.recipient_id === profile?.id && !m.read ? { ...m, read: true } : m
     ));
   };
 
@@ -203,12 +205,9 @@ export default function Messages() {
     const content = input.trim();
     setInput('');
     await base44.entities.Message.create({
-      sender_id: profile.id,
-      sender_name: profile.adventurer_name,
-      recipient_id: selectedUser.id,
-      recipient_name: selectedUser.full_name,
-      content,
-      read: false,
+      sender_id: profile.id, sender_name: profile.adventurer_name,
+      recipient_id: selectedUser.id, recipient_name: selectedUser.full_name,
+      content, read: false,
     });
     setSending(false);
     setTimeout(() => inputRef.current?.focus(), 50);
@@ -231,25 +230,35 @@ export default function Messages() {
   if (!profile && !loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 text-slate-500">
       <MessageCircle className="w-10 h-10" />
-      <p className="text-sm">Please log in to use messages.</p>
+      <p className="font-lcars text-sm">PLEASE LOG IN TO ACCESS COMMS</p>
     </div>
   );
 
   const ConversationList = (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="px-4 pt-5 pb-3 shrink-0 border-b border-white/10">
-        <h2 className="text-lg font-black text-amber-400 mb-3 uppercase tracking-widest">
-          📬 Tavern Mail
-        </h2>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search adventurers..."
-            className="w-full pl-8 pr-3 py-2 rounded-xl text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-600 bg-black/40 border border-white/10 backdrop-blur-md"
-          />
+      {/* LCARS Elbow Header */}
+      <div className="shrink-0">
+        {/* Amber top accent strip */}
+        <div className="h-1.5 bg-amber-500 rounded-tr-[1rem]" />
+        <div className="px-4 pt-3 pb-3 border-b border-white/10 bg-black/60">
+          <h2 className="font-lcars text-base font-black text-amber-400 mb-3 tracking-widest">
+            ◈ COMMS PANEL
+          </h2>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="SEARCH CREW..."
+              className="w-full pl-8 pr-3 py-2 rounded-full font-lcars text-xs text-purple-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-amber-500/60 bg-black/40 border border-white/10 backdrop-blur-md tracking-widest"
+            />
+          </div>
+        </div>
+        {/* Color stripe separator */}
+        <div className="flex h-1">
+          {['bg-cyan-500', 'bg-purple-500', 'bg-amber-500', 'bg-blue-400'].map((c, i) => (
+            <div key={i} className={cn("flex-1", c)} />
+          ))}
         </div>
       </div>
 
@@ -260,35 +269,42 @@ export default function Messages() {
         ) : sortedUsers.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-3 py-16 text-slate-600">
             <MessageCircle className="w-8 h-8 opacity-30" />
-            <p className="text-xs text-center px-4">No adventurers to message yet.<br />Send a message from someone's profile!</p>
+            <p className="font-lcars text-[10px] text-center px-4 uppercase tracking-widest">No transmissions yet</p>
           </div>
         ) : sortedUsers.map(u2 => {
           const unread = getUnread(u2.id);
           const last = getLastMsg(u2.id);
           const isActive = selectedUser?.id === u2.id;
+          const partnerName = partnerProfiles[u2.id]?.adventurer_name || u2.full_name || u2.id;
+          const avatarUrl = partnerProfiles[u2.id]?.avatar_url;
           return (
             <button key={u2.id} onClick={() => selectUser(u2)}
               className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 transition-all text-left min-h-[64px] border-b border-white/5",
-                isActive
-                  ? "bg-purple-900/40 border-l-4 border-l-amber-400"
-                  : "hover:bg-white/5 border-l-4 border-l-transparent"
+                "w-full flex items-center gap-3 px-4 py-3 transition-all text-left min-h-[64px] border-b border-white/5 border-l-4",
+                isActive ? "bg-purple-900/40 border-l-amber-400" : "hover:bg-white/5 border-l-transparent"
               )}>
-              <div className="relative shrink-0">
-                <Avatar name={u2.full_name || u2.id} size="md" />
+              {/* Avatar + online dot, wrapped in Link */}
+              <Link
+                to={`${createPageUrl('AdventurerProfile')}?name=${encodeURIComponent(partnerName)}`}
+                onClick={e => e.stopPropagation()}
+                className="relative shrink-0">
+                <Avatar name={partnerName} avatarUrl={avatarUrl} size="md" />
                 <OnlineDot lastActive={partnerProfiles[u2.id]?.last_active} className="absolute bottom-0 right-0" />
                 {unread > 0 && (
                   <span className="absolute -top-1 -right-1 bg-amber-500 text-black text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center">
                     {unread > 9 ? '9+' : unread}
                   </span>
                 )}
-              </div>
+              </Link>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-1">
-                  <span className={cn("text-sm font-semibold truncate", unread > 0 ? "text-white" : "text-purple-200")}>
-                    {u2.full_name || u2.id}
-                  </span>
-                  {last && <span className="text-[10px] text-slate-500 shrink-0 uppercase tracking-wider">{formatTime(last.created_date)}</span>}
+                  <Link
+                    to={`${createPageUrl('AdventurerProfile')}?name=${encodeURIComponent(partnerName)}`}
+                    onClick={e => e.stopPropagation()}
+                    className={cn("font-lcars text-xs font-semibold truncate hover:text-amber-400 transition-colors", unread > 0 ? "text-white" : "text-purple-200")}>
+                    {partnerName}
+                  </Link>
+                  {last && <span className="font-lcars text-[9px] text-slate-500 shrink-0 uppercase tracking-widest">{formatTime(last.created_date)}</span>}
                 </div>
                 {last && (
                   <p className={cn("text-xs truncate mt-0.5", unread > 0 ? "text-purple-300 font-medium" : "text-slate-600")}>
@@ -307,24 +323,38 @@ export default function Messages() {
     <div className="flex flex-col h-full">
       {/* Chat Header */}
       {selectedUser ? (
-        <div className="flex items-center gap-3 px-4 py-3 shrink-0 border-b border-white/10 bg-black/40 backdrop-blur-md min-h-[64px]">
+        <div className="flex items-center gap-3 px-4 py-3 shrink-0 border-b border-white/10 bg-black/60 backdrop-blur-md min-h-[64px]">
+          {/* Amber left border accent */}
+          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-amber-500/40" />
           <button onClick={() => setMobileView('list')}
-            className="md:hidden p-2 -ml-1 text-purple-400 hover:text-purple-200 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+            className="md:hidden p-2 -ml-1 text-purple-400 hover:text-amber-400 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <Avatar name={selectedUser.full_name || selectedUser.id} size="md" />
+          <Link
+            to={`${createPageUrl('AdventurerProfile')}?name=${encodeURIComponent(partnerProfiles[selectedUser.id]?.adventurer_name || selectedUser.full_name || selectedUser.id)}`}
+            className="shrink-0">
+            <Avatar
+              name={partnerProfiles[selectedUser.id]?.adventurer_name || selectedUser.full_name || selectedUser.id}
+              avatarUrl={partnerProfiles[selectedUser.id]?.avatar_url}
+              size="md"
+            />
+          </Link>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-purple-300 truncate">{selectedUser.full_name || selectedUser.id}</p>
+            <Link
+              to={`${createPageUrl('AdventurerProfile')}?name=${encodeURIComponent(partnerProfiles[selectedUser.id]?.adventurer_name || selectedUser.full_name || selectedUser.id)}`}
+              className="font-lcars text-xs font-bold text-amber-300 truncate block hover:text-amber-400 transition-colors tracking-widest">
+              {partnerProfiles[selectedUser.id]?.adventurer_name || selectedUser.full_name || selectedUser.id}
+            </Link>
             {isAdmin && !conversation.some(m => m.sender_id === profile.id || m.recipient_id === profile.id) ? (
-              <p className="text-[10px] text-amber-400 uppercase tracking-widest">👁 Admin view</p>
+              <p className="font-lcars text-[9px] text-amber-400 uppercase tracking-widest">👁 ADMIN MODERATION VIEW</p>
             ) : (
-              <p className="text-[10px] text-green-400 uppercase tracking-widest">Online</p>
+              <p className="font-lcars text-[9px] text-cyan-400 uppercase tracking-widest">◈ CHANNEL OPEN</p>
             )}
           </div>
         </div>
       ) : (
         <div className="hidden md:flex items-center px-4 py-3 shrink-0 border-b border-white/10 min-h-[64px]">
-          <span className="text-sm text-slate-600">Select a conversation</span>
+          <span className="font-lcars text-[10px] text-slate-600 uppercase tracking-widest">SELECT A CHANNEL</span>
         </div>
       )}
 
@@ -332,17 +362,17 @@ export default function Messages() {
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
         {!selectedUser ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-600">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center bg-black/40 border border-white/10 backdrop-blur-md">
-              <MessageCircle className="w-8 h-8 opacity-40" />
+            <div className="w-20 h-20 rounded-full flex items-center justify-center bg-black/40 border-2 border-amber-500/20 backdrop-blur-md">
+              <MessageCircle className="w-8 h-8 opacity-40 text-amber-500" />
             </div>
             <div className="text-center">
-              <p className="text-sm font-semibold text-slate-500">No conversation selected</p>
-              <p className="text-xs text-slate-700 mt-1">Pick an adventurer from the list to start chatting</p>
+              <p className="font-lcars text-xs font-semibold text-slate-500 uppercase tracking-widest">NO CHANNEL SELECTED</p>
+              <p className="text-xs text-slate-700 mt-1">Select a crew member to open comms</p>
             </div>
           </div>
         ) : conversation.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-600">
-            <p className="text-xs">No messages yet. Say hello! 👋</p>
+            <p className="font-lcars text-[10px] uppercase tracking-widest">CHANNEL CLEAR — INITIATE TRANSMISSION</p>
           </div>
         ) : (
           <>
@@ -354,7 +384,7 @@ export default function Messages() {
                 <div key={m.id}>
                   {showTimestamp && (
                     <div className="flex justify-center my-3">
-                      <span className="text-[10px] text-slate-500 px-3 py-1 rounded-full bg-black/40 border border-white/10 uppercase tracking-widest">
+                      <span className="font-lcars text-[9px] text-slate-500 px-3 py-1 rounded-full bg-black/40 border border-white/10 uppercase tracking-widest">
                         {formatTime(m.created_date)}
                       </span>
                     </div>
@@ -364,16 +394,29 @@ export default function Messages() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ duration: 0.15 }}
                     className={cn("flex items-end gap-2 mb-1", isMe ? "justify-end" : "justify-start")}>
-                    {!isMe && <Avatar name={selectedUser.full_name || selectedUser.id} size="sm" />}
+                    {!isMe && (
+                      <Avatar
+                        name={partnerProfiles[selectedUser.id]?.adventurer_name || selectedUser.full_name || selectedUser.id}
+                        avatarUrl={partnerProfiles[selectedUser.id]?.avatar_url}
+                        size="sm"
+                      />
+                    )}
                     <div className={cn(
-                      "max-w-[72%] sm:max-w-[60%] px-4 py-2.5 text-sm leading-relaxed",
+                      "max-w-[72%] sm:max-w-[60%] px-4 py-2.5 text-sm leading-relaxed rounded-2xl",
                       isMe
-                        ? "text-white rounded-2xl rounded-br-md bg-gradient-to-br from-purple-700 to-indigo-900 shadow-md border border-purple-500/30"
-                        : "text-slate-200 rounded-2xl rounded-bl-md bg-white/10 border border-white/5"
-                    )}>
+                        ? "text-black rounded-br-md bg-gradient-to-br from-amber-400 to-orange-500 border border-amber-300/30"
+                        : "text-slate-200 rounded-bl-md bg-purple-950/70 border border-purple-500/20 backdrop-blur-sm"
+                    )}
+                    style={isMe ? { boxShadow: '0 0 20px rgba(251,191,36,0.25)' } : {}}>
                       {m.content}
                     </div>
-                    {isMe && <Avatar name={profile.adventurer_name || profile.id} size="sm" />}
+                    {isMe && (
+                      <Avatar
+                        name={profile.adventurer_name || profile.id}
+                        avatarUrl={profile.avatar_url}
+                        size="sm"
+                      />
+                    )}
                   </motion.div>
                 </div>
               );
@@ -385,12 +428,12 @@ export default function Messages() {
 
       {/* Input Footer */}
       {selectedUser && (
-        <div className="shrink-0 px-3 py-3 border-t border-white/10 bg-black/40 backdrop-blur-md">
+        <div className="shrink-0 px-3 py-3 border-t border-white/10 bg-black/60 backdrop-blur-md">
           <div className="flex items-end gap-2">
-            <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-purple-400 transition-colors rounded-xl shrink-0">
+            <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-amber-400 transition-colors rounded-full shrink-0">
               <Smile className="w-5 h-5" />
             </button>
-            <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-purple-400 transition-colors rounded-xl shrink-0">
+            <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-amber-400 transition-colors rounded-full shrink-0">
               <Paperclip className="w-5 h-5" />
             </button>
             <textarea
@@ -398,24 +441,25 @@ export default function Messages() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-              placeholder="Type a message..."
+              placeholder="Transmit message..."
               rows={1}
-              className="flex-1 resize-none rounded-2xl px-4 py-2.5 text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all bg-black/40 border border-white/10 backdrop-blur-md"
+              className="flex-1 resize-none rounded-2xl px-4 py-2.5 text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50 transition-all bg-black/40 border border-white/10 backdrop-blur-md"
               style={{ maxHeight: '120px', lineHeight: '1.5' }}
             />
             <button
               onClick={sendMessage}
               disabled={sending || !input.trim()}
               className={cn(
-                "min-w-[44px] min-h-[44px] flex items-center justify-center rounded-2xl transition-all shrink-0 disabled:opacity-40",
+                "min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-all shrink-0 disabled:opacity-40",
                 input.trim()
-                  ? "bg-gradient-to-br from-purple-700 to-indigo-900 shadow-md border border-purple-500/30"
+                  ? "bg-gradient-to-br from-amber-400 to-orange-500 border border-amber-300/30"
                   : "bg-white/5 border border-white/10"
-              )}>
-              {sending ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Send className="w-4 h-4 text-white" />}
+              )}
+              style={input.trim() ? { boxShadow: '0 0 16px rgba(251,191,36,0.35)' } : {}}>
+              {sending ? <Loader2 className="w-4 h-4 animate-spin text-black" /> : <Send className="w-4 h-4 text-black" />}
             </button>
           </div>
-          <p className="text-[10px] text-slate-600 text-center mt-1.5 uppercase tracking-widest">Enter to send · Shift+Enter for new line</p>
+          <p className="font-lcars text-[9px] text-slate-600 text-center mt-1.5 uppercase tracking-widest">ENTER TO SEND · SHIFT+ENTER FOR NEW LINE</p>
         </div>
       )}
     </div>
@@ -425,13 +469,13 @@ export default function Messages() {
     <div className="h-[calc(100vh-3.5rem)] md:h-screen flex flex-col">
       <div className="flex-1 flex overflow-hidden">
         <div className={cn(
-          "w-full md:w-[300px] md:flex flex-col shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-md",
+          "w-full md:w-[300px] md:flex flex-col shrink-0 border-r border-white/10 bg-black/50 backdrop-blur-md relative",
           mobileView === 'list' ? 'flex' : 'hidden md:flex'
         )}>
           {ConversationList}
         </div>
         <div className={cn(
-          "flex-1 flex-col min-w-0",
+          "flex-1 flex-col min-w-0 relative",
           mobileView === 'chat' ? 'flex' : 'hidden md:flex'
         )}>
           {ChatWindow}
