@@ -37,7 +37,23 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [adventurerId, setAdventurerId] = useState(null);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const u = await base44.auth.me();
+        if (!u) return;
+        const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+        if (profiles.length > 0) {
+          setAdventurerId(profiles[0].id);
+          setFormData(f => ({ ...f, quest_giver: f.quest_giver || profiles[0].adventurer_name || '' }));
+        }
+      } catch (_) {}
+    };
+    init();
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -69,12 +85,12 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
       setUploadingImage(false);
     }
 
-    const quest = await base44.entities.Quest.create({ ...formData, difficulty_class: dc, status: 'pending', ...(image_url && { image_url }) });
+    const quest = await base44.entities.Quest.create({ ...formData, difficulty_class: dc, status: 'pending', ...(adventurerId && { adventurer_id: adventurerId }), ...(image_url && { image_url }) });
 
     // Log to Activity Stream
     await base44.entities.Activity.create({
       type: 'quest_submitted',
-      user_name: formData.quest_giver,
+      adventurer_id: adventurerId || undefined,
       quest_id: quest.id,
       quest_title: formData.title,
       content: formData.description,
