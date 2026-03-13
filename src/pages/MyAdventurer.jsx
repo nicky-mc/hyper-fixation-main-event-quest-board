@@ -37,9 +37,9 @@ function calcXP(quests, comments, saved) {
 function StatBlock({ icon: Icon, label, value, color = 'text-purple-300' }) {
   return (
     <motion.div whileHover={{ scale: 1.04 }}
-      className="flex flex-col items-center gap-1 p-3 rounded-xl border border-purple-900/40 bg-purple-950/20">
+      className="flex flex-col items-center gap-1 p-3 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm">
       <Icon className={cn("w-4 h-4", color)} />
-      <span className={cn("text-2xl font-black", color)} style={{ fontFamily: "'Caveat', cursive" }}>{value}</span>
+      <span className={cn("text-2xl font-black", color)}>{value}</span>
       <span className="text-[9px] text-slate-500 uppercase tracking-widest text-center leading-tight">{label}</span>
     </motion.div>
   );
@@ -50,10 +50,10 @@ function QuestMiniCard({ quest, onUnsave }) {
   const StatusIcon = cfg.icon;
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-3 p-3 rounded-xl border border-purple-900/30 bg-purple-950/20 hover:border-purple-700/50 transition-all group">
+      className="flex items-center gap-3 p-3 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm hover:border-white/20 transition-all group">
       <div className={cn("w-1.5 h-10 rounded-full bg-gradient-to-b shrink-0", segmentColors[quest.segment] || fallbackColor)} />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-purple-100 truncate" style={{ fontFamily: "'Caveat', cursive", fontSize: '0.95rem' }}>{quest.title}</p>
+        <p className="text-sm font-bold text-purple-100 truncate">{quest.title}</p>
         <div className="flex items-center gap-2 mt-0.5">
           <span className="text-[9px] text-slate-600 truncate">{quest.segment}</span>
           <span className={cn("inline-flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-full border", cfg.bg, cfg.color)}>
@@ -188,12 +188,11 @@ export default function MyAdventurer() {
 
         {/* ── CHARACTER SHEET HEADER ── */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="relative rounded-2xl border-2 border-purple-700/50 overflow-hidden mb-6">
+          className="relative rounded-2xl border border-white/10 bg-black/50 backdrop-blur-md overflow-hidden mb-6">
           {/* Gradient bar */}
           <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-purple-500 via-amber-400 to-red-500" />
 
-          <div className="relative p-6"
-            style={{ background: 'linear-gradient(135deg, #0d0d1a 0%, #0f0820 50%, #0a0d1e 100%)' }}>
+          <div className="relative p-6 bg-black/30">
 
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
 
@@ -218,8 +217,7 @@ export default function MyAdventurer() {
 
               {/* Name, class, XP */}
               <div className="flex-1 text-center sm:text-left">
-                <h1 className="text-4xl sm:text-5xl font-black text-amber-300 leading-tight"
-                  style={{ fontFamily: "'Caveat', cursive" }}>{name}</h1>
+                <h1 className="text-4xl sm:text-5xl font-black text-amber-300 leading-tight">{name}</h1>
                 <div className="flex items-center justify-center sm:justify-start gap-2 mt-1">
                   <CharIcon className={cn("w-4 h-4", charClass.color)} />
                   <span className={cn("text-sm font-bold", charClass.color)}>{charClass.title}</span>
@@ -269,11 +267,11 @@ export default function MyAdventurer() {
         <AnimatePresence>
           {activeQuest && (
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="mb-5 p-4 rounded-xl border-2 border-amber-500/50 bg-gradient-to-r from-amber-900/20 to-orange-900/10 flex items-center gap-3">
+              className="mb-5 p-4 rounded-xl border border-amber-500/30 bg-black/50 backdrop-blur-sm flex items-center gap-3">
               <Star className="w-5 h-5 text-amber-400 shrink-0 animate-pulse" />
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] text-amber-600 uppercase tracking-widest font-bold">⚔️ Active Quest — On Air!</p>
-                <p className="text-lg font-black text-amber-300 truncate" style={{ fontFamily: "'Caveat', cursive" }}>{activeQuest.title}</p>
+                <p className="text-lg font-black text-amber-300 truncate">{activeQuest.title}</p>
               </div>
               <div className="text-right shrink-0">
                 <p className="text-[9px] text-amber-700 truncate max-w-[100px]">{activeQuest.segment}</p>
@@ -287,7 +285,7 @@ export default function MyAdventurer() {
         <AnimatePresence>
           {pendingRequests.length > 0 && (
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="mb-5 rounded-xl border border-cyan-700/50 bg-cyan-950/20 overflow-hidden">
+              className="mb-5 rounded-xl border border-white/10 bg-black/50 backdrop-blur-sm overflow-hidden">
               <div className="px-4 py-2 border-b border-cyan-800/40 flex items-center gap-2">
                 <Users className="w-4 h-4 text-cyan-400" />
                 <span className="text-xs font-bold text-cyan-300 uppercase tracking-widest">Friend Requests ({pendingRequests.length})</span>
@@ -314,7 +312,7 @@ export default function MyAdventurer() {
         </AnimatePresence>
 
         {/* Tab bar */}
-        <div className="flex gap-1 p-1 rounded-xl bg-purple-950/40 border border-purple-900/40 mb-4">
+        <div className="flex gap-1 p-1 rounded-xl bg-black/40 backdrop-blur-sm border border-white/10 mb-4">
           {tabs.map(tab => {
             const Icon = tab.icon;
             return (

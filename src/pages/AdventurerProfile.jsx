@@ -44,7 +44,7 @@ function PrivacyGate({ privacyLevel, canSee, message }) {
   const icons = { 'Private': Lock, 'Friends-Only': Users };
   const Icon = icons[privacyLevel] || Shield;
   return (
-    <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-600 border border-purple-900/30 rounded-xl">
+    <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-600 border border-white/10 bg-black/30 backdrop-blur-sm rounded-xl">
       <Icon className="w-10 h-10 opacity-20" />
       <p className="text-sm font-semibold text-slate-500">{message}</p>
     </div>
@@ -398,7 +398,7 @@ export default function AdventurerProfile() {
           <>
             {/* ── COVER + AVATAR ── */}
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border-2 border-purple-700/40 overflow-hidden mb-4">
+              className="rounded-2xl border border-white/10 bg-black/50 backdrop-blur-md overflow-hidden mb-4">
 
               <div
                 className="relative h-44 sm:h-56 overflow-hidden cursor-pointer group"
@@ -445,8 +445,7 @@ export default function AdventurerProfile() {
                 )}
               </div>
 
-              <div className="relative px-5 pb-5"
-                style={{ background: 'linear-gradient(180deg, #0d0d1a, #0a0d1e)' }}>
+              <div className="relative px-5 pb-5 bg-black/30">
 
                 <div className="flex items-end justify-between -mt-12 mb-4">
                   <div className="relative">
@@ -648,7 +647,7 @@ export default function AdventurerProfile() {
             </motion.div>
 
             {/* ── TABS ── */}
-            <div className="flex gap-1 p-1 rounded-xl bg-purple-950/40 border border-purple-900/40 mb-4">
+            <div className="flex gap-1 p-1 rounded-xl bg-black/40 backdrop-blur-sm border border-white/10 mb-4">
               {tabs.map(tab => {
                 const Icon = tab.icon;
                 return (
@@ -678,7 +677,7 @@ export default function AdventurerProfile() {
                 {activeTab === 'quests' && (
                   <div className="space-y-2">
                     {myQuests.length === 0 ? (
-                      <div className="py-12 text-center text-slate-600 border border-purple-900/30 rounded-xl flex flex-col items-center gap-2">
+                      <div className="py-12 text-center text-slate-600 border border-white/10 bg-black/30 backdrop-blur-sm rounded-xl flex flex-col items-center gap-2">
                         <Sword className="w-8 h-8 opacity-20" />
                         <p className="text-sm">No quests submitted yet.</p>
                       </div>
@@ -687,7 +686,7 @@ export default function AdventurerProfile() {
                       const StatusIcon = cfg.icon;
                       return (
                         <motion.div key={q.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-                          className="flex items-center gap-3 p-4 rounded-xl border border-purple-900/30 bg-purple-950/20 hover:border-purple-700/50 transition-all">
+                          className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm hover:border-white/20 transition-all">
                           <div className="w-1.5 h-10 rounded-full bg-gradient-to-b from-purple-500 to-indigo-600 shrink-0" />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-purple-100 truncate">{q.title}</p>
@@ -709,7 +708,7 @@ export default function AdventurerProfile() {
                 {activeTab === 'lore' && canSeePrivate && (
                   <div className="space-y-2">
                     {comments.length === 0 ? (
-                      <div className="py-12 text-center text-slate-600 border border-purple-900/30 rounded-xl flex flex-col items-center gap-2">
+                      <div className="py-12 text-center text-slate-600 border border-white/10 bg-black/30 backdrop-blur-sm rounded-xl flex flex-col items-center gap-2">
                         <MessageCircle className="w-8 h-8 opacity-20" />
                         <p className="text-sm">No lore contributions yet.</p>
                       </div>
@@ -717,7 +716,7 @@ export default function AdventurerProfile() {
                       const quest = quests[c.quest_id];
                       return (
                         <motion.div key={c.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                          className="rounded-xl border border-purple-900/30 bg-purple-950/20 overflow-hidden">
+                          className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden">
                           {quest && (
                             <div className="px-4 py-1.5 bg-purple-900/20 border-b border-purple-900/30 flex items-center justify-between">
                               <span className="text-[9px] text-purple-600 uppercase tracking-widest">{quest.segment}</span>
