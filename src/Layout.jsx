@@ -387,8 +387,8 @@ export default function Layout({ children, currentPageName }) {
         )}
       </AnimatePresence>
 
-      {/* ── MOBILE TOP BAR ── */}
-      <div className="md:hidden fixed top-0 inset-x-0 w-full z-50 h-12 flex items-center justify-between px-3"
+      {/* ── TOP BAR (All Screens) ── */}
+      <div className="fixed top-0 inset-x-0 w-full z-[100] h-12 flex items-center justify-between px-3"
         style={{
           backdropFilter: 'blur(20px) saturate(1.8)',
           WebkitBackdropFilter: 'blur(20px) saturate(1.8)',

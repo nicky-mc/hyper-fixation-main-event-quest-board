@@ -385,18 +385,26 @@ export default function AdventurerProfile() {
         style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)', backgroundSize: '45px 45px' }} />
 
       {/* MAIN CONTENT AREA WITH LCARS ELBOW */}
-      <div className="flex gap-4 md:gap-6 w-full max-w-6xl mx-auto mt-4 px-4">
+      <div className="flex w-full max-w-6xl mx-auto gap-3 pt-24 px-4 pb-12">
         
-        {/* LCARS ELBOW — Desktop only */}
-        <div className="hidden md:flex flex-col w-24 lg:w-32 shrink-0 bg-amber-500 rounded-tl-[4rem] rounded-bl-[4rem] border-r-8 border-black" />
+        {/* Left Vertical Spine */}
+        <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-24 h-[calc(100vh-8rem)]"></div>
 
-        {/* PROFILE CONTENT */}
-        <div className="flex-1 relative pt-6 md:pt-8 pb-12 overflow-y-auto">
+        {/* Right Column (Top Arm + Content) */}
+        <div className="flex-1 flex flex-col min-w-0 gap-3">
+          
+          {/* Top Horizontal Arm */}
+          <div className="hidden md:flex h-12 bg-amber-500 rounded-r-[4rem] rounded-tl-[2rem] items-center px-6 shrink-0">
+            <span className="font-lcars text-black text-xl font-black tracking-widest">PERSONNEL RECORD</span>
+          </div>
 
-        <Link to={createPageUrl('QuestBoard')}
-          className="font-lcars inline-flex items-center gap-1.5 text-purple-500 hover:text-purple-300 text-[10px] mb-4 mt-2 transition-colors uppercase tracking-widest">
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to Quest Board
-        </Link>
+          {/* Profile Content (Cover photo, Bio, Tabs) */}
+          <div className="flex-1 flex flex-col gap-4">
+
+            <Link to={createPageUrl('QuestBoard')}
+              className="font-lcars inline-flex items-center gap-1.5 text-purple-500 hover:text-purple-300 text-[10px] mb-2 transition-colors uppercase tracking-widest">
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Quest Board
+            </Link>
 
         {loading ? (
           <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-purple-500" /></div>
@@ -829,8 +837,10 @@ export default function AdventurerProfile() {
             </AnimatePresence>
           </>
           )}
-          </div>
 
+           </div>
+          </div>
+          </div>
           </div>
           </div>
           );
