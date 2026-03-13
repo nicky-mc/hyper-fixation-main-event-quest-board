@@ -58,14 +58,13 @@ export function useAdventurerSync() {
           }
           setProfile(profile);
         } else {
-          // Create new profile
-          const isAdmin = authUser.email === ADMIN_EMAIL;
+          // Create new profile with default role
           const newProfile = await base44.entities.AdventurerProfile.create({
             auth_id: authUser.id,
             system_user_id: authUser.id,
             adventurer_name: authUser.full_name || authUser.email.split('@')[0],
             email: authUser.email,
-            role: isAdmin ? 'admin' : 'user'
+            role: 'user'
           });
           setProfile(newProfile);
         }
