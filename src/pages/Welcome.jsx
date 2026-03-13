@@ -154,56 +154,7 @@ export default function Welcome() {
         </motion.p>
       </div>
 
-      {/* Auth Modals */}
-      <AnimatePresence>
-        {(showSignIn || showSignUp) && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => {
-                setShowSignIn(false);
-                setShowSignUp(false);
-              }}
-              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
-            />
-            
-            {/* Modal Container */}
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <div className="w-full max-w-md">
-                {/* Close Button */}
-                <button
-                  onClick={() => {
-                    setShowSignIn(false);
-                    setShowSignUp(false);
-                  }}
-                  className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-200 transition-colors z-50"
-                >
-                  <X className="w-5 h-5" />
-                </button>
 
-                {/* Sign In Modal */}
-                {showSignIn && (
-                  <SignInModal
-                    onClose={() => setShowSignIn(false)}
-                    onSuccess={() => window.location.href = '/QuestBoard'}
-                  />
-                )}
-
-                {/* Sign Up Modal */}
-                {showSignUp && (
-                  <SignUpModal
-                    onClose={() => setShowSignUp(false)}
-                    onSuccess={() => window.location.href = '/QuestBoard'}
-                  />
-                )}
-              </div>
-            </div>
-          </>
-        )}
-      </AnimatePresence>
 
       {/* Safe area padding for mobile */}
       <div className="h-[env(safe-area-inset-bottom)]" />
