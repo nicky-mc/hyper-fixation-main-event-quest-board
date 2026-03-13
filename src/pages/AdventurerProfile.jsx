@@ -838,7 +838,6 @@ export default function AdventurerProfile() {
           </>
           )}
 
-            </div>
           </div>
         </div>
       </div>
