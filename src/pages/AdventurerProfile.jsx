@@ -609,7 +609,7 @@ export default function AdventurerProfile() {
 
                 {/* Admin Panel */}
                 {isCurrentUserAdmin && !isOwnProfile && (
-                  <div className="mt-4 p-3 rounded-xl border border-amber-700/40 bg-amber-900/10">
+                  <div className="mt-4 p-3 rounded-xl border border-amber-500/30 bg-black/50 backdrop-blur-sm">
                     <p className="text-[10px] text-amber-500 uppercase tracking-widest font-bold mb-2 flex items-center gap-1">
                       <ShieldAlert className="w-3 h-3" /> Admin Actions
                     </p>
