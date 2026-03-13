@@ -207,7 +207,7 @@ export default function Messages() {
     );
 
   const sendMessage = async () => {
-    if (!input.trim() || !selectedUser || sending) return;
+    if (!input.trim() || !selectedUser || sending || blockedIds.has(selectedUser.id)) return;
     setSending(true);
     const content = input.trim();
     setInput('');
