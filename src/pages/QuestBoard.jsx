@@ -171,7 +171,7 @@ export default function QuestBoard() {
           {/* Top badge row */}
           <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4 flex-wrap">
             <span className="text-cyan-500/70 text-[10px] tracking-[0.4em] font-mono uppercase border border-cyan-900/50 px-2 py-0.5 rounded">
-              STARDATE 2026.02
+              STARDATE {new Date().getFullYear()}.{(new Date().getMonth() + 1).toString().padStart(2, '0')}.{new Date().getDate().toString().padStart(2, '0')}
             </span>
             <span className="text-red-500/70 text-[10px] tracking-[0.4em] font-mono uppercase border border-red-900/50 px-2 py-0.5 rounded">
               🦈 SHARK ALERT
@@ -195,20 +195,20 @@ export default function QuestBoard() {
               animate={{ textShadow: ['0 0 30px rgba(251,191,36,0.3)', '0 0 70px rgba(251,191,36,0.55)', '0 0 30px rgba(251,191,36,0.3)'] }}
               transition={{ duration: 3.5, repeat: Infinity }}
               className="font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 leading-tight"
-              style={{ fontSize: 'clamp(1.8rem, 6vw, 4rem)', fontFamily: "'Orbitron', sans-serif", letterSpacing: '0.04em' }}
+              style={{ fontSize: 'clamp(1.8rem, 6vw, 4rem)', letterSpacing: '0.04em' }}
             >
               THE HYPER-FIXATION
             </motion.h1>
             <div className="flex items-center justify-center gap-3 mt-2">
               <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
               <span className="font-bold tracking-[0.3em] uppercase text-sm"
-                style={{ fontFamily: "'Orbitron', sans-serif", color: '#ef4444', textShadow: '0 0 12px rgba(239,68,68,0.5)', fontSize: '0.65rem' }}>
+                style={{ color: '#ef4444', textShadow: '0 0 12px rgba(239,68,68,0.5)', fontSize: '0.65rem' }}>
                 ⚔ MAIN EVENT ⚔
               </span>
               <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
             </div>
             <p className="font-semibold text-purple-300/70 mt-1 tracking-[0.3em] uppercase"
-              style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.85rem' }}>
+              style={{ fontSize: '0.85rem' }}>
               Quest Board
             </p>
           </div>
@@ -282,7 +282,7 @@ export default function QuestBoard() {
                 {/* Top highlight ridge */}
                 <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
 
-                <span className="relative flex items-center gap-3" style={{ fontFamily: "'Exo 2', sans-serif", fontSize: '1.1rem', fontWeight: 800, letterSpacing: '0.08em' }}>
+                <span className="relative flex items-center gap-3" style={{ fontSize: '1.1rem', fontWeight: 800, letterSpacing: '0.08em' }}>
                   {isRolling
                     ? <><Loader2 className="w-5 h-5 animate-spin" /> Rolling Initiative...</>
                     : <><Swords className="w-5 h-5" /> Roll for Initiative!</>
@@ -304,7 +304,7 @@ export default function QuestBoard() {
             whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
             onClick={() => user ? setIsDrawerOpen(true) : base44.auth.redirectToLogin(window.location.pathname)}
             className="h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-purple-600/50 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 hover:from-purple-800 hover:to-indigo-800 hover:border-purple-500 text-purple-200 font-bold text-sm"
-            style={{ fontFamily: "'Exo 2', sans-serif", transition: 'all 0.5s ease-in-out' }}
+            style={{ transition: 'all 0.5s ease-in-out' }}
           >
             <Plus className="w-4 h-4" />
             {user ? 'Post a Quest 🦈' : 'Login to Post 🦈'}
@@ -319,7 +319,7 @@ export default function QuestBoard() {
                 "h-11 flex items-center gap-2 px-5 rounded-xl border-2 font-bold text-sm",
                 sortByVotes ? "bg-amber-500/20 border-amber-500/60 text-amber-300" : "bg-purple-900/30 border-purple-700/40 text-purple-400 hover:border-purple-500"
               )}
-              style={{ fontFamily: "'Exo 2', sans-serif", transition: 'all 0.5s ease-in-out' }}
+              style={{ transition: 'all 0.5s ease-in-out' }}
             >
               <ArrowUpDown className="w-4 h-4" />
               {sortByVotes ? 'By Votes' : 'Sort by Votes'}
@@ -331,7 +331,7 @@ export default function QuestBoard() {
             whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
             onClick={() => setMapOpen(true)}
             className="h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-cyan-800/50 bg-cyan-950/30 text-cyan-400 hover:border-cyan-600/70 font-bold text-sm"
-            style={{ fontFamily: "'Exo 2', sans-serif", transition: 'all 0.5s ease-in-out' }}
+            style={{ transition: 'all 0.5s ease-in-out' }}
           >
             <Map className="w-4 h-4" /> Quest Map
           </motion.button>
@@ -364,7 +364,7 @@ export default function QuestBoard() {
             <div className="w-24 h-24 rounded-full bg-purple-950/30 border-2 border-purple-800/30 flex items-center justify-center mb-6">
               <Fish className="w-10 h-10 text-cyan-700/50" />
             </div>
-            <h3 className="text-3xl text-purple-300/70 mb-2" style={{ fontFamily: "'Caveat', cursive" }}>
+            <h3 className="text-3xl text-purple-300/70 mb-2">
               The Board Awaits, Adventurer...
             </h3>
             <p className="text-slate-600 max-w-md text-sm">
@@ -374,7 +374,7 @@ export default function QuestBoard() {
         ) : displayedQuests.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-3xl text-purple-300/50 mb-2" style={{ fontFamily: "'Caveat', cursive" }}>No quests in this zone yet...</p>
+            <p className="text-3xl text-purple-300/50 mb-2">No quests in this zone yet...</p>
             <p className="text-slate-600 text-sm">Try a different category or post one!</p>
           </motion.div>
         ) : (
@@ -402,7 +402,7 @@ export default function QuestBoard() {
               <div className="inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-amber-500/50"
                 style={{ background: 'linear-gradient(135deg, rgba(120,53,15,0.3), rgba(13,8,32,0.8))' }}>
                 <Crown className="w-6 h-6 text-amber-400" />
-                <span className="text-xl text-amber-200 font-bold" style={{ fontFamily: "'Caveat', cursive" }}>
+                <span className="text-xl text-amber-200 font-bold">
                   Quest locked in for the episode! Nicky & Charlotte are on the case. 🦈⚔️
                 </span>
                 <Crown className="w-6 h-6 text-amber-400" />
