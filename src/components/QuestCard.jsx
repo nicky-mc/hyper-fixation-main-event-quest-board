@@ -129,7 +129,7 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0, scale: isSelected && settled ? 1.04 : 1 }}
         transition={{ duration: 0.45, delay: index * 0.07 }}
-        className={cn("relative group transition-all duration-500", isSelected && "z-10")}
+        className={cn("relative group transition-all duration-500 hover-lift", isSelected && "z-10")}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >

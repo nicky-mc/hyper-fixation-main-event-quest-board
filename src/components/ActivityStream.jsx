@@ -19,7 +19,7 @@ function MediaPreview({ url, type }) {
 
 function Avatar({ name, url, size = 7 }) {
   return url ? (
-    <img src={url} alt={name} className={`w-${size} h-${size} rounded-full object-cover shrink-0 border border-purple-600/30`} />
+    <img src={url} alt={name} className={`w-${size} h-${size} rounded-full object-cover shrink-0`} style={{ border: '2px solid rgba(255,191,0,0.35)', boxShadow: '0 0 10px rgba(255,191,0,0.2)' }} />
   ) : (
     <div className={`w-${size} h-${size} rounded-full bg-gradient-to-br from-purple-700 to-indigo-900 border border-purple-600/40 flex items-center justify-center text-[11px] font-black text-purple-200 shrink-0`}>
       {(name || '?').charAt(0).toUpperCase()}
