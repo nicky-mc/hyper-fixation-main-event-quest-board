@@ -10,15 +10,12 @@ export default function VoteButton({ questId, isSelected }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        const u = await base44.auth.me();
-        if (!u) return;
-        const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
-        if (profiles.length > 0) setAdventurerId(profiles[0].id);
-      } catch (_) {}
-    };
-    init();
+    // Resolve the AdventurerProfile id for the current auth user
+    base44.auth.me().then(async u => {
+      if (!u) return;
+      const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+      if (profiles[0]) setAdventurerId(profiles[0].id);
+    }).catch(() => {});
     loadVotes();
 
     const unsub = base44.entities.QuestVote.subscribe((event) => {
@@ -76,7 +73,10 @@ export default function VoteButton({ questId, isSelected }) {
       )}
       title={hasVoted ? "Remove vote" : "Upvote this quest"}
     >
-      <motion.div animate={hasVoted ? { y: [-3, 0] } : {}} transition={{ type: 'spring', stiffness: 400 }}>
+      <motion.div
+        animate={hasVoted ? { y: [-3, 0] } : {}}
+        transition={{ type: 'spring', stiffness: 400 }}
+      >
         <ChevronUp className={cn("w-4 h-4", hasVoted && "fill-amber-400")} />
       </motion.div>
       <AnimatePresence mode="wait">

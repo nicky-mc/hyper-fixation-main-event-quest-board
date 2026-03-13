@@ -9,19 +9,15 @@ export default function SaveQuestButton({ questId }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        const u = await base44.auth.me();
-        if (!u) return;
-        const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
-        if (profiles.length === 0) return;
-        const profileId = profiles[0].id;
-        setAdventurerId(profileId);
-        const recs = await base44.entities.SavedQuest.filter({ quest_id: questId, adventurer_id: profileId });
-        setSavedRecord(recs[0] || null);
-      } catch (_) {}
-    };
-    init();
+    base44.auth.me().then(async u => {
+      if (!u) return;
+      const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+      const profile = profiles[0];
+      if (!profile) return;
+      setAdventurerId(profile.id);
+      const recs = await base44.entities.SavedQuest.filter({ quest_id: questId, adventurer_id: profile.id });
+      setSavedRecord(recs[0] || null);
+    }).catch(() => {});
   }, [questId]);
 
   const toggle = async (e) => {
