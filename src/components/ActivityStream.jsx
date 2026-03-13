@@ -34,7 +34,8 @@ function PostItem({ post, user, onDelete, profiles }) {
       initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-      className="rounded-xl border border-purple-900/40 bg-[#0d0d1a] overflow-hidden"
+      className="rounded-xl overflow-hidden hover-lift"
+      style={{ background: 'rgba(8,6,24,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="px-4 py-2.5 flex items-center justify-between border-b border-purple-900/30">
         <div className="flex items-center gap-2">
