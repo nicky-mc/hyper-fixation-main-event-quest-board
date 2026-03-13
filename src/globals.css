@@ -76,17 +76,39 @@
 }
 
 @layer base {
+  :root {
+    --command-red: #CC0000;
+    --command-red-bright: #EF4444;
+    --magic-gold: #FFBF00;
+    --magic-gold-glow: rgba(255, 191, 0, 0.45);
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Barlow Condensed', 'Universe Ultra Condensed', 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant SC', 'ITC Serif Gothic', Georgia, serif;
+    letter-spacing: 0.03em;
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@400;600;700;800;900&family=Exo+2:wght@400;600;700;800;900&display=swap');
+@layer utilities {
+  .font-serpentine {
+    font-family: 'Serpentine', 'Orbitron', 'Exo 2', sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@400;600;700;800;900&family=Exo+2:wght@400;600;700;800;900&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=Cormorant+SC:wght@300;400;500;600;700&display=swap');
 
 @layer utilities {
   .glass-card {
