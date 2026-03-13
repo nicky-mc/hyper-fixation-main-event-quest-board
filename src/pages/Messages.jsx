@@ -41,6 +41,7 @@ export default function Messages() {
   const [profile, setProfile] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [blockedIds, setBlockedIds] = useState(new Set()); // IDs I've blocked or who blocked me
   const [selectedUser, setSelectedUser] = useState(null);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,16 @@ export default function Messages() {
           if (prof) {
             setProfile(prof);
             await loadData(prof);
+            // Load block lists (both directions)
+            const [myBlocks, theirBlocks] = await Promise.all([
+              base44.entities.BlockedUser.filter({ blocker_id: prof.id }),
+              base44.entities.BlockedUser.filter({ blocked_id: prof.id }),
+            ]);
+            const ids = new Set([
+              ...myBlocks.map(b => b.blocked_id),
+              ...theirBlocks.map(b => b.blocker_id),
+            ]);
+            setBlockedIds(ids);
           } else {
             console.warn('Profile not found for user:', user.email);
           }
@@ -213,6 +224,7 @@ export default function Messages() {
   };
 
   const filteredUsers = allUsers.filter(u2 =>
+    !blockedIds.has(u2.id) &&
     (u2.full_name || u2.id).toLowerCase().includes(search.toLowerCase())
   );
 
