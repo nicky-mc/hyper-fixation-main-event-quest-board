@@ -359,7 +359,7 @@ export default function AdventurerProfile() {
   }
 
   return (
-    <div className="min-h-screen flex"
+    <div className="min-h-screen pt-20 md:pt-24 flex"
       style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 30%, #080d1a 60%, #050a10 100%)' }}>
 
       <ImageViewerModal
@@ -394,7 +394,7 @@ export default function AdventurerProfile() {
         <div className="flex-1 relative pt-6 md:pt-8 pb-12 overflow-y-auto">
 
         <Link to={createPageUrl('QuestBoard')}
-          className="font-lcars inline-flex items-center gap-1.5 text-purple-500 hover:text-purple-300 text-[10px] mb-4 transition-colors uppercase tracking-widest">
+          className="font-lcars inline-flex items-center gap-1.5 text-purple-500 hover:text-purple-300 text-[10px] mb-4 mt-2 transition-colors uppercase tracking-widest">
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Quest Board
         </Link>
 
