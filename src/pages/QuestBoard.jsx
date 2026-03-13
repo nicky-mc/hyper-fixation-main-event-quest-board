@@ -60,7 +60,7 @@ export default function QuestBoard() {
     setLoading(false);
   };
 
-  const loadVoteCounts = async (questList) => {
+  const loadVoteCounts = async () => {
     const allVotes = await base44.entities.QuestVote.list();
     const counts = {};
     allVotes.forEach(v => { counts[v.quest_id] = (counts[v.quest_id] || 0) + 1; });
@@ -75,16 +75,13 @@ export default function QuestBoard() {
   };
 
   useEffect(() => {
-    loadQuests();
-    base44.auth.me().then(u => setUser(u)).catch(() => {});
+    const init = async () => {
+      await loadQuests();
+      await Promise.all([loadVoteCounts(), loadCommentCounts()]);
+      base44.auth.me().then(u => setUser(u)).catch(() => {});
+    };
+    init();
   }, []);
-
-  useEffect(() => {
-    if (quests.length > 0) {
-      loadVoteCounts(quests);
-      loadCommentCounts();
-    }
-  }, [quests]);
 
   // Only show pending quests on the board
   const pendingQuests = quests.filter(q => q.status === 'pending');
@@ -102,35 +99,35 @@ export default function QuestBoard() {
     : filteredQuests;
 
   const rollForInitiative = async () => {
-    if (!isAdmin) return;
-    if (pendingQuests.length === 0 || isRolling) return;
-    setIsRolling(true);
-    setSelectedQuestId(null);
+   if (!isAdmin) return;
+   if (pendingQuests.length === 0 || isRolling) return;
+   setIsRolling(true);
+   setSelectedQuestId(null);
 
-    const rollDuration = 2000;
-    const flickerInterval = 120;
-    let elapsed = 0;
+   const rollDuration = 2000;
+   const flickerInterval = 120;
+   let elapsed = 0;
 
-    const timer = setInterval(() => {
-      const ri = Math.floor(Math.random() * pendingQuests.length);
-      setRollingId(pendingQuests[ri].id);
-      elapsed += flickerInterval;
-      if (elapsed >= rollDuration) {
-        clearInterval(timer);
-        const fi = Math.floor(Math.random() * pendingQuests.length);
-        const selected = pendingQuests[fi];
-        setRollingId(null);
-        setSelectedQuestId(selected.id);
-        setIsRolling(false);
-        // Mark as completed (removes from board) and post to News Feed
-        base44.entities.Quest.update(selected.id, { status: 'completed' });
-        base44.entities.NewsPost.create({
-          author_name: 'The Quest Board',
-          author_email: 'questboard@hme.app',
-          content: `⚔️ **CHOSEN SIDE QUEST** ⚔️\n\n"${selected.title}" has been selected for the next episode!\n\n📜 ${selected.description}\n\n🎯 Segment: ${selected.segment} · 🎲 DC: ${selected.difficulty_class}\n🧙 Submitted by: ${selected.quest_giver}\n\n🦈 Nicky & Charlotte are on the case!`,
-        });
-      }
-    }, flickerInterval);
+   const timer = setInterval(() => {
+     const ri = Math.floor(Math.random() * pendingQuests.length);
+     setRollingId(pendingQuests[ri].id);
+     elapsed += flickerInterval;
+     if (elapsed >= rollDuration) {
+       clearInterval(timer);
+       const fi = Math.floor(Math.random() * pendingQuests.length);
+       const selected = pendingQuests[fi];
+       setRollingId(null);
+       setSelectedQuestId(selected.id);
+       setIsRolling(false);
+       // Mark as completed (removes from board) and post to News Feed
+       base44.entities.Quest.update(selected.id, { status: 'completed' });
+       base44.entities.NewsPost.create({
+         author_name: 'The Quest Board',
+         author_email: 'questboard@hme.app',
+         content: `⚔️ **CHOSEN SIDE QUEST** ⚔️\n\n"${selected.title}" has been selected for the next episode!\n\n📜 ${selected.description}\n\n🎯 Segment: ${selected.segment} · 🎲 DC: ${selected.difficulty_class}\n🧙 Submitted by: ${selected.quest_giver}\n\n🦈 Nicky & Charlotte are on the case!`,
+       }).then(() => loadQuests()).catch(() => {});
+     }
+   }, flickerInterval);
   };
 
   return (
