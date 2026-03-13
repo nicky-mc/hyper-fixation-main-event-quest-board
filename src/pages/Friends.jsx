@@ -214,8 +214,19 @@ export default function Friends() {
     return 'pending';
   };
 
-  const getMutualCount = (friendId) => {
-    return 0; // Would need deeper query; placeholder
+  const getMutualCount = (targetId) => {
+    // My accepted friend IDs
+    const myFriendIds = new Set(friends.map(f =>
+      f.requester_id === profile?.id ? f.recipient_id : f.requester_id
+    ));
+    // Target's accepted friendships from allProfiles context — not available here,
+    // so we rely on what we have: friendProfiles
+    const targetFriends = friendProfiles.filter(fp => {
+      const f = fp._friendship;
+      const otherId = f.requester_id === fp.id ? f.recipient_id : f.requester_id;
+      return myFriendIds.has(otherId);
+    });
+    return targetFriends.length > 0 ? targetFriends.length : 0;
   };
 
   // Search results powered by AdventurerProfile (accessible to all authenticated users)
