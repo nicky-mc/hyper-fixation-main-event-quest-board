@@ -159,6 +159,11 @@ export default function Layout({ children, currentPageName }) {
       {/* Bottom: user */}
       <div className="mt-auto px-2 pb-3 shrink-0">
         <div className="mx-1 mb-2 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.3), transparent)' }} />
+        {profile && (
+          <div className="flex justify-center mb-2">
+            <NotificationCenter profile={profile} />
+          </div>
+        )}
         {user ? (
           <>
             <AnimatePresence>
