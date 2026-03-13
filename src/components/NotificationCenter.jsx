@@ -7,19 +7,27 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { formatDistanceToNow } from 'date-fns';
 
+// Module-level cache to avoid re-fetching on every navigation
+const cache = { data: null, profileId: null, ts: 0 };
+const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
+
 export default function NotificationCenter({ profile }) {
   const [open, setOpen] = useState(false);
-  const [friendRequests, setFriendRequests] = useState([]);
-  const [unreadMessages, setUnreadMessages] = useState(0);
-  const [questVotes, setQuestVotes] = useState([]);
-  const [blockedIds, setBlockedIds] = useState(new Set());
+  const [friendRequests, setFriendRequests] = useState(cache.data?.friendRequests || []);
+  const [unreadMessages, setUnreadMessages] = useState(cache.data?.unreadMessages || 0);
+  const [questVotes, setQuestVotes] = useState(cache.data?.questVotes || []);
+  const [blockedIds, setBlockedIds] = useState(cache.data?.blockedIds || new Set());
   const [lastSeen, setLastSeen] = useState(
     () => localStorage.getItem('notif_last_seen') || new Date(0).toISOString()
   );
 
   useEffect(() => {
     if (!profile) return;
-    loadAll();
+    const now = Date.now();
+    const cacheValid = cache.profileId === profile.id && (now - cache.ts) < CACHE_TTL_MS;
+    if (!cacheValid) {
+      loadAll();
+    }
 
     const unsubFriendship = base44.entities.Friendship.subscribe(e => {
       if (e.type === 'create' && e.data?.recipient_id === profile.id && e.data?.status === 'pending') {
@@ -58,22 +66,29 @@ export default function NotificationCenter({ profile }) {
       base44.entities.Quest.filter({ adventurer_id: profile.id }),
     ]);
 
-    // Filter out blocked users from friend requests
-    setFriendRequests(requests.filter(r => !ids.has(r.requester_id)));
-    setUnreadMessages(msgs.filter(m => !ids.has(m.sender_id)).length);
+    const filteredRequests = requests.filter(r => !ids.has(r.requester_id));
+    const filteredMsgCount = msgs.filter(m => !ids.has(m.sender_id)).length;
 
-    // Votes on my quests since last seen, by other people
+    let newVotes = [];
     if (myQuests.length > 0) {
       const questIds = new Set(myQuests.map(q => q.id));
-      const allVotes = await base44.entities.QuestVote.list('-created_date', 200);
-      const newVotes = allVotes.filter(v =>
+      const allVotes = await base44.entities.QuestVote.list('-created_date', 50);
+      newVotes = allVotes.filter(v =>
         questIds.has(v.quest_id) &&
         v.created_date > lastSeen &&
         v.adventurer_id !== profile.id &&
         !ids.has(v.adventurer_id)
       );
-      setQuestVotes(newVotes);
     }
+
+    setFriendRequests(filteredRequests);
+    setUnreadMessages(filteredMsgCount);
+    setQuestVotes(newVotes);
+
+    // Update cache
+    cache.data = { friendRequests: filteredRequests, unreadMessages: filteredMsgCount, questVotes: newVotes, blockedIds: ids };
+    cache.profileId = profile.id;
+    cache.ts = Date.now();
   };
 
   const totalCount = friendRequests.length + unreadMessages + questVotes.length;
