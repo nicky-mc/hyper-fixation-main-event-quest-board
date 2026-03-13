@@ -400,7 +400,7 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Hamburger */}
         <button onClick={() => setMobileOpen(true)}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 transition-colors shrink-0">
+          className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-red-400 transition-colors shrink-0">
           <Menu className="w-5 h-5" />
         </button>
 
