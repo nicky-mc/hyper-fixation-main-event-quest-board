@@ -834,14 +834,14 @@ export default function AdventurerProfile() {
                 )}
 
               </motion.div>
-              </AnimatePresence>
-              </>
-              )}
+            </AnimatePresence>
+          </>
+          )}
 
-              </div>
-              </div>
-              </div>
-              </div>
-              </div>
-              );
-              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
