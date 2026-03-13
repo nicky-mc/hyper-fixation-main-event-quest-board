@@ -411,9 +411,9 @@ export default function AdventurerProfile() {
                     alt="cover"
                     className="w-full h-full object-cover group-hover:brightness-75 transition-all"
                     style={{
-                      objectPosition: `${coverDisplay.position.x}% ${coverDisplay.position.y}%`,
-                      transform: `scale(${coverDisplay.zoom / 100})`,
-                      transformOrigin: `${coverDisplay.position.x}% ${coverDisplay.position.y}%`,
+                      objectPosition: `${coverDisplay?.position?.x ?? 50}% ${coverDisplay?.position?.y ?? 50}%`,
+                      transform: `scale(${(coverDisplay?.zoom ?? 100) / 100})`,
+                      transformOrigin: `${coverDisplay?.position?.x ?? 50}% ${coverDisplay?.position?.y ?? 50}%`,
                     }}
                   />
                 ) : (
