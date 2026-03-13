@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useAdventurer } from '@/layout.jsx';
+import OnlineDot from '@/components/OnlineDot';
 
 function Avatar({ name, src, size = 'lg', online }) {
   const sizes = { sm: 'w-9 h-9 text-sm', md: 'w-12 h-12 text-base', lg: 'w-16 h-16 text-xl' };
@@ -28,7 +29,10 @@ function FriendCard({ profile, mutual, onMessage, onRemove }) {
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center gap-3 p-5 rounded-2xl transition-all group"
       style={{ background: 'rgba(15,8,35,0.7)', border: '1px solid rgba(139,92,246,0.2)', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
-      <Avatar name={profile.adventurer_name || profile.name} src={profile.avatar_url} size="lg" online={Math.random() > 0.5} />
+      <div className="relative">
+        <Avatar name={profile.adventurer_name || profile.name} src={profile.avatar_url} size="lg" />
+        <OnlineDot lastActive={profile.last_active} className="absolute bottom-0.5 right-0.5" />
+      </div>
       <div className="text-center min-w-0 w-full">
         <p className="font-bold text-purple-100 truncate text-sm">{profile.adventurer_name || profile.name}</p>
         {mutual > 0 && <p className="text-[10px] text-slate-500 mt-0.5">{mutual} mutual friend{mutual !== 1 ? 's' : ''}</p>}
