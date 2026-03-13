@@ -198,7 +198,7 @@ export default function Layout({ children, currentPageName }) {
   );
 
   return (
-    <AdventurerContext.Provider value={profile}>
+    <AdventurerContext.Provider value={null}>
       <div className="min-h-screen flex relative"
         style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
 

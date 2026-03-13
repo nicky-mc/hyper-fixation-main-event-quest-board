@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { useAdventurerSync } from '@/components/useAdventurerSync';
+import { useAdventurer } from '@/layout.jsx';
 
 function Avatar({ name, src, size = 'lg', online }) {
   const sizes = { sm: 'w-9 h-9 text-sm', md: 'w-12 h-12 text-base', lg: 'w-16 h-16 text-xl' };
@@ -128,7 +128,7 @@ const TABS = [
 ];
 
 export default function Friends() {
-  const { profile, loading: profileLoading } = useAdventurerSync();
+  const profile = useAdventurer();
   const [tab, setTab] = useState('friends');
   const [loading, setLoading] = useState(true);
 
@@ -141,10 +141,8 @@ export default function Friends() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    if (profileLoading) return;
     if (profile) loadAll(profile);
-    else setLoading(false);
-  }, [profile, profileLoading]);
+  }, [profile]);
 
   const loadAll = async (prof) => {
     setLoading(true);
