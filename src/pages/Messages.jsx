@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Send, Loader2, MessageCircle, ArrowLeft, Smile, Paperclip, Search } from 'lucide-react';
+import OnlineDot from '@/components/OnlineDot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -41,6 +42,7 @@ export default function Messages() {
   const [profile, setProfile] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [partnerProfiles, setPartnerProfiles] = useState({}); // id -> AdventurerProfile
   const [blockedIds, setBlockedIds] = useState(new Set()); // IDs I've blocked or who blocked me
   const [selectedUser, setSelectedUser] = useState(null);
   const [input, setInput] = useState('');
@@ -137,7 +139,15 @@ export default function Messages() {
       }
     });
 
-    setAllUsers(Object.values(partnerMap));
+    const users = Object.values(partnerMap);
+    setAllUsers(users);
+    // Fetch AdventurerProfiles for online status
+    if (users.length > 0) {
+      const allProfs = await base44.entities.AdventurerProfile.list('adventurer_name', 200);
+      const profMap = {};
+      allProfs.forEach(p => { profMap[p.id] = p; });
+      setPartnerProfiles(profMap);
+    }
   };
 
   useEffect(() => {
