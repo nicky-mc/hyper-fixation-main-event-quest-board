@@ -250,7 +250,7 @@ export default function Layout({ children, currentPageName }) {
       >
         {/* Command Red top accent */}
         <div className="absolute inset-x-0 top-0 h-0.5 rounded-t-2xl"
-          style={{ background: 'linear-gradient(90deg, transparent, #dc2626, #fbbf24, #dc2626, transparent)' }} />
+          style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)' }} />
         {/* Command Red left glow edge */}
         <div className="absolute left-0 top-8 bottom-8 w-0.5 rounded-full"
           style={{ background: 'linear-gradient(180deg, transparent, rgba(239,68,68,0.6), transparent)' }} />
