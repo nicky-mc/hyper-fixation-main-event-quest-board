@@ -10,29 +10,14 @@ export default function SignInModal({ onClose, onSuccess }) {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignIn = async (e) => {
+  const handleSignIn = (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-    
-    setLoading(true);
-    setError('');
-    
-    try {
-      // Sign in with email/password using base44 auth
-      await base44.auth.redirectToLogin(window.location.pathname, { email, password });
-      onSuccess?.();
-    } catch (err) {
-      setError(err.message || 'Sign in failed');
-    } finally {
-      setLoading(false);
-    }
+    // base44 auth uses the platform's login page - redirects there and back
+    base44.auth.redirectToLogin('/QuestBoard');
   };
 
   const handleGoogleSignIn = () => {
-    base44.auth.redirectToLogin(window.location.pathname, { provider: 'google' });
+    base44.auth.redirectToLogin('/QuestBoard');
   };
 
   return (

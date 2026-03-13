@@ -41,29 +41,13 @@ export default function SignUpModal({ onClose, onSuccess }) {
     setLoading(true);
     setError('');
 
-    try {
-      // Sign up via base44 auth
-      await base44.auth.redirectToLogin(window.location.pathname);
-
-      // Create AdventurerProfile automatically
-      await base44.entities.AdventurerProfile.create({
-        auth_id: formData.email,
-        email: formData.email,
-        adventurer_name: formData.name,
-        role: 'user',
-      });
-
-      onSuccess?.();
-      window.location.href = '/QuestBoard';
-    } catch (err) {
-      setError(err.message || 'Sign up failed');
-    } finally {
-      setLoading(false);
-    }
+    // base44 auth uses the platform's login page for registration too
+    base44.auth.redirectToLogin('/QuestBoard');
+    setLoading(false);
   };
 
   const handleGoogleSignUp = () => {
-    base44.auth.redirectToLogin(window.location.pathname);
+    base44.auth.redirectToLogin('/QuestBoard');
   };
 
   return (

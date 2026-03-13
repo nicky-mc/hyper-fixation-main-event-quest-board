@@ -19,6 +19,18 @@ export default function Welcome() {
   const [showSignUp, setShowSignUp] = useState(false);
   const { isAuthenticated, isLoadingAuth } = useAuth();
 
+  // MUST be before any conditional returns (React rules of hooks)
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        setShowSignIn(false);
+        setShowSignUp(false);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, []);
+
   // If already logged in and auth check complete, redirect to QuestBoard
   if (isAuthenticated && !isLoadingAuth) {
     return <Navigate to="/QuestBoard" replace />;
@@ -32,18 +44,6 @@ export default function Welcome() {
       </div>
     );
   }
-
-  // Handle ESC key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        setShowSignIn(false);
-        setShowSignUp(false);
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 pb-[max(3rem,env(safe-area-inset-bottom))] relative overflow-hidden"
