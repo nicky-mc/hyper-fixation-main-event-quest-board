@@ -339,16 +339,19 @@ export default function AdventurerProfile() {
 
                 {/* Avatar — overlapping the cover */}
                 <div className="flex items-end justify-between -mt-12 mb-4">
-                  <div className="relative">
-                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#0d0d1a] shadow-2xl shadow-black/60">
-                      {avatarUrl ? (
-                        <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 flex items-center justify-center text-4xl font-black text-white">
-                          {adventurerName.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
+                   <div className="relative">
+                     <div 
+                       className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#0d0d1a] shadow-2xl shadow-black/60 cursor-pointer hover:opacity-80 transition-opacity"
+                       onClick={() => avatarUrl && setViewingImage({ url: avatarUrl, alt: 'avatar' })}
+                     >
+                       {avatarUrl ? (
+                         <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                       ) : (
+                         <div className="w-full h-full bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 flex items-center justify-center text-4xl font-black text-white">
+                           {adventurerName.charAt(0).toUpperCase()}
+                         </div>
+                       )}
+                     </div>
                     {isOwnProfile && (
                       <>
                         <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
