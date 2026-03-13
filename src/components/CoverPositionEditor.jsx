@@ -7,8 +7,10 @@ export default function CoverPositionEditor({
   initialPosition = { x: 50, y: 50 }, 
   initialZoom = 100,
   onSave, 
-  onCancel 
+  onCancel,
+  isOpen = false
 }) {
+  if (!isOpen || !coverUrl) return null;
   const [position, setPosition] = useState(initialPosition);
   const [zoom, setZoom] = useState(initialZoom);
   const [isDragging, setIsDragging] = useState(false);
