@@ -128,7 +128,7 @@ const TABS = [
 ];
 
 export default function Friends() {
-  const profile = useAdventurer();
+  const { profile, loading: profileLoading } = useAdventurerSync();
   const [tab, setTab] = useState('friends');
   const [loading, setLoading] = useState(true);
 
@@ -141,8 +141,10 @@ export default function Friends() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    if (profileLoading) return;
     if (profile) loadAll(profile);
-  }, [profile]);
+    else setLoading(false);
+  }, [profile, profileLoading]);
 
   const loadAll = async (prof) => {
     setLoading(true);
