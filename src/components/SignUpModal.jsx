@@ -43,11 +43,7 @@ export default function SignUpModal({ onClose, onSuccess }) {
 
     try {
       // Sign up via base44 auth
-      await base44.auth.redirectToSignUp(window.location.pathname, {
-        email: formData.email,
-        password: formData.password,
-        full_name: formData.name,
-      });
+      await base44.auth.redirectToLogin(window.location.pathname);
 
       // Create AdventurerProfile automatically
       await base44.entities.AdventurerProfile.create({
