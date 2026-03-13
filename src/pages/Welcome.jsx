@@ -12,21 +12,9 @@ const FEATURES = [
 ];
 
 export default function Welcome() {
-  const [showSignIn, setShowSignIn] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
   const { isAuthenticated, isLoadingAuth } = useAuth();
 
-  // MUST be before any conditional returns (React rules of hooks)
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        setShowSignIn(false);
-        setShowSignUp(false);
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, []);
+  const handleLogin = () => base44.auth.redirectToLogin('/QuestBoard');
 
   // If already logged in and auth check complete, redirect to QuestBoard
   if (isAuthenticated && !isLoadingAuth) {
