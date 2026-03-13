@@ -6,6 +6,7 @@ import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays,
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import MessageToast from '@/components/MessageToast';
+import NotificationCenter from '@/components/NotificationCenter';
 import { useAdventurerSync } from '@/components/useAdventurerSync';
 
 // Global adventurer context
@@ -43,6 +44,7 @@ export default function Layout({ children, currentPageName }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expanded, setExpanded]     = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -65,6 +67,12 @@ export default function Layout({ children, currentPageName }) {
     });
     return unsub;
   }, [profile]);
+
+  // Ping last_active on every navigation
+  useEffect(() => {
+    if (!profile) return;
+    base44.entities.AdventurerProfile.update(profile.id, { last_active: new Date().toISOString() }).catch(() => {});
+  }, [location.pathname, profile?.id]);
 
   const handleLogin  = () => base44.auth.redirectToLogin(window.location.pathname);
   const handleLogout = () => base44.auth.logout('/');
