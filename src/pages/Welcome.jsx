@@ -111,7 +111,7 @@ export default function Welcome() {
                 }}>
                 ⚔️ Ready Player One
               </button>
-              <button onClick={() => setShowSignUp(true)}
+              <button onClick={handleLogin}
                 className="flex-1 min-h-[50px] sm:py-4 rounded-xl font-black text-base transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
                 style={{
                   fontFamily: "'Exo 2', sans-serif",
