@@ -384,21 +384,14 @@ export default function AdventurerProfile() {
       <div className="fixed inset-0 opacity-20 pointer-events-none"
         style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)', backgroundSize: '45px 45px' }} />
 
-      {/* LCARS ELBOW STRUCTURE — Desktop only */}
-      <div className="hidden md:flex flex-col shrink-0 relative w-24 gap-3 p-3"
-        style={{ background: 'rgba(139,69,19,0.25)' }}>
-        {/* Top elbow — thick sweeping corner */}
-        <div className="absolute top-0 -right-6 w-24 h-24 rounded-br-[3rem]"
-          style={{ background: 'linear-gradient(135deg, rgba(217,119,6,0.4), rgba(139,69,19,0.3))' }} />
-        {/* Vertical color bar */}
-        <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full bg-gradient-to-b from-amber-500 via-red-500 to-purple-500" />
-      </div>
+      {/* MAIN CONTENT AREA WITH LCARS ELBOW */}
+      <div className="flex gap-4 md:gap-6 w-full max-w-6xl mx-auto mt-4 px-4">
+        
+        {/* LCARS ELBOW — Desktop only */}
+        <div className="hidden md:flex flex-col w-24 lg:w-32 shrink-0 bg-amber-500 rounded-tl-[4rem] rounded-bl-[4rem] border-r-8 border-black" />
 
-      {/* GAP between elbow and content */}
-      <div className="hidden md:block w-3" style={{ background: 'transparent' }} />
-
-      {/* MAIN CONTENT AREA */}
-      <div className="flex-1 relative px-4 md:px-6 pt-6 md:pt-8 pb-12 overflow-y-auto">
+        {/* PROFILE CONTENT */}
+        <div className="flex-1 relative pt-6 md:pt-8 pb-12 overflow-y-auto">
 
         <Link to={createPageUrl('QuestBoard')}
           className="font-lcars inline-flex items-center gap-1.5 text-purple-500 hover:text-purple-300 text-[10px] mb-4 transition-colors uppercase tracking-widest">
@@ -416,7 +409,7 @@ export default function AdventurerProfile() {
               className="rounded-2xl border border-white/10 bg-black/50 backdrop-blur-md overflow-hidden mb-4">
 
               <div
-                className="relative h-44 sm:h-56 overflow-hidden cursor-pointer group"
+                className="relative h-64 sm:h-80 lg:h-96 overflow-hidden cursor-pointer group"
                 onClick={() => coverUrl && setViewingImage({ url: coverUrl, alt: 'cover' })}
               >
                 {coverUrl ? (
@@ -462,17 +455,17 @@ export default function AdventurerProfile() {
 
               <div className="relative px-5 pb-5 bg-black/30">
 
-                <div className="flex items-end justify-between -mt-12 mb-4">
+                <div className="flex items-end justify-between -mt-16 sm:-mt-20 mb-4">
                   <div className="relative">
                     <div
-                      className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#0d0d1a] shadow-2xl shadow-black/60 cursor-pointer hover:opacity-80 transition-opacity"
+                      className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-[#0d0d1a] shadow-2xl shadow-black/60 cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={() => avatarUrl && setViewingImage({ url: avatarUrl, alt: 'avatar' })}
                     >
                       {avatarUrl ? (
                         <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 flex items-center justify-center text-4xl font-black text-white">
-                          {adventurerName.charAt(0).toUpperCase()}
+                        <div className="w-full h-full bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 flex items-center justify-center text-6xl sm:text-7xl font-black text-white">
+                           {adventurerName.charAt(0).toUpperCase()}
                         </div>
                       )}
                     </div>
@@ -480,8 +473,8 @@ export default function AdventurerProfile() {
                       <>
                         <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
                         <button onClick={() => avatarRef.current?.click()} disabled={uploadingAvatar}
-                          className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-purple-600 border-2 border-[#0d0d1a] flex items-center justify-center hover:bg-purple-500 transition-colors">
-                          {uploadingAvatar ? <Loader2 className="w-3 h-3 animate-spin text-white" /> : <Camera className="w-3 h-3 text-white" />}
+                          className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-purple-600 border-2 border-[#0d0d1a] flex items-center justify-center hover:bg-purple-500 transition-colors">
+                          {uploadingAvatar ? <Loader2 className="w-5 h-5 animate-spin text-white" /> : <Camera className="w-5 h-5 text-white" />}
                         </button>
                       </>
                     )}
@@ -835,8 +828,10 @@ export default function AdventurerProfile() {
               </motion.div>
             </AnimatePresence>
           </>
-        )}
-      </div>
-    </div>
-  );
-}
+          )}
+          </div>
+
+          </div>
+          </div>
+          );
+          }
