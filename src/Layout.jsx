@@ -269,8 +269,103 @@ export default function Layout({ children, currentPageName }) {
         <SidebarContent onNav={() => {}} />
       </motion.aside>
 
-      {/* ── MOBILE TOP BAR (slim, just logo) ── */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-50 h-12 flex items-center justify-center px-4"
+      {/* ── MOBILE DRAWER OVERLAY ── */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="md:hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.div
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              className="md:hidden fixed left-0 top-0 bottom-0 w-72 z-[70] flex flex-col overflow-hidden"
+              style={{
+                background: 'rgba(8, 6, 24, 0.97)',
+                borderRight: '1px solid rgba(204,0,0,0.25)',
+                boxShadow: '4px 0 40px rgba(0,0,0,0.8)',
+              }}>
+              {/* Top accent */}
+              <div className="absolute inset-x-0 top-0 h-0.5"
+                style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)' }} />
+
+              {/* Close button */}
+              <button onClick={() => setMobileOpen(false)}
+                className="absolute top-3 right-3 p-2 rounded-lg text-slate-500 hover:text-red-400 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Profile section at top */}
+              {profile && (
+                <Link to={`/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-5 pt-8 pb-5 border-b border-red-900/30 group">
+                  <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-amber-500/40 group-hover:border-amber-400 transition-colors"
+                    style={{ boxShadow: '0 0 16px rgba(251,191,36,0.2)' }}>
+                    {profile.avatar_url
+                      ? <img src={profile.avatar_url} alt={profile.adventurer_name} className="w-full h-full object-cover" />
+                      : <div className="w-full h-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-2xl font-black text-white">
+                          {(profile.adventurer_name || '?').charAt(0).toUpperCase()}
+                        </div>
+                    }
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-black text-amber-300 text-base truncate">{profile.adventurer_name}</p>
+                    <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                    <p className="text-[10px] text-red-400/70 mt-0.5 flex items-center gap-1">
+                      View Profile <ChevronRight className="w-3 h-3" />
+                    </p>
+                  </div>
+                </Link>
+              )}
+
+              {/* Nav items */}
+              <nav className="flex flex-col gap-1 px-3 py-4 flex-1 overflow-y-auto">
+                {NAV_ITEMS.map(({ label, page, icon: Icon }) => {
+                  const badge = page === 'Messages' ? unreadCount : 0;
+                  return (
+                    <Link key={page} to={createPageUrl(page)} onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-red-400 hover:bg-red-900/20 transition-all group"
+                      style={{ border: '1px solid transparent' }}>
+                      <div className="relative shrink-0">
+                        <Icon className="w-5 h-5 group-hover:[filter:drop-shadow(0_0_6px_rgba(239,68,68,0.9))]" />
+                        {badge > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center">
+                            {badge > 9 ? '9+' : badge}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-sm font-semibold">{label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {/* Bottom: logout */}
+              <div className="px-3 pb-6 border-t border-red-900/20 pt-3">
+                {user ? (
+                  <button onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-900/20 transition-all group">
+                    <LogOut className="w-5 h-5 group-hover:[filter:drop-shadow(0_0_5px_rgba(239,68,68,0.8))]" />
+                    <span className="text-sm font-semibold">Logout</span>
+                  </button>
+                ) : (
+                  <button onClick={handleLogin}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-amber-400/80 hover:text-amber-300 hover:bg-amber-900/20 transition-all">
+                    <LogIn className="w-5 h-5" />
+                    <span className="text-sm font-semibold">Login</span>
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ── MOBILE TOP BAR ── */}
+      <div className="md:hidden fixed top-0 inset-x-0 z-50 h-12 flex items-center justify-between px-3"
         style={{
           backdropFilter: 'blur(20px) saturate(1.8)',
           WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
@@ -279,18 +374,38 @@ export default function Layout({ children, currentPageName }) {
         }}>
         <div className="h-0.5 absolute inset-x-0 top-0"
           style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)' }} />
-        <Link to={createPageUrl('QuestBoard')} className="flex items-center gap-2">
+
+        {/* Hamburger */}
+        <button onClick={() => setMobileOpen(true)}
+          className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 transition-colors shrink-0">
+          <Menu className="w-5 h-5" />
+        </button>
+
+        {/* Logo */}
+        <Link to={createPageUrl('QuestBoard')} className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
           <div className="w-7 h-7 rounded-full overflow-hidden"
             style={{ border: '1px solid rgba(255,191,0,0.5)', boxShadow: '0 0 10px rgba(255,191,0,0.25)' }}>
             <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-black text-base" style={{ background: 'linear-gradient(90deg, #CC0000, #FFBF00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>HME</span>
         </Link>
-        {profile && (
-          <div className="absolute right-3">
-            <NotificationCenter profile={profile} />
-          </div>
-        )}
+
+        {/* Right: notification + profile avatar */}
+        <div className="flex items-center gap-2 shrink-0">
+          {profile && <NotificationCenter profile={profile} />}
+          {profile && (
+            <Link to={`/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`}
+              className="w-7 h-7 rounded-full overflow-hidden border border-amber-500/40 hover:border-amber-400 transition-colors"
+              style={{ boxShadow: '0 0 8px rgba(251,191,36,0.15)' }}>
+              {profile.avatar_url
+                ? <img src={profile.avatar_url} alt={profile.adventurer_name} className="w-full h-full object-cover" />
+                : <div className="w-full h-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-xs font-black text-white">
+                    {(profile.adventurer_name || '?').charAt(0).toUpperCase()}
+                  </div>
+              }
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* ── MOBILE FLOATING BOTTOM DOCK ── */}
