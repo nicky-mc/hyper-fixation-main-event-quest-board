@@ -14,70 +14,75 @@ export function useAdventurerSync() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isMounted = true; // Prevent state updates if component unmounts
+
     const syncUser = async () => {
       try {
         const authUser = await base44.auth.me();
+        
         if (!authUser) {
-          setProfile(null);
-          setLoading(false);
+          if (isMounted) {
+            setProfile(null);
+            setLoading(false);
+          }
           return;
         }
 
-        // Step 1: Look up by email first (handles existing users with no auth_id)
+        // 1. FIRST check by auth_id (The most robust method)
         let profiles = await base44.entities.AdventurerProfile.filter({
-          email: authUser.email
+          auth_id: authUser.id
         });
 
-        let profile = null;
+        let currentProfile = null;
 
         if (profiles.length > 0) {
-          // Deduplicate if multiple profiles with same email
-          if (profiles.length > 1) {
-            // Sort by data completeness, keep the most complete one
-            profiles.sort((a, b) => {
-              const aScore = Object.values(a).filter(v => v && v !== 'user').length;
-              const bScore = Object.values(b).filter(v => v && v !== 'user').length;
-              return bScore - aScore;
-            });
-            profile = profiles[0];
-            
-            // Delete duplicates
-            for (let i = 1; i < profiles.length; i++) {
-              await base44.entities.AdventurerProfile.delete(profiles[i].id);
-            }
-          } else {
-            profile = profiles[0];
-          }
-
-          // Update auth_id if missing or different, but never touch role
-          if (profile.auth_id !== authUser.id || profile.system_user_id !== authUser.id) {
-            profile = await base44.entities.AdventurerProfile.update(profile.id, {
-              auth_id: authUser.id,
-              system_user_id: authUser.id,
-            });
-          }
-          setProfile(profile);
+          currentProfile = profiles[0];
         } else {
-          // Create new profile with default role
-          const newProfile = await base44.entities.AdventurerProfile.create({
+          // 2. Fallback: check by email if they were created before auth_id was added
+          profiles = await base44.entities.AdventurerProfile.filter({
+            email: authUser.email
+          });
+
+          if (profiles.length > 0) {
+             currentProfile = profiles[0];
+             // Repair the missing auth_id
+             currentProfile = await base44.entities.AdventurerProfile.update(currentProfile.id, {
+                auth_id: authUser.id,
+                system_user_id: authUser.id
+             });
+          }
+        }
+
+        // 3. If still no profile, create a brand new one
+        if (!currentProfile) {
+           currentProfile = await base44.entities.AdventurerProfile.create({
             auth_id: authUser.id,
             system_user_id: authUser.id,
             adventurer_name: authUser.full_name || authUser.email.split('@')[0],
             email: authUser.email,
             role: 'user'
           });
-          setProfile(newProfile);
         }
-        setError(null);
+
+        // 4. CRITICAL: Always set the profile to state
+        if (isMounted) {
+            setProfile(currentProfile);
+            setError(null);
+        }
+
       } catch (err) {
         console.error('Adventurer sync error:', err);
-        setError(err);
+        if (isMounted) setError(err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     syncUser();
+
+    return () => {
+        isMounted = false; // Cleanup
+    };
   }, []);
 
   return { profile, loading, error };
