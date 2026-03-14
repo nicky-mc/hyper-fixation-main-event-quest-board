@@ -392,13 +392,7 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* ── TOP BAR (All Screens) ── */}
-      <div className="fixed top-0 inset-x-0 w-full z-[100] h-12 flex items-center justify-between px-3"
-        style={{
-          backdropFilter: 'blur(20px) saturate(1.8)',
-          WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
-          background: 'rgba(8, 6, 24, 0.75)',
-          borderBottom: '1px solid rgba(239,68,68,0.15)',
-        }}>
+      <div className="fixed top-0 w-full h-16 z-[100] flex items-center justify-between px-3 bg-black border-b border-purple-900/50">
         <div className="h-0.5 absolute inset-x-0 top-0"
           style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)' }} />
 
