@@ -84,36 +84,8 @@ export default function Layout({ children, currentPageName }) {
   // Sidebar content shared between desktop & mobile
   const SidebarContent = ({ onNav }) => (
     <>
-      {/* Logo */}
-      <Link to={createPageUrl('QuestBoard')} onClick={onNav}
-        className="flex items-center gap-3 px-3 py-4 mb-2 group shrink-0">
-        <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 transition-all duration-500 group-hover:scale-110"
-          style={{
-            border: '1px solid rgba(251,191,36,0.5)',
-            boxShadow: '0 0 16px rgba(251,191,36,0.25)',
-          }}>
-          <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
-        </div>
-        <AnimatePresence>
-          {expanded && (
-            <motion.span
-              initial={{ opacity: 0, x: -8, width: 0 }}
-              animate={{ opacity: 1, x: 0, width: 'auto' }}
-              exit={{ opacity: 0, x: -8, width: 0 }}
-              className="font-black text-lg tracking-wide overflow-hidden whitespace-nowrap"
-              style={{
-                background: 'linear-gradient(135deg, #fbbf24, #f97316)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}>
-              HME
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </Link>
-
       {/* Divider */}
-      <div className="mx-3 mb-3 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.4), transparent)' }} />
+      <div className="mx-3 mb-3 mt-3 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.4), transparent)' }} />
 
       {/* Nav items */}
       <nav className="flex flex-col gap-1 flex-1 px-2">
