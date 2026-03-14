@@ -45,6 +45,7 @@ export default function Layout({ children, currentPageName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expanded, setExpanded]     = useState(false);
   const location = useLocation();
+  const lastUnreadFetch = useRef(0);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -54,6 +55,9 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   const loadUnread = async (profileId) => {
+    const now = Date.now();
+    if (now - lastUnreadFetch.current < 30000) return; // 30s cooldown
+    lastUnreadFetch.current = now;
     const msgs = await base44.entities.Message.filter({ recipient_id: profileId, read: false });
     setUnreadCount(msgs.length);
   };
