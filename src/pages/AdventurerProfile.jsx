@@ -385,21 +385,21 @@ export default function AdventurerProfile() {
         style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)', backgroundSize: '45px 45px' }} />
 
       {/* MAIN CONTENT AREA WITH LCARS ELBOW */}
-      <div className="flex w-full max-w-6xl mx-auto gap-3 pt-24 px-4 pb-12">
+      <div className="flex w-full max-w-6xl mx-auto gap-3 pt-16 px-4 pb-12 relative">
         
         {/* Left Vertical Spine */}
-        <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-24 z-40 h-[calc(100vh-8rem)]"></div>
+        <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-16 z-40 h-[calc(100vh-4rem)]"></div>
 
         {/* Right Column (Top Arm + Content) */}
         <div className="flex-1 flex flex-col min-w-0 gap-3">
           
           {/* Top Horizontal Arm */}
-          <div className="hidden md:flex sticky top-24 z-40 h-12 bg-amber-500 rounded-r-[4rem] rounded-tl-[2rem] items-center px-6 shrink-0">
+          <div className="hidden md:flex h-12 bg-amber-500 rounded-r-[4rem] rounded-tl-[2rem] items-center px-6 shrink-0 sticky top-16 z-40 shadow-md">
             <span className="font-lcars text-black text-xl font-black tracking-widest">PERSONNEL RECORD</span>
           </div>
 
           {/* Profile Content (Cover photo, Bio, Tabs) */}
-          <div className="flex-1 flex flex-col gap-4">
+          <div className="flex-1 flex flex-col gap-4 relative z-20">
 
             <Link to={createPageUrl('QuestBoard')}
               className="font-lcars inline-flex items-center gap-1.5 text-purple-500 hover:text-purple-300 text-[10px] mb-2 transition-colors uppercase tracking-widest">
