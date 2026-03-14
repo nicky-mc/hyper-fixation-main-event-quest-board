@@ -393,8 +393,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* ── TOP BAR (All Screens) ── */}
       <div className="fixed top-0 w-full h-16 z-[100] flex items-center justify-between px-3 bg-black border-b border-purple-900/50">
-        <div className="h-0.5 absolute inset-x-0 top-0"
-          style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)' }} />
+
 
         {/* Hamburger */}
         <button onClick={() => setMobileOpen(true)}
