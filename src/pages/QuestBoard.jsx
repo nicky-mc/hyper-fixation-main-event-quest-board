@@ -301,7 +301,7 @@ export default function QuestBoard() {
           <motion.button
             whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
             onClick={() => user ? setIsDrawerOpen(true) : base44.auth.redirectToLogin(window.location.pathname)}
-            className="h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-purple-600/50 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 hover:from-purple-800 hover:to-indigo-800 hover:border-purple-500 text-purple-200 font-bold text-sm"
+            className="font-lcars h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-purple-600/50 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 hover:from-purple-800 hover:to-indigo-800 hover:border-purple-500 text-purple-200 font-bold text-sm"
             style={{ transition: 'all 0.5s ease-in-out' }}
           >
             <Plus className="w-4 h-4" />
@@ -314,7 +314,7 @@ export default function QuestBoard() {
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
               onClick={() => setSortByVotes(s => !s)}
               className={cn(
-                "h-11 flex items-center gap-2 px-5 rounded-xl border-2 font-bold text-sm",
+                "font-lcars h-11 flex items-center gap-2 px-5 rounded-xl border-2 font-bold text-sm",
                 sortByVotes ? "bg-amber-500/20 border-amber-500/60 text-amber-300" : "bg-purple-900/30 border-purple-700/40 text-purple-400 hover:border-purple-500"
               )}
               style={{ transition: 'all 0.5s ease-in-out' }}
@@ -328,7 +328,7 @@ export default function QuestBoard() {
           <motion.button
             whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
             onClick={() => setMapOpen(true)}
-            className="h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-cyan-800/50 bg-cyan-950/30 text-cyan-400 hover:border-cyan-600/70 font-bold text-sm"
+            className="font-lcars h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-cyan-800/50 bg-cyan-950/30 text-cyan-400 hover:border-cyan-600/70 font-bold text-sm"
             style={{ transition: 'all 0.5s ease-in-out' }}
           >
             <Map className="w-4 h-4" /> Quest Map
