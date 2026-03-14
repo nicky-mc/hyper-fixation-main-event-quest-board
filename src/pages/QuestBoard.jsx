@@ -311,6 +311,19 @@ export default function QuestBoard() {
             </motion.button>
           )}
 
+          {/* Host Settings — admin only */}
+          {isAdmin && (
+            <motion.button
+              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+              onClick={() => setSettingsOpen(true)}
+              className="font-lcars h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-slate-600/50 bg-slate-900/40 text-slate-300 hover:border-slate-400 hover:bg-slate-800/60 font-bold text-sm tracking-widest uppercase"
+              style={{ transition: 'all 0.5s ease-in-out' }}
+              title="Host notification settings"
+            >
+              <Settings className="w-4 h-4" /> Host Settings
+            </motion.button>
+          )}
+
           {/* Quest Map */}
           <motion.button
             whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
