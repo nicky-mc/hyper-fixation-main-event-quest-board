@@ -187,26 +187,27 @@ export default function QuestBoard() {
           </div>
 
           {/* Main title */}
-          <div className="relative inline-block">
+          <div className="flex flex-col items-center justify-center mb-6">
             <motion.h1
               animate={{ textShadow: ['0 0 30px rgba(251,191,36,0.3)', '0 0 70px rgba(251,191,36,0.55)', '0 0 30px rgba(251,191,36,0.3)'] }}
               transition={{ duration: 3.5, repeat: Infinity }}
-              className="font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 leading-tight"
-              style={{ fontSize: 'clamp(1.8rem, 6vw, 4rem)', letterSpacing: '0.04em' }}
+              className="font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 leading-none m-0"
+              style={{ fontSize: 'clamp(2.5rem, 8vw, 5.5rem)', letterSpacing: '0.02em' }}
             >
-              THE HYPER-FIXATION
+              HYPER-FIXATION
             </motion.h1>
-            <div className="flex items-center justify-center gap-3 mt-2">
-              <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
-              <span className="font-bold tracking-[0.3em] uppercase text-sm"
-                style={{ color: '#ef4444', textShadow: '0 0 12px rgba(239,68,68,0.5)', fontSize: '0.65rem' }}>
-                ⚔ MAIN EVENT ⚔
+
+            <div className="flex items-center justify-center gap-4 w-full max-w-lg mt-2">
+              <div className="h-[3px] flex-1 rounded-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.8), transparent)' }} />
+              <span className="font-black tracking-[0.2em] uppercase text-red-500 leading-none"
+                style={{ textShadow: '0 0 15px rgba(239,68,68,0.6)', fontSize: 'clamp(1.2rem, 4vw, 2.5rem)' }}>
+                MAIN EVENT
               </span>
-              <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), transparent)' }} />
+              <div className="h-[3px] flex-1 rounded-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.8), transparent)' }} />
             </div>
-            <p className="font-semibold text-purple-300/70 mt-1 tracking-[0.3em] uppercase"
-              style={{ fontSize: '0.85rem' }}>
-              Quest Board
+
+            <p className="font-bold text-purple-400 mt-4 tracking-[0.4em] uppercase text-sm">
+              — Official Podcast Quest Board —
             </p>
           </div>
 
