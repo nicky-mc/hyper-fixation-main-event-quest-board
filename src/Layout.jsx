@@ -336,27 +336,30 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* ── TOP BAR (All Screens) ── */}
-      <header className="fixed top-0 w-full h-16 z-[100] flex items-center justify-between px-3 bg-[#05050A]">
+      <header className="fixed top-0 w-full h-16 z-[100] px-4 bg-[#05050A] grid grid-cols-3 items-center">
         <div className="absolute inset-x-0 bottom-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)', boxShadow: '0 2px 10px rgba(204,0,0,0.5)' }} />
 
+        {/* Left: Hamburger */}
+        <div className="flex justify-start">
+          <button onClick={() => setMobileOpen(true)}
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-red-400 transition-colors">
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
 
-        {/* Hamburger */}
-        <button onClick={() => setMobileOpen(true)}
-          className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-red-400 transition-colors shrink-0">
-          <Menu className="w-5 h-5" />
-        </button>
+        {/* Center: Logo */}
+        <div className="flex justify-center">
+          <Link to={createPageUrl('QuestBoard')} className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full overflow-hidden"
+              style={{ border: '1px solid rgba(255,191,0,0.5)', boxShadow: '0 0 10px rgba(255,191,0,0.25)' }}>
+              <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
+            </div>
+            <span className="font-black text-base" style={{ background: 'linear-gradient(90deg, #CC0000, #FFBF00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>HME</span>
+          </Link>
+        </div>
 
-        {/* Logo */}
-        <Link to={createPageUrl('QuestBoard')} className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
-          <div className="w-7 h-7 rounded-full overflow-hidden"
-            style={{ border: '1px solid rgba(255,191,0,0.5)', boxShadow: '0 0 10px rgba(255,191,0,0.25)' }}>
-            <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
-          </div>
-          <span className="font-black text-base" style={{ background: 'linear-gradient(90deg, #CC0000, #FFBF00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>HME</span>
-        </Link>
-
-        {/* Right: bell first, then avatar */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Right: Bell then Avatar */}
+        <div className="flex justify-end items-center gap-4 pr-2">
           {profile && <NotificationCenter profile={profile} />}
           {profile && (
             <Link to={`/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`}
