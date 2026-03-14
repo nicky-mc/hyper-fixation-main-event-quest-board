@@ -180,7 +180,7 @@ export default function QuestBoard() {
               style={{ fontSize: 'clamp(2.5rem, 8vw, 5.5rem)', letterSpacing: '0.02em', textShadow: '0 0 40px rgba(251,191,36,0.4)' }}
             >
               HYPER-FIXATION
-            </motion.h1>
+            </h1>
 
             <div className="flex items-center justify-center gap-4 w-full max-w-lg mt-2">
               <div className="h-[3px] flex-1 rounded-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(220,38,38,0.8), transparent)' }} />
