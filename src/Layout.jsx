@@ -460,7 +460,7 @@ export default function Layout({ children, currentPageName }) {
       </div>
 
       {/* ── MAIN CONTENT ── */}
-      <main className="flex-1 relative z-10 md:pl-24 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen">
+      <main className="flex-1 relative z-10 md:pl-24 pt-16 md:pt-16 pb-20 md:pb-0 min-h-screen">
         {children}
       </main>
 
