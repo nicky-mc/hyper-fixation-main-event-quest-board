@@ -245,13 +245,13 @@ export default function Layout({ children, currentPageName }) {
           <>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="md:hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm"
+              className="md:hidden fixed inset-0 z-[110] bg-black/70 backdrop-blur-sm"
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
               initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="md:hidden fixed left-0 top-0 bottom-0 w-72 z-[70] flex flex-col overflow-hidden"
+              className="md:hidden fixed left-0 top-0 bottom-0 w-72 z-[120] flex flex-col overflow-hidden"
               style={{
                 background: 'rgba(8, 6, 24, 0.97)',
                 borderRight: '1px solid rgba(204,0,0,0.25)',
@@ -379,7 +379,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* ── MOBILE FLOATING BOTTOM DOCK ── */}
-      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50 flex items-center justify-around px-3 py-2 rounded-2xl transform-gpu translate-z-0"
+      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50 flex items-center justify-around px-3 py-2 rounded-2xl"
         style={{
           backdropFilter: 'blur(24px) saturate(2)',
           WebkitBackdropFilter: 'blur(24px) saturate(2)',
