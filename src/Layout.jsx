@@ -190,7 +190,7 @@ export default function Layout({ children, currentPageName }) {
           style={{ background: 'radial-gradient(circle, rgba(120,40,200,0.6) 0%, transparent 70%)', filter: 'blur(80px)' }} />
         <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full opacity-15 transform-gpu translate-z-0"
           style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.5) 0%, transparent 70%)', filter: 'blur(100px)' }} />
-        <div className="absolute top-1/3 right-0 w-[400px] h-[400px] rounded-full opacity-15"
+        <div className="absolute top-1/3 right-0 w-[400px] h-[400px] rounded-full opacity-15 transform-gpu translate-z-0"
           style={{ background: 'radial-gradient(circle, rgba(0,180,220,0.4) 0%, transparent 70%)', filter: 'blur(80px)' }} />
         {/* Wood-grain texture overlay */}
         <div className="absolute inset-0 opacity-[0.04]"
