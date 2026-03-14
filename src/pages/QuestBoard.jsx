@@ -212,10 +212,10 @@ export default function QuestBoard() {
           </div>
 
           {/* Subtitle */}
-          <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base mt-4 leading-relaxed">
-            Hosted by <span className="text-purple-300 font-semibold">Nicky</span> (Captain / Bard-Sorcerer) &amp; <span className="text-pink-300 font-semibold">Charlotte</span> (Tactical Geek Princess / Barbarian-Druid).
-            <br className="hidden sm:block" />
-            Submit your Side Quests — they'll Roll for Initiative to pick what's next on air!
+          <p className="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base mt-2 leading-relaxed">
+            Hosted by <span className="text-purple-400 font-bold">Nicky</span> (Captain / Bard-Sorcerer) &amp; <span className="text-pink-400 font-bold">Charlotte</span> (Tactical Geek Princess / Barbarian-Druid).
+            <br className="hidden sm:block mt-2" />
+            We aren't experts, we are just two adventurers exploring the lore of life, pop culture, and deep dives, discussing new things we found out and want to share, always learning as we go. Submit your topics below, and we'll <span className="text-amber-400 font-semibold">Roll for Initiative</span> to pick our next discussion on the air!
           </p>
 
           {/* Host cards */}
