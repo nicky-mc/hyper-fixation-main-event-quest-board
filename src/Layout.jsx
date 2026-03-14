@@ -392,7 +392,8 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* ── TOP BAR (All Screens) ── */}
-      <div className="fixed top-0 w-full h-16 z-[100] flex items-center justify-between px-3 bg-black border-b border-purple-900/50">
+      <header className="fixed top-0 w-full h-16 z-[100] flex items-center justify-between px-3 bg-[#05050A]">
+        <div className="absolute inset-x-0 bottom-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)', boxShadow: '0 2px 10px rgba(204,0,0,0.5)' }} />
 
 
         {/* Hamburger */}
