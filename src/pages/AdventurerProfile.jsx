@@ -385,20 +385,20 @@ export default function AdventurerProfile() {
         style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)', backgroundSize: '45px 45px' }} />
 
       {/* MAIN CONTENT AREA WITH LCARS ELBOW */}
-      <div className="flex w-full max-w-6xl mx-auto gap-3 pt-16 px-4 pb-12 relative">
+      <div className="flex w-full max-w-6xl mx-auto gap-3 px-4 pb-12 relative">
         
-        {/* Left Vertical Spine */}
-        <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-16 z-40 h-[calc(100vh-4rem)]"></div>
+        {/* Left Vertical Spine: flush under the Top Nav */}
+        <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-16 h-[calc(100vh-4rem)] z-40 border-r-8 border-black"></div>
 
-        {/* Right Column (Top Arm + Content) */}
+        {/* Right Column: Content wrapper */}
         <div className="flex-1 flex flex-col min-w-0 gap-3">
           
-          {/* Top Horizontal Arm */}
-          <div className="hidden md:flex h-12 bg-amber-500 rounded-r-[4rem] rounded-tl-[2rem] items-center px-6 shrink-0 sticky top-16 z-40 shadow-md">
+          {/* Top Horizontal Arm: locks at 64px, flush with spine */}
+          <div className="hidden md:flex h-12 bg-amber-500 rounded-r-[4rem] rounded-tl-[2rem] items-center px-6 shrink-0 sticky top-16 z-40 shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
             <span className="font-lcars text-black text-xl font-black tracking-widest">PERSONNEL RECORD</span>
           </div>
 
-          {/* Profile Content (Cover photo, Bio, Tabs) */}
+          {/* Profile Content: lower z so it scrolls under the arm */}
           <div className="flex-1 flex flex-col gap-4 relative z-20">
 
             <Link to={createPageUrl('QuestBoard')}
