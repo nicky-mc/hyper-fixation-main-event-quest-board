@@ -385,7 +385,7 @@ export default function AdventurerProfile() {
         style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)', backgroundSize: '45px 45px' }} />
 
       {/* MAIN CONTENT AREA WITH LCARS ELBOW */}
-      <div className="flex w-full max-w-6xl mx-auto gap-3 px-4 pb-12 relative">
+      <div className="flex w-full max-w-6xl mx-auto gap-1 px-4 pb-12 relative">
         
         {/* Left Vertical Spine: flush under the Top Nav */}
         <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-16 h-[calc(100vh-4rem)] z-40 border-r-8 border-black"></div>
