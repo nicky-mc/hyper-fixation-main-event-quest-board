@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import QuestCard from '@/components/QuestCard';
 import QuestSubmissionDrawer from '@/components/QuestSubmissionDrawer';
-import NotificationBell from '@/components/NotificationBell';
+
 import HostSettingsModal from '@/components/HostSettingsModal';
 import QuestCategoryFilter, { CATEGORIES, filterQuestsByCategory } from '@/components/QuestCategoryFilter';
 import QuestWorldMap from '@/components/QuestWorldMap';
