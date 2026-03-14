@@ -359,7 +359,7 @@ export default function AdventurerProfile() {
   }
 
   return (
-    <div className="min-h-screen flex"
+    <div className="min-h-screen w-full relative"
       style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 30%, #080d1a 60%, #050a10 100%)' }}>
 
       <ImageViewerModal
