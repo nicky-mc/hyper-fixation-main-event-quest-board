@@ -388,7 +388,7 @@ export default function AdventurerProfile() {
       <div className="flex w-full items-start gap-[2px] px-4 pb-12 relative">
         
         {/* Left Vertical Spine: flush under the Top Nav */}
-        <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-16 self-start h-[calc(100vh-4rem)] z-40 border-r-8 border-black"></div>
+        <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-16 h-[calc(100vh-4rem)] z-40 border-r-8 border-black"></div>
 
         {/* Right Column: Content wrapper */}
         <div className="flex-1 flex flex-col min-w-0 gap-1">
