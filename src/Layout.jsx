@@ -380,39 +380,8 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </header>
 
-      {/* ── MOBILE FLOATING BOTTOM DOCK ── */}
-      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50 flex items-center justify-around px-3 py-2 rounded-2xl"
-        style={{
-          backdropFilter: 'blur(24px) saturate(2)',
-          WebkitBackdropFilter: 'blur(24px) saturate(2)',
-          background: 'rgba(8, 6, 24, 0.82)',
-          border: '1px solid rgba(204,0,0,0.25)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(204,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05)',
-        }}>
-        {NAV_ITEMS.slice(0, 6).map(({ label, page, icon: Icon }) => {
-          const active = currentPageName === page;
-          const badge = page === 'Messages' ? unreadCount : 0;
-          return (
-            <Link key={page} to={createPageUrl(page)}
-              className="relative flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl transition-all duration-300"
-              style={active ? { color: '#FFBF00', filter: 'drop-shadow(0 0 6px rgba(255,191,0,0.7))' } : { color: 'rgba(148,163,184,0.7)' }}>
-              <div className="relative">
-                <Icon className="w-5 h-5" />
-                {badge > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[8px] font-black rounded-full w-3.5 h-3.5 flex items-center justify-center">
-                    {badge > 9 ? '9+' : badge}
-                  </span>
-                )}
-              </div>
-              <span className="text-[8px] font-semibold tracking-wide">{label.split(' ')[0]}</span>
-              {active && <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-amber-400" />}
-            </Link>
-          );
-        })}
-      </div>
-
       {/* ── MAIN CONTENT ── */}
-      <main className="flex-1 relative z-10 md:pl-24 pt-16 md:pt-16 pb-20 md:pb-0 min-h-screen">
+      <main className="flex-1 relative z-10 md:pl-24 pt-16 md:pt-16 pb-4 md:pb-0 min-h-screen">
         {children}
       </main>
 
