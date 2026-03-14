@@ -220,7 +220,7 @@ export default function Layout({ children, currentPageName }) {
         onHoverEnd={() => setExpanded(false)}
         animate={{ width: expanded ? 200 : 68 }}
         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-        className="hidden md:flex fixed left-4 top-16 bottom-4 z-50 flex-col overflow-hidden rounded-b-2xl rounded-t-none"
+        className="hidden md:flex fixed left-4 top-16 bottom-4 z-50 flex-col overflow-hidden rounded-b-2xl rounded-t-none transform-gpu translate-z-0"
         style={{
           backdropFilter: 'blur(24px) saturate(2)',
           WebkitBackdropFilter: 'blur(24px) saturate(2)',
