@@ -376,7 +376,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* ── MOBILE FLOATING BOTTOM DOCK ── */}
-      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50 flex items-center justify-around px-3 py-2 rounded-2xl"
+      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50 flex items-center justify-around px-3 py-2 rounded-2xl transform-gpu translate-z-0"
         style={{
           backdropFilter: 'blur(24px) saturate(2)',
           WebkitBackdropFilter: 'blur(24px) saturate(2)',
