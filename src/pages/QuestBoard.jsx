@@ -18,14 +18,14 @@ function Particle({ style }) {
   return (
     <motion.div
       className="absolute rounded-full pointer-events-none"
-      style={style}
+      style={{ ...style, willChange: 'opacity, transform' }}
       animate={{ y: [0, -30, 0], opacity: [0.3, 0.8, 0.3] }}
       transition={{ duration: 3 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 3 }}
     />
   );
 }
 
-const particles = Array.from({ length: 18 }, (_, i) => ({
+const particles = Array.from({ length: 8 }, (_, i) => ({
   id: i,
   style: {
     left: `${Math.random() * 100}%`,
@@ -132,11 +132,11 @@ export default function QuestBoard() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Deep Space Nebula background (supplements the layout bg) */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] opacity-20 rounded-full"
+      {/* Optimized Background Layer */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden transform-gpu translate-z-0" style={{ backfaceVisibility: 'hidden' }}>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] opacity-20 rounded-full transform-gpu"
           style={{ background: 'radial-gradient(ellipse, rgba(251,191,36,0.3) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] opacity-20 rounded-full"
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] opacity-20 rounded-full transform-gpu"
           style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.5) 0%, transparent 70%)', filter: 'blur(80px)' }} />
         {particles.map(p => <Particle key={p.id} style={p.style} />)}
       </div>
@@ -175,11 +175,9 @@ export default function QuestBoard() {
 
           {/* Main title */}
           <div className="flex flex-col items-center justify-center mb-6">
-            <motion.h1
-              animate={{ textShadow: ['0 0 30px rgba(251,191,36,0.3)', '0 0 70px rgba(251,191,36,0.55)', '0 0 30px rgba(251,191,36,0.3)'] }}
-              transition={{ duration: 3.5, repeat: Infinity }}
+            <h1
               className="font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 leading-none m-0"
-              style={{ fontSize: 'clamp(2.5rem, 8vw, 5.5rem)', letterSpacing: '0.02em' }}
+              style={{ fontSize: 'clamp(2.5rem, 8vw, 5.5rem)', letterSpacing: '0.02em', textShadow: '0 0 40px rgba(251,191,36,0.4)' }}
             >
               HYPER-FIXATION
             </motion.h1>
