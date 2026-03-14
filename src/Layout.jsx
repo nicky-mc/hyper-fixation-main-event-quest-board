@@ -135,34 +135,6 @@ export default function Layout({ children, currentPageName }) {
       {/* Bottom: user */}
       <div className="mt-auto px-2 pb-3 shrink-0">
         <div className="mx-1 mb-2 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.3), transparent)' }} />
-        {profile && (
-          <div className="flex flex-col items-center gap-2 mb-2">
-            <Link to={`/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`}
-              className="group relative flex items-center">
-              <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-500/30 group-hover:border-amber-400 transition-colors"
-                style={{ boxShadow: '0 0 10px rgba(251,191,36,0.1)' }}>
-                {profile.avatar_url
-                  ? <img src={profile.avatar_url} alt={profile.adventurer_name} className="w-full h-full object-cover" />
-                  : <div className="w-full h-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-xs font-black text-white">
-                      {(profile.adventurer_name || '?').charAt(0).toUpperCase()}
-                    </div>
-                }
-              </div>
-              <AnimatePresence>
-                {expanded && (
-                  <motion.span
-                    initial={{ opacity: 0, x: -8, width: 0 }}
-                    animate={{ opacity: 1, x: 0, width: 'auto' }}
-                    exit={{ opacity: 0, x: -8, width: 0 }}
-                    className="ml-2 text-xs text-amber-300/80 font-semibold whitespace-nowrap overflow-hidden max-w-[110px] truncate">
-                    {profile.adventurer_name}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Link>
-            <NotificationCenter profile={profile} />
-          </div>
-        )}
         {user ? (
           <>
             <AnimatePresence>
