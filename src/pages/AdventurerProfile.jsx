@@ -391,7 +391,7 @@ export default function AdventurerProfile() {
         <div className="hidden md:flex flex-col w-24 lg:w-32 bg-amber-500 rounded-l-[4rem] rounded-br-[2rem] shrink-0 sticky top-16 self-start h-[calc(100vh-4rem)] z-40 border-r-8 border-black"></div>
 
         {/* Right Column: Content wrapper */}
-        <div className="flex-1 flex flex-col min-w-0 gap-3">
+        <div className="flex-1 flex flex-col min-w-0 gap-1">
           
           {/* Top Horizontal Arm: locks at 64px, flush with spine */}
           <div className="hidden md:flex h-12 bg-amber-500 rounded-r-[4rem] rounded-tl-[2rem] items-center px-6 shrink-0 sticky top-16 z-40 shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
