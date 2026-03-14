@@ -355,8 +355,9 @@ export default function Layout({ children, currentPageName }) {
           <span className="font-black text-base" style={{ background: 'linear-gradient(90deg, #CC0000, #FFBF00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>HME</span>
         </Link>
 
-        {/* Right: avatar first, then notification bell */}
+        {/* Right: bell first, then avatar */}
         <div className="flex items-center gap-2 shrink-0">
+          {profile && <NotificationCenter profile={profile} />}
           {profile && (
             <Link to={`/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`}
               className="w-7 h-7 rounded-full overflow-hidden border border-amber-500/40 hover:border-amber-400 transition-colors"
@@ -369,7 +370,6 @@ export default function Layout({ children, currentPageName }) {
               }
             </Link>
           )}
-          {profile && <NotificationCenter profile={profile} />}
         </div>
       </header>
 
