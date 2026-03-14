@@ -353,7 +353,10 @@ export default function Layout({ children, currentPageName }) {
               style={{ border: '1px solid rgba(255,191,0,0.5)', boxShadow: '0 0 10px rgba(255,191,0,0.25)' }}>
               <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="font-black text-base" style={{ background: 'linear-gradient(90deg, #CC0000, #FFBF00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>HME</span>
+            <span className="font-black text-base" style={{ background: 'linear-gradient(90deg, #CC0000, #FFBF00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span className="md:hidden">HME</span>
+              <span className="hidden md:inline tracking-widest text-sm">HYPER-FIXATION MAIN EVENT</span>
+            </span>
           </Link>
         </div>
 
