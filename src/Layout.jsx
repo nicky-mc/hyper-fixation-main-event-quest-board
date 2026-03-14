@@ -245,17 +245,19 @@ export default function Layout({ children, currentPageName }) {
           <>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="md:hidden fixed inset-0 z-[110] bg-black/70 backdrop-blur-sm"
+              className="md:hidden fixed inset-0 z-[110] bg-black/70 backdrop-blur-sm transform-gpu will-change-transform"
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
               initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="md:hidden fixed left-0 top-0 bottom-0 w-72 z-[120] flex flex-col overflow-hidden"
+              className="md:hidden fixed left-0 top-0 bottom-0 w-72 z-[120] flex flex-col overflow-hidden transform-gpu will-change-transform"
               style={{
                 background: 'rgba(8, 6, 24, 0.97)',
                 borderRight: '1px solid rgba(204,0,0,0.25)',
                 boxShadow: '4px 0 40px rgba(0,0,0,0.8)',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)',
               }}>
               {/* Top accent */}
               <div className="absolute inset-x-0 top-0 h-0.5"
@@ -335,7 +337,7 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* ── TOP BAR (All Screens) ── */}
-      <header className="fixed top-0 w-full h-16 z-[100] px-4 bg-[#05050A] grid grid-cols-3 items-center">
+      <header className="fixed top-0 w-full h-16 z-[100] px-4 bg-[#05050A] grid grid-cols-3 items-center transform-gpu translate-z-0">
         <div className="absolute inset-x-0 bottom-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)', boxShadow: '0 2px 10px rgba(204,0,0,0.5)' }} />
 
         {/* Left: Hamburger */}
