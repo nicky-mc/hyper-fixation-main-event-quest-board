@@ -184,7 +184,7 @@ export default function Layout({ children, currentPageName }) {
       <div className="min-h-screen flex relative transform-gpu" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)', backgroundAttachment: 'fixed' }}>
 
       {/* Deep Space Nebula overlays */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="fixed inset-0 pointer-events-none z-0 transform-gpu translate-z-0">
         {/* Nebula color clouds */}
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-20"
           style={{ background: 'radial-gradient(circle, rgba(120,40,200,0.6) 0%, transparent 70%)', filter: 'blur(80px)' }} />
