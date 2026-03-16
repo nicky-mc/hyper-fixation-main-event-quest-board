@@ -181,7 +181,7 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <AdventurerContext.Provider value={profile}>
-      <div className="min-h-screen flex relative" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)', backgroundAttachment: 'fixed' }}>
+      <div className="min-h-screen flex relative" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
 
       {/* Deep Space Nebula overlays */}
       <div className="fixed inset-0 pointer-events-none z-0 transform-gpu translate-z-0">

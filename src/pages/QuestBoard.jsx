@@ -140,7 +140,7 @@ export default function QuestBoard() {
   };
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden max-w-[100vw] transform-gpu"
+    <div className="min-h-screen w-full relative overflow-hidden max-w-[100vw]"
       style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 30%, #080d1a 60%, #050a10 100%)', backgroundAttachment: 'fixed' }}>
       {/* Optimized Background Layer */}
       <div className="absolute inset-0 h-full pointer-events-none overflow-hidden transform-gpu translate-z-0" style={{ backfaceVisibility: 'hidden' }}>
