@@ -133,19 +133,17 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={onClose} className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40" />
-
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm" onClick={onClose}>
           <motion.div
-            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
             ref={drawerRef}
-            className="fixed right-0 top-0 h-full w-full max-w-md z-50 overflow-y-auto"
+            onClick={e => e.stopPropagation()}
+            className="w-full max-w-xl max-h-[85vh] overflow-y-auto rounded-2xl border-2 border-purple-700/50 shadow-2xl relative bg-gradient-to-b from-[#0d0d1a] via-[#0f0d22] to-[#080b18]"
           >
-            <div className="h-full bg-gradient-to-b from-[#0d0d1a] via-[#0f0d22] to-[#080b18] border-l-2 border-purple-800/50">
               {/* Scanline effect */}
-              <div className="absolute inset-0 pointer-events-none opacity-5"
+              <div className="absolute inset-0 pointer-events-none opacity-5 rounded-2xl"
                 style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139,92,246,0.3) 2px, rgba(139,92,246,0.3) 4px)' }} />
 
               {/* Header */}
