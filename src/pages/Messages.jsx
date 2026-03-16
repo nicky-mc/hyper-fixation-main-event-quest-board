@@ -461,9 +461,21 @@ export default function Messages() {
             <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-amber-400 transition-colors rounded-full shrink-0">
               <Smile className="w-5 h-5" />
             </button>
-            <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-amber-400 transition-colors rounded-full shrink-0">
-              <Paperclip className="w-5 h-5" />
-            </button>
+            <div className="relative shrink-0">
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+              {attachmentPreview && (
+                <div className="absolute bottom-full left-0 mb-2 p-2 bg-[#0d0d1a] border border-purple-800/50 rounded-xl shadow-xl flex items-start gap-2 z-10">
+                  <img src={attachmentPreview} alt="upload preview" className="w-20 h-20 object-cover rounded-lg border border-purple-900" />
+                  <button onClick={() => { setAttachment(null); setAttachmentPreview(null); }} className="p-1 bg-red-900/80 text-white rounded-full hover:bg-red-700">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+              <button onClick={() => fileInputRef.current?.click()}
+                className={cn("min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors rounded-full", attachmentPreview ? "text-amber-400" : "text-slate-500 hover:text-amber-400")}>
+                <Paperclip className="w-5 h-5" />
+              </button>
+            </div>
             <textarea
               ref={textareaRef}
               value={input}
