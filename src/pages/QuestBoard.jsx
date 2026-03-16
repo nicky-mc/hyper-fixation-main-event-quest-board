@@ -81,7 +81,13 @@ export default function QuestBoard() {
     const init = async () => {
       await loadQuests();
       await Promise.all([loadVoteCounts(), loadCommentCounts()]);
-      base44.auth.me().then(u => setUser(u)).catch(() => {});
+      base44.auth.me().then(async u => {
+        setUser(u);
+        if (u) {
+          const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+          if (profiles[0]) setCurrentAdventurerId(profiles[0].id);
+        }
+      }).catch(() => {});
     };
     init();
   }, []);
