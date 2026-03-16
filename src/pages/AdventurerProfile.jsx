@@ -80,6 +80,10 @@ export default function AdventurerProfile() {
   const [friendCount, setFriendCount] = useState(0);
   const [mutualCount, setMutualCount] = useState(0);
   const [activeTab, setActiveTab] = useState('quests');
+  const [feedPosts, setFeedPosts] = useState([]);
+  const [feedActivities, setFeedActivities] = useState([]);
+  const [newPost, setNewPost] = useState('');
+  const [postingFeed, setPostingFeed] = useState(false);
   const avatarRef = useRef(null);
   const coverRef = useRef(null);
   const [viewingImage, setViewingImage] = useState(null);
@@ -324,9 +328,41 @@ export default function AdventurerProfile() {
     await loadAll();
   };
 
+  const loadFeed = async (prof) => {
+    if (!prof) return;
+    const [posts, activities] = await Promise.all([
+      base44.entities.ProfilePost.filter({ profile_id: prof.id }, '-created_date', 50),
+      base44.entities.Activity.filter({ adventurer_id: prof.id }, '-created_date', 50),
+    ]);
+    setFeedPosts(posts);
+    setFeedActivities(activities);
+  };
+
+  const submitPost = async () => {
+    if (!newPost.trim() || !myProfile || !profile) return;
+    setPostingFeed(true);
+    await base44.entities.ProfilePost.create({
+      profile_id: profile.id,
+      author_id: myProfile.id,
+      author_name: myProfile.adventurer_name,
+      content: newPost.trim(),
+    });
+    setNewPost('');
+    await loadFeed(profile);
+    setPostingFeed(false);
+  };
+
+  const mergedFeed = [
+    ...feedPosts.map(p => ({ ...p, _type: 'post' })),
+    ...feedActivities.map(a => ({ ...a, _type: 'activity' })),
+  ].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+
+  const canPostOnFeed = myProfile && profile && (isOwnProfile || isFriend || isCurrentUserAdmin);
+
   const tabs = [
     { id: 'quests', label: 'Quests', icon: Sword, count: myQuests.length },
     { id: 'lore', label: 'Lore Drops', icon: MessageCircle, count: comments.length },
+    { id: 'feed', label: 'Comms Log', icon: Radio },
     { id: 'about', label: 'About', icon: Star },
   ];
 
@@ -531,10 +567,10 @@ export default function AdventurerProfile() {
                           }
                         </button>
                         {canMessage && (
-                          <Link to={createPageUrl('Messages')}
+                          <Link to={createPageUrl('Messages') + '?chatWith=' + profile.id}
                             className="font-lcars flex items-center gap-1.5 px-5 py-2 rounded-full bg-cyan-900/40 border border-cyan-500/40 text-cyan-300 hover:border-cyan-400 hover:bg-cyan-900/60 text-xs font-bold transition-all uppercase tracking-widest"
                             style={{ boxShadow: '0 0 12px rgba(34,211,238,0.15)' }}>
-                            <MessageCircle className="w-3.5 h-3.5" /> Message
+                             <MessageCircle className="w-3.5 h-3.5" /> Message
                           </Link>
                         )}
                         {/* Block button */}
