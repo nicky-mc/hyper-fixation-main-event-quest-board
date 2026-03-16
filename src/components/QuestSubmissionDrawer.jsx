@@ -170,15 +170,6 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
               {/* Form */}
               <form onSubmit={handleSubmit} className="p-6 space-y-5 relative z-10">
                 <div className="space-y-2">
-                  <Label className="text-purple-300 text-sm font-medium">Adventurer Name</Label>
-                  <Input value={formData.quest_giver}
-                    onChange={(e) => setFormData({ ...formData, quest_giver: e.target.value })}
-                    placeholder="What's your handle, Adventurer?"
-                    className="bg-[#0d0820]/70 border-purple-800/50 text-purple-100 placeholder:text-slate-600 focus:border-purple-500"
-                    required />
-                </div>
-
-                <div className="space-y-2">
                   <Label className="text-purple-300 text-sm font-medium">Quest Title</Label>
                   <Input value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
