@@ -202,9 +202,10 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
                     </div>
                   ) : (
                     <button type="button" onClick={() => fileInputRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-dashed border-purple-800/50 text-purple-500 hover:border-purple-500 hover:text-purple-300 transition-colors bg-[#0d0820]/40">
-                      <ImagePlus className="w-5 h-5" />
-                      <span className="text-sm">Upload an image or GIF</span>
+                      className="w-full flex flex-col items-center justify-center p-6 border-2 border-dashed border-purple-700/50 rounded-xl bg-purple-950/20 hover:bg-purple-900/30 transition-colors cursor-pointer">
+                      <ImagePlus className="w-6 h-6 text-purple-400 mb-2" />
+                      <span className="text-sm text-purple-400">Upload an image or GIF</span>
+                      <span className="text-[10px] text-slate-600 mt-1">PNG, JPG, GIF supported</span>
                     </button>
                   )}
                 </div>
