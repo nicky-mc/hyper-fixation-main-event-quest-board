@@ -91,6 +91,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
 
     const quest = await base44.entities.Quest.create({
       ...formData,
+      quest_giver: myProfile?.adventurer_name || formData.quest_giver || 'Anonymous',
       difficulty_class: dc,
       status: 'pending',
       ...(image_url && { image_url }),
