@@ -68,6 +68,15 @@ export default function Messages() {
   const textareaRef = useRef(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const targetAuthId = params.get('chatWith');
+    if (targetAuthId && allUsers.length > 0) {
+      const match = allUsers.find(u => u.id === targetAuthId);
+      if (match) selectUser(match);
+    }
+  }, [allUsers]);
+
+  useEffect(() => {
     const initProfile = async () => {
       try {
         const user = await base44.auth.me();
