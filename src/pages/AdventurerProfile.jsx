@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2, Camera, Shield, Crown, Zap, Trophy, Sword, UserPlus, UserMinus, UserCheck, Clock, MapPin, Star, Flame, Bookmark, CheckCircle2, Users, ShieldAlert, Ban, Eye, Lock, UserX, Radio, Send } from 'lucide-react';
+import { Scroll, MessageCircle, Edit2, Save, X, ArrowLeft, Loader2, Camera, Shield, Crown, Zap, Trophy, Sword, UserPlus, UserMinus, UserCheck, Clock, MapPin, Star, Flame, Bookmark, CheckCircle2, Users, ShieldAlert, Ban, Eye, Lock, UserX, Radio, Send, Paperclip } from 'lucide-react';
+import FeedPostItem from '@/components/FeedPostItem';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
@@ -84,6 +85,10 @@ export default function AdventurerProfile() {
   const [feedActivities, setFeedActivities] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [postingFeed, setPostingFeed] = useState(false);
+  const [feedAttachment, setFeedAttachment] = useState(null);
+  const [feedPreview, setFeedPreview] = useState(null);
+  const [isUploadingFeed, setIsUploadingFeed] = useState(false);
+  const feedFileRef = useRef(null);
   const avatarRef = useRef(null);
   const coverRef = useRef(null);
   const [viewingImage, setViewingImage] = useState(null);
@@ -340,15 +345,25 @@ export default function AdventurerProfile() {
   };
 
   const submitPost = async () => {
-    if (!newPost.trim() || !myProfile || !profile) return;
+    if ((!newPost.trim() && !feedAttachment) || !myProfile || !profile) return;
     setPostingFeed(true);
+    let media_url = undefined;
+    if (feedAttachment) {
+      setIsUploadingFeed(true);
+      const result = await base44.integrations.Core.UploadFile({ file: feedAttachment });
+      media_url = result.file_url;
+      setIsUploadingFeed(false);
+    }
     await base44.entities.ProfilePost.create({
       profile_id: profile.id,
       author_id: myProfile.id,
       author_name: myProfile.adventurer_name,
       content: newPost.trim(),
+      ...(media_url && { media_url }),
     });
     setNewPost('');
+    setFeedAttachment(null);
+    setFeedPreview(null);
     await loadFeed(profile);
     setPostingFeed(false);
   };
