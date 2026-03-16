@@ -249,8 +249,8 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
                 </AnimatePresence>
 
                 <Button type="submit"
-                  disabled={isSubmitting || !formData.quest_giver || !formData.title || !formData.description || !formData.segment}
-                  className="w-full py-6 text-xl font-black bg-gradient-to-r from-red-700 via-red-600 to-orange-600 hover:from-red-600 hover:to-orange-500 border-2 border-red-500/50 text-white shadow-lg shadow-red-900/40 disabled:opacity-50"
+                  disabled={isSubmitting || !formData.title || !formData.description || !formData.segment}
+                  className="font-lcars w-full py-6 text-xl font-black uppercase tracking-widest bg-gradient-to-r from-red-700 via-red-600 to-orange-600 hover:from-red-600 hover:to-orange-500 border-2 border-red-500/50 text-white shadow-lg shadow-red-900/40 disabled:opacity-50"
                 >
                   {isSubmitting
                     ? <span className="flex items-center gap-2"><Dice6 className="w-5 h-5 animate-spin" /> Rolling DC...</span>
