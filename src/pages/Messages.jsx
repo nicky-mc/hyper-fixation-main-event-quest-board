@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Send, Loader2, MessageCircle, ArrowLeft, Smile, Paperclip, Search } from 'lucide-react';
+import { Send, Loader2, MessageCircle, ArrowLeft, Smile, Paperclip, Search, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import OnlineDot from '@/components/OnlineDot';
