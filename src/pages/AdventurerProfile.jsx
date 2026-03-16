@@ -819,18 +819,40 @@ export default function AdventurerProfile() {
                   <div className="space-y-3">
                     {/* Post input — only for friends/owner/admin */}
                     {canPostOnFeed && (
-                      <div className="flex items-end gap-2 p-3 rounded-xl border border-purple-800/40 bg-black/40 backdrop-blur-sm">
-                        <textarea
-                          value={newPost}
-                          onChange={e => setNewPost(e.target.value)}
-                          placeholder="Post a transmission..."
-                          rows={2}
-                          className="flex-1 resize-none bg-transparent text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none"
-                        />
-                        <button onClick={submitPost} disabled={postingFeed || !newPost.trim()}
-                          className="shrink-0 p-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 hover:bg-amber-500/30 transition-all disabled:opacity-40">
-                          {postingFeed ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                        </button>
+                      <div className="rounded-xl border border-purple-800/40 bg-black/40 backdrop-blur-sm p-3 space-y-2">
+                        {feedPreview && (
+                          <div className="relative inline-block">
+                            <img src={feedPreview} alt="preview" className="max-h-32 rounded-lg border border-purple-800/50 object-cover" />
+                            <button onClick={() => { setFeedAttachment(null); setFeedPreview(null); }}
+                              className="absolute top-1 right-1 p-0.5 bg-black/80 text-white rounded-full hover:bg-red-700 transition-colors">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                        <div className="flex items-end gap-2">
+                          <textarea
+                            value={newPost}
+                            onChange={e => setNewPost(e.target.value)}
+                            placeholder="Post a transmission..."
+                            rows={2}
+                            className="flex-1 resize-none bg-transparent text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none"
+                          />
+                          <input ref={feedFileRef} type="file" accept="image/*" className="hidden"
+                            onChange={e => {
+                              const f = e.target.files?.[0];
+                              if (!f) return;
+                              setFeedAttachment(f);
+                              setFeedPreview(URL.createObjectURL(f));
+                            }} />
+                          <button onClick={() => feedFileRef.current?.click()}
+                            className={cn("shrink-0 p-2 rounded-xl transition-all border", feedPreview ? "bg-amber-500/20 border-amber-500/40 text-amber-400" : "bg-white/5 border-white/10 text-slate-500 hover:text-amber-400")}>
+                            <Paperclip className="w-4 h-4" />
+                          </button>
+                          <button onClick={submitPost} disabled={postingFeed || isUploadingFeed || (!newPost.trim() && !feedAttachment)}
+                            className="shrink-0 p-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 hover:bg-amber-500/30 transition-all disabled:opacity-40">
+                            {(postingFeed || isUploadingFeed) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                          </button>
+                        </div>
                       </div>
                     )}
 
@@ -843,16 +865,11 @@ export default function AdventurerProfile() {
                       <motion.div key={item.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                         className="rounded-xl border border-purple-900/40 bg-black/40 backdrop-blur-sm overflow-hidden">
                         {item._type === 'post' ? (
-                          <div className="p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-[10px] font-black text-white shrink-0">
-                                {item.author_name?.charAt(0).toUpperCase()}
-                              </div>
-                              <span className="font-lcars text-[10px] text-amber-400 uppercase tracking-widest font-bold">{item.author_name}</span>
-                              <span className="text-[9px] text-slate-600 ml-auto">{formatTime(item.created_date)}</span>
-                            </div>
-                            <p className="text-sm text-slate-200 leading-relaxed">{item.content}</p>
-                          </div>
+                          <FeedPostItem
+                            post={item}
+                            myProfile={myProfile}
+                            onImageClick={setViewingImage}
+                          />
                         ) : (
                           <div className="p-4">
                             <div className="flex items-start gap-2">
