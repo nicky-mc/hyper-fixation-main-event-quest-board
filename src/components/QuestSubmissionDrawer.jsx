@@ -137,6 +137,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
           <motion.div
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            ref={drawerRef}
             className="fixed right-0 top-0 h-full w-full max-w-md z-50 overflow-y-auto"
           >
             <div className="h-full bg-gradient-to-b from-[#0d0d1a] via-[#0f0d22] to-[#080b18] border-l-2 border-purple-800/50">
