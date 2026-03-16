@@ -51,6 +51,8 @@ export default function QuestBoard() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [mapOpen, setMapOpen] = useState(false);
   const [feedOpen, setFeedOpen] = useState(false);
+  const [allVotes, setAllVotes] = useState([]);
+  const [currentAdventurerId, setCurrentAdventurerId] = useState(null);
 
   const isAdmin = user?.role === 'admin';
 
