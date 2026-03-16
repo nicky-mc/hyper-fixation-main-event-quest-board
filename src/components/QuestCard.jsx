@@ -85,7 +85,7 @@ function TauntEffect() {
   );
 }
 
-export default function QuestCard({ quest, isSelected, isRolling, index, currentUser, onDeleted, commentCount = 0 }) {
+export default function QuestCard({ quest, isSelected, isRolling, index, currentUser, onDeleted, commentCount = 0, voteCount = 0, allVotes = [], adventurerId }) {
   const cfg = segmentConfig[quest.segment] || fallback;
   const SegmentIcon = cfg.icon;
 
