@@ -39,6 +39,17 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
   const [uploadingImage, setUploadingImage] = useState(false);
   const [myProfile, setMyProfile] = useState(null);
   const fileInputRef = useRef(null);
+  const drawerRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      if (drawerRef.current) drawerRef.current.scrollTop = 0;
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
 
   useEffect(() => {
     base44.auth.me().then(async u => {

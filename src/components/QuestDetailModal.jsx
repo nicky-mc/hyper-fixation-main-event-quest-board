@@ -1,5 +1,6 @@
 import { X, Trash2, MessageCircle, CheckCircle, Sword, Shield, Scroll, Star, Flame, Zap, Radio, Skull, Fish, Telescope, BookOpen, Dices, Trophy, Anchor, Ghost, Tv, RotateCcw, Users, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 import QuestComments from '@/components/QuestComments';
