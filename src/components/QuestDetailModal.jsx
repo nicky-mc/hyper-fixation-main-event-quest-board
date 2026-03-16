@@ -34,6 +34,11 @@ export default function QuestDetailModal({ quest, currentUser, onClose, onDelete
   const SegmentIcon = cfg.icon;
   const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.email === quest.created_by);
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
   const handleDelete = async () => {
     if (!window.confirm('Delete this quest?')) return;
     await base44.entities.Quest.delete(quest.id);

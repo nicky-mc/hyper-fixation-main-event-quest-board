@@ -31,7 +31,7 @@ const segments = [
 ];
 
 export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitted }) {
-  const [formData, setFormData] = useState({ quest_giver: '', title: '', description: '', segment: '' });
+  const [formData, setFormData] = useState({ title: '', description: '', segment: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rolledDC, setRolledDC] = useState(null);
   const [imageFile, setImageFile] = useState(null);
