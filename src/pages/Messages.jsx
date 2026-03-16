@@ -488,7 +488,7 @@ export default function Messages() {
             />
             <button
               onClick={sendMessage}
-              disabled={sending || !input.trim()}
+              disabled={sending || isUploading || (!input.trim() && !attachment)}
               className={cn(
                 "min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-all shrink-0 disabled:opacity-40",
                 input.trim()
