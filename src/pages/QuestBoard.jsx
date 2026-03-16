@@ -392,6 +392,9 @@ export default function QuestBoard() {
                 currentUser={user}
                 onDeleted={loadQuests}
                 commentCount={commentCounts[quest.id] || 0}
+                voteCount={voteCounts[quest.id] || 0}
+                allVotes={allVotes}
+                adventurerId={currentAdventurerId}
               />
             ))}
           </div>
