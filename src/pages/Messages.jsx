@@ -402,7 +402,7 @@ export default function Messages() {
             {conversation.map((m, i) => {
               const isMe = m.sender_id === profile.id;
               const prevMsg = conversation[i - 1];
-              const showTimestamp = !prevMsg || (new Date(m.created_date) - new Date(prevMsg.created_date)) > 5 * 60 * 1000;
+              const showTimestamp = !prevMsg || (new Date(m.created_date) - new Date(prevMsg.created_date)) > 10 * 60 * 1000;
               return (
                 <div key={m.id}>
                   {showTimestamp && (
