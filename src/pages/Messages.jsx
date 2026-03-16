@@ -203,15 +203,34 @@ export default function Messages() {
       (m.sender_id === id && m.recipient_id === profile?.id)
     );
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAttachment(file);
+    setAttachmentPreview(URL.createObjectURL(file));
+  };
+
   const sendMessage = async () => {
-    if (!input.trim() || !selectedUser || sending || blockedIds.has(selectedUser.id)) return;
+    if ((!input.trim() && !attachment) || !selectedUser || sending || isUploading || blockedIds.has(selectedUser.id)) return;
     setSending(true);
+    setIsUploading(true);
     const content = input.trim();
     setInput('');
+
+    let media_url = null;
+    if (attachment) {
+      const result = await base44.integrations.Core.UploadFile({ file: attachment });
+      media_url = result.file_url;
+    }
+    setAttachment(null);
+    setAttachmentPreview(null);
+    setIsUploading(false);
+
     await base44.entities.Message.create({
       sender_id: profile.id, sender_name: profile.adventurer_name,
       recipient_id: selectedUser.id, recipient_name: selectedUser.full_name,
       content, read: false,
+      ...(media_url && { media_url }),
     });
     setSending(false);
     setTimeout(() => inputRef.current?.focus(), 50);
