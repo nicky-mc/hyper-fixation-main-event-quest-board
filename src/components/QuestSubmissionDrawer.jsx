@@ -262,9 +262,8 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
                   Your DC is rolled randomly on submission. NAT 20 = instant priority. NAT 1 = Nicky reads it in a funny voice.
                 </p>
               </form>
-            </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );
