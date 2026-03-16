@@ -226,7 +226,7 @@ export default function QuestCard({ quest, isSelected, isRolling, index, current
                 <span className="text-sm font-medium text-purple-300/80 truncate font-cinzel group-hover/giver:text-purple-200">{quest.quest_giver}</span>
               </Link>
 
-              <VoteButton questId={quest.id} isSelected={isSelected} />
+              <VoteButton questId={quest.id} isSelected={isSelected} voteCount={voteCount} allVotes={allVotes} adventurerId={adventurerId} />
 
               {commentCount > 0 && (
                 <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md shrink-0"
