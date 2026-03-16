@@ -431,7 +431,12 @@ export default function Messages() {
                         : "text-slate-200 rounded-bl-md bg-purple-950/70 border border-purple-500/20 backdrop-blur-sm"
                     )}
                     style={isMe ? { boxShadow: '0 0 20px rgba(251,191,36,0.25)' } : {}}>
-                      {m.content}
+                     <div className="flex flex-col gap-2">
+                       {m.content && <p className="text-sm leading-relaxed">{m.content}</p>}
+                       {m.media_url && (
+                         <img src={m.media_url} alt="attachment" className="max-w-[200px] sm:max-w-[250px] rounded-lg border border-white/10 shadow-md mt-1" />
+                       )}
+                     </div>
                     </div>
                     {isMe && (
                       <Avatar
