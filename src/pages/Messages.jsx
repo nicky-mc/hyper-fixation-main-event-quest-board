@@ -54,6 +54,10 @@ export default function Messages() {
   const [sending, setSending] = useState(false);
   const [search, setSearch] = useState('');
   const [mobileView, setMobileView] = useState('list');
+  const [attachment, setAttachment] = useState(null);
+  const [attachmentPreview, setAttachmentPreview] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
   const textareaRef = useRef(null);
