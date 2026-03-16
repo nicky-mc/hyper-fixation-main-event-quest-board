@@ -202,3 +202,11 @@
     box-shadow: 0 0 0 2px rgba(239,68,68,0.6), 0 0 60px rgba(239,68,68,0.55), 0 0 120px rgba(234,88,12,0.25), inset 0 1px 0 rgba(255,255,255,0.12);
   }
 }
+
+/* ── THEMED SCROLLBARS ── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(8, 6, 24, 0.8); border-left: 1px solid rgba(168, 85, 247, 0.2); }
+::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #fbbf24, #f59e0b); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+/* ── CUSTOM TEXT SELECTION ── */
+::selection { background: rgba(168, 85, 247, 0.4); color: #fef08a; text-shadow: 0 0 8px rgba(251, 191, 36, 0.5); }
