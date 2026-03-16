@@ -76,7 +76,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.quest_giver || !formData.title || !formData.description || !formData.segment) return;
+    if (!formData.title || !formData.description || !formData.segment) return;
 
     setIsSubmitting(true);
     const dc = Math.floor(Math.random() * 20) + 1;
@@ -249,7 +249,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
                 </AnimatePresence>
 
                 <Button type="submit"
-                  disabled={isSubmitting || !formData.title || !formData.description || !formData.segment}
+                  disabled={isSubmitting || !authUser || !formData.title || !formData.description || !formData.segment}
                   className="font-lcars w-full py-6 text-xl font-black uppercase tracking-widest bg-gradient-to-r from-red-700 via-red-600 to-orange-600 hover:from-red-600 hover:to-orange-500 border-2 border-red-500/50 text-white shadow-lg shadow-red-900/40 disabled:opacity-50"
                 >
                   {isSubmitting
