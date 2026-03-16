@@ -63,9 +63,10 @@ export default function QuestBoard() {
   };
 
   const loadVoteCounts = async () => {
-    const allVotes = await base44.entities.QuestVote.list();
+    const votes = await base44.entities.QuestVote.list();
+    setAllVotes(votes);
     const counts = {};
-    allVotes.forEach(v => { counts[v.quest_id] = (counts[v.quest_id] || 0) + 1; });
+    votes.forEach(v => { counts[v.quest_id] = (counts[v.quest_id] || 0) + 1; });
     setVoteCounts(counts);
   };
 
