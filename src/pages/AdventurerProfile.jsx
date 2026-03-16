@@ -143,6 +143,7 @@ export default function AdventurerProfile() {
     }
 
     setProfileUserRole(prof?.role || 'user');
+    if (prof) loadFeed(prof);
     setLoading(false);
   };
 
@@ -792,6 +793,73 @@ export default function AdventurerProfile() {
                         </motion.div>
                       );
                     })}
+                  </div>
+                )}
+
+                {/* COMMS LOG — gated by privacy */}
+                {activeTab === 'feed' && !canSeePrivate && (
+                  <PrivacyGate privacyLevel={privacyLevel} canSee={false} message={privacyGateMessage} />
+                )}
+                {activeTab === 'feed' && canSeePrivate && (
+                  <div className="space-y-3">
+                    {/* Post input — only for friends/owner/admin */}
+                    {canPostOnFeed && (
+                      <div className="flex items-end gap-2 p-3 rounded-xl border border-purple-800/40 bg-black/40 backdrop-blur-sm">
+                        <textarea
+                          value={newPost}
+                          onChange={e => setNewPost(e.target.value)}
+                          placeholder="Post a transmission..."
+                          rows={2}
+                          className="flex-1 resize-none bg-transparent text-sm text-purple-100 placeholder:text-slate-600 focus:outline-none"
+                        />
+                        <button onClick={submitPost} disabled={postingFeed || !newPost.trim()}
+                          className="shrink-0 p-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 hover:bg-amber-500/30 transition-all disabled:opacity-40">
+                          {postingFeed ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
+
+                    {mergedFeed.length === 0 ? (
+                      <div className="py-12 text-center text-slate-600 border border-white/10 bg-black/30 backdrop-blur-sm rounded-xl flex flex-col items-center gap-2">
+                        <Radio className="w-8 h-8 opacity-20" />
+                        <p className="text-sm">No transmissions yet.</p>
+                      </div>
+                    ) : mergedFeed.map(item => (
+                      <motion.div key={item.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                        className="rounded-xl border border-purple-900/40 bg-black/40 backdrop-blur-sm overflow-hidden">
+                        {item._type === 'post' ? (
+                          <div className="p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                {item.author_name?.charAt(0).toUpperCase()}
+                              </div>
+                              <span className="font-lcars text-[10px] text-amber-400 uppercase tracking-widest font-bold">{item.author_name}</span>
+                              <span className="text-[9px] text-slate-600 ml-auto">{formatTime(item.created_date)}</span>
+                            </div>
+                            <p className="text-sm text-slate-200 leading-relaxed">{item.content}</p>
+                          </div>
+                        ) : (
+                          <div className="p-4">
+                            <div className="flex items-start gap-2">
+                              <div className="px-2 py-0.5 rounded bg-purple-900/50 border border-purple-700/40 text-[9px] font-lcars text-purple-400 uppercase tracking-widest shrink-0 mt-0.5">
+                                {item.type === 'quest_submitted' ? '⚔️ Quest' : item.type === 'comment_added' ? '💬 Comment' : '⬆️ Vote'}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm text-slate-300 leading-relaxed">
+                                  {item.type === 'quest_submitted' && item.quest_title
+                                    ? <><span className="text-purple-300 font-bold">{profile?.adventurer_name}</span> submitted a new quest: <span className="text-amber-300 font-bold">{item.quest_title}</span></>
+                                    : item.type === 'comment_added' && item.quest_title
+                                    ? <><span className="text-purple-300 font-bold">{profile?.adventurer_name}</span> dropped lore on <span className="text-amber-300 font-bold">{item.quest_title}</span></>
+                                    : item.content || item.type
+                                  }
+                                </p>
+                                <span className="text-[9px] text-slate-600 mt-1 block">{formatTime(item.created_date)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
                   </div>
                 )}
 
