@@ -264,7 +264,6 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
               </form>
           </motion.div>
         </div>
-
       )}
     </AnimatePresence>
   );
