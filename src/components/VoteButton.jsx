@@ -4,32 +4,35 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 
-export default function VoteButton({ questId, isSelected }) {
-  const [votes, setVotes] = useState([]);
-  const [adventurerId, setAdventurerId] = useState(null);
+// votesByQuestId: { [questId]: number } — passed from parent to avoid N+1 fetches
+// allVotes: full vote array — passed from parent
+export default function VoteButton({ questId, isSelected, voteCount: initialCount = 0, allVotes = [], adventurerId: propAdventurerId }) {
+  const [localCount, setLocalCount] = useState(initialCount);
+  const [localVoted, setLocalVoted] = useState(false);
+  const [adventurerId, setAdventurerId] = useState(propAdventurerId || null);
   const [loading, setLoading] = useState(false);
 
+  // Sync from props when parent data updates
+  useEffect(() => { setLocalCount(initialCount); }, [initialCount]);
   useEffect(() => {
-    // Resolve the AdventurerProfile id for the current auth user
+    if (propAdventurerId) {
+      setAdventurerId(propAdventurerId);
+      setLocalVoted(allVotes.some(v => v.quest_id === questId && v.adventurer_id === propAdventurerId));
+    }
+  }, [propAdventurerId, allVotes, questId]);
+
+  useEffect(() => {
+    // Only fetch adventurerId if not provided by parent
+    if (propAdventurerId) return;
     base44.auth.me().then(async u => {
       if (!u) return;
       const profiles = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
-      if (profiles[0]) setAdventurerId(profiles[0].id);
+      if (profiles[0]) {
+        setAdventurerId(profiles[0].id);
+        setLocalVoted(allVotes.some(v => v.quest_id === questId && v.adventurer_id === profiles[0].id));
+      }
     }).catch(() => {});
-    loadVotes();
-
-    const unsub = base44.entities.QuestVote.subscribe((event) => {
-      if (event.data?.quest_id !== questId) return;
-      if (event.type === 'create') setVotes(v => [...v, event.data]);
-      else if (event.type === 'delete') setVotes(v => v.filter(x => x.id !== event.id));
-    });
-    return unsub;
   }, [questId]);
-
-  const loadVotes = async () => {
-    const data = await base44.entities.QuestVote.filter({ quest_id: questId });
-    setVotes(data);
-  };
 
   const hasVoted = adventurerId && votes.some(v => v.adventurer_id === adventurerId);
   const voteCount = votes.length;
