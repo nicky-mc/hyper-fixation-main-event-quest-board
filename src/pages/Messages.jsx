@@ -4,8 +4,11 @@ import { Send, Loader2, MessageCircle, ArrowLeft, Smile, Paperclip, Search, X } 
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import OnlineDot from '@/components/OnlineDot';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import ImageViewerModal from '@/components/ImageViewerModal';
+
+const QUICK_EMOJIS = ['👍','❤️','😂','🔥','🦈','⚔️','✨','💀','🖖','🎲','😭','👀','💯','🎉','🚀','🤔','😎','🍻','🍿','💡'];
 
 function Avatar({ name, avatarUrl, size = 'md' }) {
   const sizes = { sm: 'w-8 h-8 text-xs', md: 'w-10 h-10 text-sm', lg: 'w-12 h-12 text-base' };
@@ -57,6 +60,8 @@ export default function Messages() {
   const [attachment, setAttachment] = useState(null);
   const [attachmentPreview, setAttachmentPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [viewingImage, setViewingImage] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
@@ -202,6 +207,8 @@ export default function Messages() {
       (m.sender_id === profile?.id && m.recipient_id === id) ||
       (m.sender_id === id && m.recipient_id === profile?.id)
     );
+
+  const addEmoji = (emoji) => { setInput(prev => prev + emoji); setShowEmojiPicker(false); };
 
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
@@ -427,7 +434,7 @@ export default function Messages() {
                     <div className="flex flex-col gap-1 max-w-[75%] sm:max-w-[65%]">
                       {m.media_url && (
                         <div className={cn("overflow-hidden rounded-xl border border-white/10 shadow-md", isMe ? "self-end" : "self-start")}>
-                          <img src={m.media_url} alt="attachment" className="max-w-[200px] sm:max-w-[250px] object-cover" />
+                          <img src={m.media_url} alt="attachment" className="max-w-[200px] sm:max-w-[250px] object-cover cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setViewingImage({ url: m.media_url, alt: 'attachment' })} />
                         </div>
                       )}
                       {m.content && m.content.trim() !== '' && (
@@ -464,9 +471,35 @@ export default function Messages() {
       {selectedUser && (
         <div className="shrink-0 px-3 py-3 border-t border-white/10 bg-black/60 backdrop-blur-md">
           <div className="flex items-end gap-2">
-            <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-amber-400 transition-colors rounded-full shrink-0">
-              <Smile className="w-5 h-5" />
-            </button>
+            <div className="relative flex items-center shrink-0">
+              <button type="button" onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="p-2 text-slate-400 hover:text-amber-400 hover:bg-amber-900/30 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <Smile className="w-5 h-5" />
+              </button>
+              <AnimatePresence>
+                {showEmojiPicker && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute bottom-full left-0 mb-2 p-3 bg-[#0d0d1a] border border-purple-800/50 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.8)] w-64 z-50"
+                  >
+                    <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
+                      <span className="text-[10px] font-lcars text-purple-400 tracking-widest uppercase">Quick React</span>
+                      <button onClick={() => setShowEmojiPicker(false)} className="text-slate-500 hover:text-white"><X className="w-3 h-3" /></button>
+                    </div>
+                    <div className="grid grid-cols-5 gap-2">
+                      {QUICK_EMOJIS.map(emj => (
+                        <button key={emj} type="button" onClick={() => addEmoji(emj)}
+                          className="text-xl hover:bg-purple-900/50 p-1 rounded-lg transition-colors flex items-center justify-center">
+                          {emj}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             <div className="relative shrink-0">
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
               {attachmentPreview && (
@@ -513,6 +546,7 @@ export default function Messages() {
 
   return (
     <div className="h-[calc(100vh-3.5rem)] md:h-screen flex flex-col">
+      <ImageViewerModal imageUrl={viewingImage?.url} alt={viewingImage?.alt} isOpen={!!viewingImage} onClose={() => setViewingImage(null)} />
       <div className="flex-1 flex overflow-hidden">
         <div className={cn(
           "w-full md:w-[300px] md:flex flex-col shrink-0 border-r border-white/10 bg-black/50 backdrop-blur-md relative",
