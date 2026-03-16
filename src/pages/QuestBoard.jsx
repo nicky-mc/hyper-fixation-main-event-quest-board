@@ -362,7 +362,13 @@ export default function QuestBoard() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <Radio className="w-12 h-12 text-purple-500 animate-pulse" />
-            <span className="text-purple-400/70 font-mono text-sm">SCANNING FOR QUESTS...</span>
+            <motion.span className="text-purple-400/70 font-mono text-sm tracking-widest" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              {"SCANNING FOR QUESTS...".split("").map((char, index) => (
+                <motion.span key={index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.05, duration: 0.1 }}>
+                  {char}
+                </motion.span>
+              ))}
+            </motion.span>
           </div>
         ) : quests.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}

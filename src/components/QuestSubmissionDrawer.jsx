@@ -174,7 +174,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
                   <Input value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="Name your quest boldly..."
-                    className="bg-[#0d0820]/70 border-purple-800/50 text-purple-100 placeholder:text-slate-600 focus:border-purple-500"
+                    className="bg-[#0d0820]/70 border-purple-800/50 text-purple-100 placeholder:text-slate-600 focus:border-amber-400/70 focus:ring-2 focus:ring-purple-500/50 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all duration-300"
                     required />
                 </div>
 
