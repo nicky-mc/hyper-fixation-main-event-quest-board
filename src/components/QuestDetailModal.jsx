@@ -47,7 +47,7 @@ export default function QuestDetailModal({ quest, currentUser, onClose, onDelete
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 pb-12 px-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
@@ -56,7 +56,7 @@ export default function QuestDetailModal({ quest, currentUser, onClose, onDelete
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ type: 'spring', stiffness: 320, damping: 28 }}
         onClick={e => e.stopPropagation()}
-        className="w-full max-w-2xl rounded-2xl border-2 border-purple-700/60 shadow-2xl"
+        className="w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl border-2 border-purple-700/60 shadow-2xl relative"
         style={{ background: 'linear-gradient(135deg, #0d0d1a, #0f0d22)' }}
       >
         {/* Segment banner */}

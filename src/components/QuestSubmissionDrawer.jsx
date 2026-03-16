@@ -38,6 +38,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [myProfile, setMyProfile] = useState(null);
+  const [authUser, setAuthUser] = useState(null);
   const fileInputRef = useRef(null);
   const drawerRef = useRef(null);
 
