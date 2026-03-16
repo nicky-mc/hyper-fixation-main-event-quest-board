@@ -413,10 +413,10 @@ export default function Messages() {
                     </div>
                   )}
                   <motion.div
-                    initial={{ opacity: 0, y: 6, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.15 }}
-                    className={cn("flex items-end gap-2 mb-1", isMe ? "justify-end" : "justify-start")}>
+                   initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                   animate={{ opacity: 1, y: 0, scale: 1 }}
+                   transition={{ duration: 0.15 }}
+                   className={cn("flex items-end gap-2 mb-1", isMe ? "justify-end" : "justify-start")}>
                     {!isMe && (
                       <Avatar
                         name={partnerProfiles[selectedUser.id]?.adventurer_name || selectedUser.full_name || selectedUser.id}
@@ -424,19 +424,25 @@ export default function Messages() {
                         size="sm"
                       />
                     )}
-                    <div className={cn(
-                      "max-w-[72%] sm:max-w-[60%] px-4 py-2.5 text-sm leading-relaxed rounded-2xl",
-                      isMe
-                        ? "text-black rounded-br-md bg-gradient-to-br from-amber-400 to-orange-500 border border-amber-300/30"
-                        : "text-slate-200 rounded-bl-md bg-purple-950/70 border border-purple-500/20 backdrop-blur-sm"
-                    )}
-                    style={isMe ? { boxShadow: '0 0 20px rgba(251,191,36,0.25)' } : {}}>
-                     <div className="flex flex-col gap-2">
-                       {m.content && <p className="text-sm leading-relaxed">{m.content}</p>}
-                       {m.media_url && (
-                         <img src={m.media_url} alt="attachment" className="max-w-[200px] sm:max-w-[250px] rounded-lg border border-white/10 shadow-md mt-1" />
-                       )}
-                     </div>
+                    <div className="flex flex-col gap-1 max-w-[75%] sm:max-w-[65%]">
+                      {m.media_url && (
+                        <div className={cn("overflow-hidden rounded-xl border border-white/10 shadow-md", isMe ? "self-end" : "self-start")}>
+                          <img src={m.media_url} alt="attachment" className="max-w-[200px] sm:max-w-[250px] object-cover" />
+                        </div>
+                      )}
+                      {m.content && m.content.trim() !== '' && (
+                        <div className={cn(
+                          "px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm w-fit",
+                          isMe
+                            ? "bg-gradient-to-br from-amber-500 to-orange-500 text-black font-medium rounded-tr-sm self-end"
+                            : "bg-purple-900/40 border border-purple-800/50 text-purple-100 rounded-tl-sm self-start"
+                        )}>
+                          {m.content}
+                        </div>
+                      )}
+                      <span className={cn("text-[9px] text-slate-500 mt-0.5", isMe ? "text-right mr-1" : "text-left ml-1")}>
+                        {formatTime(m.created_date)}
+                      </span>
                     </div>
                     {isMe && (
                       <Avatar
