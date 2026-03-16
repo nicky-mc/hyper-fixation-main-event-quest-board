@@ -69,12 +69,22 @@ export default function Messages() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const targetAuthId = params.get('chatWith');
-    if (targetAuthId && allUsers.length > 0) {
-      const match = allUsers.find(u => u.id === targetAuthId);
-      if (match) selectUser(match);
-    }
-  }, [allUsers]);
+    const targetId = params.get('chatWith');
+    if (!targetId || !profile) return;
+    // If already in conversation list, select them immediately
+    const existing = allUsers.find(u => u.id === targetId);
+    if (existing) { selectUser(existing); return; }
+    // Otherwise bootstrap a placeholder so the chat window opens
+    base44.entities.AdventurerProfile.filter({ id: targetId }).then(profs => {
+      const p = profs[0];
+      if (p) {
+        const stub = { id: p.id, full_name: p.adventurer_name };
+        setAllUsers(prev => prev.find(u => u.id === p.id) ? prev : [...prev, stub]);
+        setPartnerProfiles(prev => ({ ...prev, [p.id]: p }));
+        selectUser(stub);
+      }
+    }).catch(() => {});
+  }, [profile, allUsers.length]);
 
   useEffect(() => {
     const initProfile = async () => {
