@@ -55,6 +55,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
   useEffect(() => {
     base44.auth.me().then(async u => {
       if (!u) return;
+      setAuthUser(u);
       const profs = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
       if (profs[0]) setMyProfile(profs[0]);
     }).catch(() => {});
@@ -92,7 +93,7 @@ export default function QuestSubmissionDrawer({ isOpen, onClose, onQuestSubmitte
 
     const quest = await base44.entities.Quest.create({
       ...formData,
-      quest_giver: myProfile?.adventurer_name || formData.quest_giver || 'Anonymous',
+      quest_giver: myProfile?.adventurer_name || authUser?.full_name || authUser?.email || 'Anonymous Adventurer',
       difficulty_class: dc,
       status: 'pending',
       ...(image_url && { image_url }),
