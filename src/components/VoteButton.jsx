@@ -34,23 +34,29 @@ export default function VoteButton({ questId, isSelected, voteCount: initialCoun
     }).catch(() => {});
   }, [questId]);
 
-  const hasVoted = adventurerId && votes.some(v => v.adventurer_id === adventurerId);
-  const voteCount = votes.length;
+  const hasVoted = localVoted;
+  const voteCount = localCount;
 
   const handleVote = async (e) => {
     e.stopPropagation();
     if (!adventurerId || loading) return;
     setLoading(true);
     if (hasVoted) {
-      const myVote = votes.find(v => v.adventurer_id === adventurerId);
-      if (myVote) await base44.entities.QuestVote.delete(myVote.id);
+      // Optimistic update
+      setLocalVoted(false);
+      setLocalCount(c => Math.max(0, c - 1));
       try {
+        const myVotes = await base44.entities.QuestVote.filter({ quest_id: questId, adventurer_id: adventurerId });
+        if (myVotes[0]) await base44.entities.QuestVote.delete(myVotes[0].id);
         const acts = await base44.entities.Activity.filter({ type: 'quest_voted', quest_id: questId, adventurer_id: adventurerId });
         await Promise.all(acts.map(a => base44.entities.Activity.delete(a.id)));
       } catch (_) {}
     } else {
-      await base44.entities.QuestVote.create({ quest_id: questId, adventurer_id: adventurerId });
+      // Optimistic update
+      setLocalVoted(true);
+      setLocalCount(c => c + 1);
       try {
+        await base44.entities.QuestVote.create({ quest_id: questId, adventurer_id: adventurerId });
         const quests = await base44.entities.Quest.filter({ id: questId });
         await base44.entities.Activity.create({
           type: 'quest_voted',
