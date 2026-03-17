@@ -83,6 +83,7 @@ export default function QuestBoard() {
       // Stagger secondary calls to avoid rate limiting
       await loadVoteCounts();
       await loadCommentCounts();
+      // Auth call after data to reduce burst
       base44.auth.me().then(async u => {
         setUser(u);
         if (u) {
