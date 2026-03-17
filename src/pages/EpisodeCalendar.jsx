@@ -142,6 +142,25 @@ export default function EpisodeCalendar() {
     setLoading(false);
   };
 
+  const loadCalEvents = async () => {
+    const data = await base44.entities.CalendarEvent.list('date', 200);
+    setCalEvents(data);
+  };
+
+  const handleSaveEvent = async () => {
+    if (!eventForm.title || !eventForm.date) return;
+    await base44.entities.CalendarEvent.create(eventForm);
+    setShowEventForm(false);
+    setEventForm({ title: '', date: '', time: '', event_type: 'Recording', description: '', is_live: false });
+    loadCalEvents();
+  };
+
+  const handleDeleteEvent = async (id) => {
+    if (!window.confirm('Delete this event?')) return;
+    await base44.entities.CalendarEvent.delete(id);
+    loadCalEvents();
+  };
+
   const monthStart = startOfMonth(currentMonth);
   const monthEnd   = endOfMonth(currentMonth);
   const calStart   = startOfWeek(monthStart, { weekStartsOn: 1 });
