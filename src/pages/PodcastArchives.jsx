@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { AudioContext } from '@/layout';
+import { AudioContext } from '@/Layout';
 import { Play, Upload, Loader2, Headphones, Mic, Pause } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
