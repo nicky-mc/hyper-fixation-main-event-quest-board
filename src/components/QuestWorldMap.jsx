@@ -8,22 +8,14 @@ export default function QuestWorldMap({ quests, onClose }) {
   const [mapTheme, setMapTheme] = useState('scifi'); // 'scifi' | 'fantasy'
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md overflow-hidden flex items-center justify-center">
+    <div className="relative w-full h-[70vh] min-h-[600px] bg-black rounded-2xl border border-purple-800/50 shadow-2xl overflow-hidden flex items-center justify-center mt-4">
 
-      {/* Theme Toggle */}
+      {/* Theme Toggle Button */}
       <button
         onClick={() => setMapTheme(prev => prev === 'scifi' ? 'fantasy' : 'scifi')}
-        className="absolute top-6 left-6 z-50 px-4 py-2 bg-black/60 backdrop-blur-md text-amber-400 hover:text-white hover:bg-black/80 rounded-full border border-amber-500/50 transition-colors font-lcars tracking-widest text-xs uppercase shadow-lg"
+        className="absolute top-4 left-4 z-[120] px-4 py-2 bg-black/80 backdrop-blur-md text-amber-400 hover:text-white hover:bg-black rounded-full border border-amber-500/50 transition-colors font-lcars tracking-widest text-xs uppercase shadow-lg cursor-pointer"
       >
         Switch to {mapTheme === 'scifi' ? 'Fantasy' : 'Sci-Fi'} Realm
-      </button>
-
-      {/* Close Button */}
-      <button
-        onClick={onClose}
-        className="absolute top-6 right-6 z-50 p-3 bg-red-900/40 text-red-400 hover:bg-red-900/80 rounded-full border border-red-500/50 transition-colors shadow-lg"
-      >
-        <X className="w-6 h-6" />
       </button>
 
       {/* Draggable Canvas */}
