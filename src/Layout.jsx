@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays, UserPlus, Compass, ChevronRight, BookOpen } from 'lucide-react';
+import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays, UserPlus, Compass, ChevronRight, BookOpen, Headphones } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import MessageToast from '@/components/MessageToast';
@@ -13,6 +13,9 @@ import { useAdventurerSync } from '@/components/useAdventurerSync';
 // Global adventurer context
 export const AdventurerContext = createContext(null);
 export const useAdventurer = () => useContext(AdventurerContext);
+
+// Global audio context
+export const AudioContext = createContext({ activeEpisode: null, setActiveEpisode: () => {} });
 
 function SwordsIcon({ className }) {
   return (
