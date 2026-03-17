@@ -3,18 +3,7 @@ import { Play, Pause, Volume2, VolumeX, ChevronDown, ChevronUp, Radio } from 'lu
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-// Global player state — persists across renders via module-level ref
-let globalSrc = '';
-let globalTitle = 'No episode loaded';
-let globalListeners = [];
-
-export function setGlobalTrack(src, title) {
-  globalSrc = src;
-  globalTitle = title;
-  globalListeners.forEach(fn => fn(src, title));
-}
-
-export default function GlobalAudioPlayer() {
+export default function GlobalAudioPlayer({ currentTrack }) {
   const audioRef = useRef(null);
   const progressRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -23,25 +12,25 @@ export default function GlobalAudioPlayer() {
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [src, setSrc] = useState(globalSrc);
-  const [title, setTitle] = useState(globalTitle);
 
-  // Subscribe to global track changes
+  // When track changes, load and auto-play
   useEffect(() => {
-    const handler = (newSrc, newTitle) => {
-      setSrc(newSrc);
-      setTitle(newTitle);
+    if (!audioRef.current) return;
+    if (!currentTrack) {
+      audioRef.current.pause();
       setIsPlaying(false);
       setCurrentTime(0);
-      if (audioRef.current) {
-        audioRef.current.src = newSrc;
-        audioRef.current.load();
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-      }
-    };
-    globalListeners.push(handler);
-    return () => { globalListeners = globalListeners.filter(l => l !== handler); };
-  }, []);
+      setDuration(0);
+      return;
+    }
+    audioRef.current.src = currentTrack.audio_url;
+    audioRef.current.load();
+    setCurrentTime(0);
+    setDuration(0);
+    audioRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+  }, [currentTrack?.id]);
+
+  if (!currentTrack) return null;
 
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -52,14 +41,6 @@ export default function GlobalAudioPlayer() {
     } else {
       audio.play().then(() => setIsPlaying(true)).catch(() => {});
     }
-  };
-
-  const handleTimeUpdate = () => {
-    if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
-  };
-
-  const handleLoadedMetadata = () => {
-    if (audioRef.current) setDuration(audioRef.current.duration);
   };
 
   const handleSeek = (e) => {
@@ -97,9 +78,8 @@ export default function GlobalAudioPlayer() {
     <>
       <audio
         ref={audioRef}
-        src={src || undefined}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
+        onTimeUpdate={() => audioRef.current && setCurrentTime(audioRef.current.currentTime)}
+        onLoadedMetadata={() => audioRef.current && setDuration(audioRef.current.duration)}
         onEnded={() => setIsPlaying(false)}
         preload="metadata"
       />
@@ -116,14 +96,10 @@ export default function GlobalAudioPlayer() {
         {/* LCARS top accent strip */}
         <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #a855f7, #CC0000, transparent)' }} />
 
-        {/* Progress bar — clickable */}
-        <div
-          ref={progressRef}
-          onClick={handleSeek}
-          className="w-full h-1 bg-purple-900/50 cursor-pointer group relative"
-        >
+        {/* Progress bar */}
+        <div ref={progressRef} onClick={handleSeek} className="w-full h-1 bg-purple-900/50 cursor-pointer">
           <div
-            className="h-full transition-all duration-150 relative"
+            className="h-full transition-all duration-150"
             style={{
               width: `${progress * 100}%`,
               background: 'linear-gradient(90deg, #CC0000, #FFBF00)',
@@ -132,10 +108,9 @@ export default function GlobalAudioPlayer() {
           />
         </div>
 
-        {/* Main controls row */}
+        {/* Controls row */}
         <div className="flex items-center gap-3 px-4 py-2.5">
-
-          {/* LCARS left elbow pill */}
+          {/* LCARS pill */}
           <div className="hidden sm:flex items-center shrink-0">
             <div className="w-12 h-7 rounded-full bg-amber-500/80 flex items-center justify-center"
               style={{ boxShadow: '0 0 10px rgba(251,191,36,0.3)' }}>
@@ -163,41 +138,30 @@ export default function GlobalAudioPlayer() {
           {/* Track info */}
           <div className="flex-1 min-w-0">
             <p className="font-lcars text-xs text-amber-300 font-bold truncate tracking-widest uppercase">
-              {title}
+              {currentTrack.season && currentTrack.episode_number
+                ? `S${currentTrack.season}E${currentTrack.episode_number} · `
+                : ''
+              }{currentTrack.title}
             </p>
             <p className="font-lcars text-[9px] text-slate-500 tracking-widest uppercase">
-              {formatTime(currentTime)}
-              {duration ? ` / ${formatTime(duration)}` : ''}
-              {isPlaying && (
-                <span className="ml-2 text-green-400 animate-pulse">◈ ON AIR</span>
-              )}
+              {formatTime(currentTime)}{duration ? ` / ${formatTime(duration)}` : ''}
+              {isPlaying && <span className="ml-2 text-green-400 animate-pulse">◈ ON AIR</span>}
             </p>
           </div>
 
-          {/* Volume — hidden on mobile */}
+          {/* Volume (desktop) */}
           <div className="hidden sm:flex items-center gap-2 shrink-0">
             <button onClick={toggleMute} className="text-purple-400 hover:text-amber-400 transition-colors">
-              {muted || volume === 0
-                ? <VolumeX className="w-4 h-4" />
-                : <Volume2 className="w-4 h-4" />
-              }
+              {muted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.05"
-              value={muted ? 0 : volume}
-              onChange={handleVolumeChange}
-              className="w-20 h-1 accent-amber-400 cursor-pointer"
-            />
+            <input type="range" min="0" max="1" step="0.05"
+              value={muted ? 0 : volume} onChange={handleVolumeChange}
+              className="w-20 h-1 accent-amber-400 cursor-pointer" />
           </div>
 
           {/* Expand toggle */}
-          <button
-            onClick={() => setExpanded(e => !e)}
-            className="shrink-0 text-purple-500 hover:text-amber-400 transition-colors p-1"
-          >
+          <button onClick={() => setExpanded(e => !e)}
+            className="shrink-0 text-purple-500 hover:text-amber-400 transition-colors p-1">
             {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
           </button>
         </div>
@@ -213,7 +177,6 @@ export default function GlobalAudioPlayer() {
               className="overflow-hidden border-t border-purple-900/40 px-4 py-3"
             >
               <div className="flex items-center gap-4">
-                {/* LCARS color block */}
                 <div className="flex gap-1 shrink-0">
                   {['bg-red-600', 'bg-amber-400', 'bg-cyan-500', 'bg-purple-500'].map((c, i) => (
                     <div key={i} className={cn("w-2 h-10 rounded-full", c)} style={{ opacity: 0.7 }} />
@@ -221,8 +184,11 @@ export default function GlobalAudioPlayer() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-lcars text-[9px] text-purple-400 uppercase tracking-widest mb-1">Now Playing</p>
-                  <p className="font-lcars text-sm text-amber-300 font-black tracking-wide">{title}</p>
-                  <p className="font-lcars text-[9px] text-slate-500 mt-1 uppercase tracking-widest">
+                  <p className="font-lcars text-sm text-amber-300 font-black tracking-wide">{currentTrack.title}</p>
+                  {currentTrack.description && (
+                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">{currentTrack.description}</p>
+                  )}
+                  <p className="font-lcars text-[9px] text-slate-600 mt-1 uppercase tracking-widest">
                     The Hyper-Fixation Main Event · Podcast
                   </p>
                 </div>
@@ -231,12 +197,9 @@ export default function GlobalAudioPlayer() {
                   <button onClick={toggleMute} className="text-purple-400">
                     {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                   </button>
-                  <input
-                    type="range" min="0" max="1" step="0.05"
-                    value={muted ? 0 : volume}
-                    onChange={handleVolumeChange}
-                    className="w-16 h-1 accent-amber-400 cursor-pointer"
-                  />
+                  <input type="range" min="0" max="1" step="0.05"
+                    value={muted ? 0 : volume} onChange={handleVolumeChange}
+                    className="w-16 h-1 accent-amber-400 cursor-pointer" />
                 </div>
               </div>
             </motion.div>
