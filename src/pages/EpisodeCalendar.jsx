@@ -115,6 +115,13 @@ export default function EpisodeCalendar() {
     description: '', submission_deadline: '', status: 'upcoming', image_url: '',
   });
 
+  // CalendarEvent state
+  const [calEvents, setCalEvents]       = useState([]);
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [eventForm, setEventForm] = useState({
+    title: '', date: '', time: '', event_type: 'Recording', description: '', is_live: false,
+  });
+
   const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
