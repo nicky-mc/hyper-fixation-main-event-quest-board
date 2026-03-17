@@ -8,13 +8,13 @@ export default function QuestWorldMap({ quests, onClose }) {
   const [mapTheme, setMapTheme] = useState('scifi');
 
   return (
-    <div className="relative w-full h-[calc(100vh-120px)] min-h-[600px] flex items-center justify-center overflow-hidden pb-4 z-40">
+    <div className="fixed top-[64px] left-0 md:left-[260px] right-0 bottom-0 z-[40] bg-black/40 backdrop-blur-sm p-4 flex items-center justify-center overflow-hidden">
 
       {/* The LCARS PADD Device */}
-      <div className="relative w-full max-w-7xl h-full bg-black rounded-[2rem] border-4 border-amber-500 flex flex-col md:flex-row shadow-[0_0_30px_rgba(245,158,11,0.15)] overflow-hidden">
+      <div className="relative w-full h-full max-w-7xl bg-black rounded-[2rem] border-4 border-amber-500 flex flex-col md:flex-row shadow-2xl overflow-hidden">
 
         {/* The LCARS Physical Bezel */}
-        <div className="w-full md:w-32 bg-amber-500 flex md:flex-col items-center justify-between p-3 md:py-8 md:px-3 shrink-0 rounded-t-[1.5rem] md:rounded-l-[1.5rem] md:rounded-tr-none gap-4 z-50">
+        <div className="w-full md:w-32 bg-amber-500 flex md:flex-col items-center justify-between p-3 md:py-8 md:px-3 shrink-0 rounded-t-[1.5rem] md:rounded-l-[1.5rem] md:rounded-tr-none gap-4 z-50 relative">
 
           {/* Close Button */}
           <button onClick={onClose} className="w-full py-2 md:py-6 bg-red-600 hover:bg-red-500 text-black font-black font-lcars text-xs md:text-sm tracking-widest uppercase rounded-full md:rounded-[2rem] transition-colors border-2 border-red-800">
@@ -40,7 +40,7 @@ export default function QuestWorldMap({ quests, onClose }) {
           {/* Draggable Canvas */}
           <motion.div
             drag
-            dragConstraints={{ top: -2000, left: -2000, right: 2000, bottom: 2000 }}
+            dragConstraints={{ top: -2500, left: -2500, right: 2500, bottom: 2500 }}
             className="w-[3000px] h-[3000px] absolute cursor-grab active:cursor-grabbing"
             style={{
               backgroundImage: mapTheme === 'scifi' ? `url('/starmapposter3d.webp')` : `url('/fantasy-map.avif')`,
