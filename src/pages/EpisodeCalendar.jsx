@@ -221,7 +221,7 @@ export default function EpisodeCalendar() {
     setSelectedEp(null);
   };
 
-  const TABS = ['CALENDAR', 'UPCOMING', ...(isAdmin ? ['SCHEDULE'] : [])];
+  const TABS = ['CALENDAR', 'UPCOMING', 'EVENTS', ...(isAdmin ? ['SCHEDULE'] : [])];
 
   const renderContent = () => {
     if (activeTab === 'CALENDAR') return (
