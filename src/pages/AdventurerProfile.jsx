@@ -361,6 +361,17 @@ export default function AdventurerProfile() {
       content: newPost.trim(),
       ...(media_url && { media_url }),
     });
+    // Notify wall owner if it's not their own post
+    if (profile.auth_id && myProfile.id !== profile.id) {
+      await base44.entities.Notification.create({
+        target_auth_id: profile.auth_id,
+        actor_name: myProfile.adventurer_name,
+        type: 'wall_post',
+        content: 'posted on your Comms Log',
+        is_read: false,
+        link_url: `/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`,
+      });
+    }
     setNewPost('');
     setFeedAttachment(null);
     setFeedPreview(null);
