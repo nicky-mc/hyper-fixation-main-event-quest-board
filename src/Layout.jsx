@@ -187,6 +187,7 @@ export default function Layout({ children, currentPageName }) {
   );
 
   return (
+    <AudioContext.Provider value={{ activeEpisode, setActiveEpisode }}>
     <AdventurerContext.Provider value={profile}>
       <div className="min-h-screen flex relative" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
 
@@ -393,8 +394,9 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       <MessageToast currentPageName={currentPageName} />
-      <GlobalAudioPlayer />
+      <GlobalAudioPlayer currentTrack={activeEpisode} />
       </div>
     </AdventurerContext.Provider>
+    </AudioContext.Provider>
   );
 }
