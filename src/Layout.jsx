@@ -388,6 +388,7 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       <MessageToast currentPageName={currentPageName} />
+      <GlobalAudioPlayer />
       </div>
     </AdventurerContext.Provider>
   );
