@@ -6,6 +6,7 @@ import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays,
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import MessageToast from '@/components/MessageToast';
+import GlobalAudioPlayer from '@/components/GlobalAudioPlayer';
 import NotificationCenter from '@/components/NotificationCenter';
 import { useAdventurerSync } from '@/components/useAdventurerSync';
 
