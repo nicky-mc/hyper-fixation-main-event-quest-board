@@ -339,6 +339,68 @@ export default function EpisodeCalendar() {
       </div>
     );
 
+    if (activeTab === 'EVENTS') return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between mb-4">
+          <div className="font-lcars uppercase font-black tracking-widest text-xs text-cyan-400">◈ COMMUNITY EVENTS</div>
+          {isAdmin && (
+            <button onClick={() => setShowEventForm(true)}
+              className="font-lcars uppercase font-black text-[10px] tracking-widest px-4 py-1.5 rounded-full"
+              style={{ background: C.cyan + '22', color: C.cyan, border: `1px solid ${C.cyan}44` }}>
+              + ADD EVENT
+            </button>
+          )}
+        </div>
+        {calEvents.length === 0 ? (
+          <div className="font-lcars uppercase text-center p-6 text-slate-600 text-[11px] tracking-widest border border-white/10 rounded-lg bg-black/20">
+            NO EVENTS SCHEDULED
+          </div>
+        ) : calEvents.map((ev, i) => {
+          const style = EVENT_TYPE_STYLES[ev.event_type] || { color: C.blue, label: ev.event_type, pulse: false };
+          return (
+            <motion.div key={ev.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
+              className="flex items-stretch rounded-lg overflow-hidden border"
+              style={{ borderColor: style.color + '44' }}>
+              <div style={{ width: '6px', background: style.color, flexShrink: 0 }} />
+              <div className="flex-1 flex items-center justify-between px-4 py-3 bg-black/60 backdrop-blur-sm">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-lcars uppercase font-black text-sm tracking-wide truncate" style={{ color: style.color }}>
+                      {ev.title}
+                    </span>
+                    {ev.is_live && (
+                      <span className="font-lcars text-[8px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest animate-pulse"
+                        style={{ background: C.red + '33', color: C.red, border: `1px solid ${C.red}66` }}>
+                        ● LIVE
+                      </span>
+                    )}
+                  </div>
+                  <div className="font-lcars text-[10px] uppercase tracking-widest mt-0.5 text-slate-500">
+                    {ev.date && format(parseISO(ev.date), 'MMM d, yyyy').toUpperCase()}
+                    {ev.time && <span className="ml-2">· {ev.time}</span>}
+                  </div>
+                  {ev.description && (
+                    <div className="text-xs text-slate-500 mt-1 truncate">{ev.description}</div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  <span className="font-lcars font-black text-[9px] px-3 py-1 uppercase tracking-widest rounded-full"
+                    style={{ background: style.color + '22', color: style.color }}>
+                    {style.label}
+                  </span>
+                  {isAdmin && (
+                    <button onClick={() => handleDeleteEvent(ev.id)} className="p-1 hover:opacity-70 text-red-400">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    );
+
     if (activeTab === 'SCHEDULE' && isAdmin) return (
       <div>
         <div className="font-lcars uppercase font-black tracking-widest text-xs mb-4 text-amber-400">◈ ALL MISSION LOGS</div>
