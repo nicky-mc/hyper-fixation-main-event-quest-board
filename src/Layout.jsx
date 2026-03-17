@@ -41,10 +41,12 @@ const NAV_ITEMS = [
   { label: 'Friends', page: 'Friends', icon: UserPlus },
   { label: 'Discover', page: 'Discover', icon: Compass },
   { label: 'The Tavern', page: 'GuildDirectory', icon: BookOpen },
+  { label: 'The Archives', page: 'PodcastArchives', icon: Headphones },
 ];
 
 export default function Layout({ children, currentPageName }) {
   const { profile } = useAdventurerSync();
+  const [activeEpisode, setActiveEpisode] = useState(null);
   const [user, setUser]             = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
