@@ -127,6 +127,7 @@ export default function EpisodeCalendar() {
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
     loadEpisodes();
+    loadCalEvents();
     const unsub = base44.entities.EpisodeCalendar.subscribe(event => {
       if (event.type === 'create') setEpisodes(p => [...p, event.data].sort((a, b) => a.recording_date?.localeCompare(b.recording_date)));
       if (event.type === 'update') setEpisodes(p => p.map(e => e.id === event.id ? event.data : e));
