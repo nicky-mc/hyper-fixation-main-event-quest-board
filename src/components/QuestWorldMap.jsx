@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Crosshair, Rocket, MapPin } from 'lucide-react';
+import { Crosshair, Rocket, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
