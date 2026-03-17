@@ -19,6 +19,16 @@ const C = {
   black:  '#000000',
 };
 
+const EVENT_TYPE_STYLES = {
+  'Recording':       { color: C.red,    label: 'REC',     pulse: true  },
+  'Episode Drop':    { color: C.mauve,  label: 'DROP',    pulse: false },
+  'Live Stream':     { color: C.cyan,   label: 'LIVE',    pulse: true  },
+  'Community Event': { color: C.yellow, label: 'COMM',    pulse: false },
+  'Shark Special':   { color: C.orange, label: 'SHARK 🦈',pulse: false },
+};
+
+const EVENT_TYPES = ['Recording', 'Episode Drop', 'Live Stream', 'Community Event', 'Shark Special'];
+
 const SEGMENTS = [
   'The Gimmick Check','Patch Notes','World Building','Roll for Initiative',
   'The Tavern Entry','The Main Quest','Heart of the Story','The Loot Drop',
