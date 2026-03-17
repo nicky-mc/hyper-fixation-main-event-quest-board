@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Crosshair, Rocket, MapPin } from 'lucide-react';
+import { X, Crosshair, Rocket, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -8,12 +8,20 @@ export default function QuestWorldMap({ quests, onClose }) {
   const [mapTheme, setMapTheme] = useState('scifi'); // 'scifi' | 'fantasy'
 
   return (
-    <div className="relative w-full h-[70vh] min-h-[600px] bg-black rounded-2xl border border-purple-800/50 shadow-2xl overflow-hidden flex items-center justify-center mt-4">
+    <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center overflow-hidden">
 
-      {/* Theme Toggle Button */}
+      {/* Close Button - Top Right */}
+      <button
+        onClick={onClose}
+        className="absolute top-6 right-6 z-[130] p-3 bg-red-900/60 text-red-400 hover:bg-red-800 hover:text-white rounded-full border border-red-500/50 transition-colors shadow-[0_0_15px_rgba(239,68,68,0.4)] cursor-pointer"
+      >
+        <X className="w-6 h-6" />
+      </button>
+
+      {/* Theme Toggle - Bottom Left */}
       <button
         onClick={() => setMapTheme(prev => prev === 'scifi' ? 'fantasy' : 'scifi')}
-        className="absolute top-4 left-4 z-[120] px-4 py-2 bg-black/80 backdrop-blur-md text-amber-400 hover:text-white hover:bg-black rounded-full border border-amber-500/50 transition-colors font-lcars tracking-widest text-xs uppercase shadow-lg cursor-pointer"
+        className="absolute bottom-6 left-6 z-[130] px-6 py-3 bg-black/80 backdrop-blur-md text-amber-400 hover:text-white hover:bg-black rounded-full border border-amber-500/50 transition-colors font-lcars tracking-widest text-sm uppercase shadow-[0_0_15px_rgba(245,158,11,0.3)] cursor-pointer"
       >
         Switch to {mapTheme === 'scifi' ? 'Fantasy' : 'Sci-Fi'} Realm
       </button>
@@ -66,7 +74,6 @@ export default function QuestWorldMap({ quests, onClose }) {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: index * 0.05 }}
             >
-              {/* Pulse ring when selected */}
               {isSelected && (
                 <motion.div
                   className="absolute rounded-full pointer-events-none border-2"
