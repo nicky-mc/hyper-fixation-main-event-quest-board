@@ -383,7 +383,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* ── MAIN CONTENT ── */}
-      <main className="flex-1 relative z-10 md:pl-24 pt-16 md:pt-16 pb-4 md:pb-0 min-h-screen">
+      <main className="flex-1 relative z-10 md:pl-24 pt-16 md:pt-16 pb-24 min-h-screen">
         {children}
       </main>
 
