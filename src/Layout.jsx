@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays, UserPlus, Compass, ChevronRight } from 'lucide-react';
+import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays, UserPlus, Compass, ChevronRight, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import MessageToast from '@/components/MessageToast';
@@ -36,6 +36,7 @@ const NAV_ITEMS = [
   { label: 'Episode Calendar', page: 'EpisodeCalendar', icon: CalendarDays },
   { label: 'Friends', page: 'Friends', icon: UserPlus },
   { label: 'Discover', page: 'Discover', icon: Compass },
+  { label: 'The Tavern', page: 'GuildDirectory', icon: BookOpen },
 ];
 
 export default function Layout({ children, currentPageName }) {

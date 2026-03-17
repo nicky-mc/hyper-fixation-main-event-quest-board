@@ -13,6 +13,7 @@ import AdventurersDirectory from './pages/AdventurersDirectory';
 import Friends from './pages/Friends';
 import Welcome from './pages/Welcome';
 import Discover from './pages/Discover';
+import GuildDirectory from './pages/GuildDirectory';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -131,6 +132,14 @@ const AuthenticatedApp = () => {
         <ProtectedRoute>
           <LayoutWrapper currentPageName="Discover">
             <Discover />
+          </LayoutWrapper>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/GuildDirectory" element={
+        <ProtectedRoute>
+          <LayoutWrapper currentPageName="GuildDirectory">
+            <GuildDirectory />
           </LayoutWrapper>
         </ProtectedRoute>
       } />
