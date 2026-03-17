@@ -14,6 +14,7 @@ import Friends from './pages/Friends';
 import Welcome from './pages/Welcome';
 import Discover from './pages/Discover';
 import GuildDirectory from './pages/GuildDirectory';
+import PodcastArchives from './pages/PodcastArchives';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -140,6 +141,14 @@ const AuthenticatedApp = () => {
         <ProtectedRoute>
           <LayoutWrapper currentPageName="GuildDirectory">
             <GuildDirectory />
+          </LayoutWrapper>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/PodcastArchives" element={
+        <ProtectedRoute>
+          <LayoutWrapper currentPageName="PodcastArchives">
+            <PodcastArchives />
           </LayoutWrapper>
         </ProtectedRoute>
       } />
