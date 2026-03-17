@@ -80,7 +80,9 @@ export default function QuestBoard() {
   useEffect(() => {
     const init = async () => {
       await loadQuests();
-      await Promise.all([loadVoteCounts(), loadCommentCounts()]);
+      // Stagger secondary calls to avoid rate limiting
+      await loadVoteCounts();
+      await loadCommentCounts();
       base44.auth.me().then(async u => {
         setUser(u);
         if (u) {
