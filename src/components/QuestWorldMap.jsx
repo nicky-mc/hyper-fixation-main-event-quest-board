@@ -8,10 +8,10 @@ export default function QuestWorldMap({ quests, onClose }) {
   const [mapTheme, setMapTheme] = useState('scifi');
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm p-4 md:p-8 flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-[calc(100vh-120px)] min-h-[600px] flex items-center justify-center overflow-hidden pb-4 z-40">
 
       {/* The LCARS PADD Device */}
-      <div className="relative w-full max-w-6xl h-[85vh] max-h-[800px] bg-black rounded-[2rem] border-4 border-amber-500 flex flex-col md:flex-row shadow-[0_0_50px_rgba(245,158,11,0.15)] overflow-hidden">
+      <div className="relative w-full max-w-7xl h-full bg-black rounded-[2rem] border-4 border-amber-500 flex flex-col md:flex-row shadow-[0_0_30px_rgba(245,158,11,0.15)] overflow-hidden">
 
         {/* The LCARS Physical Bezel */}
         <div className="w-full md:w-32 bg-amber-500 flex md:flex-col items-center justify-between p-3 md:py-8 md:px-3 shrink-0 rounded-t-[1.5rem] md:rounded-l-[1.5rem] md:rounded-tr-none gap-4 z-50">
@@ -40,7 +40,7 @@ export default function QuestWorldMap({ quests, onClose }) {
           {/* Draggable Canvas */}
           <motion.div
             drag
-            dragConstraints={{ top: -1000, left: -1000, right: 1000, bottom: 1000 }}
+            dragConstraints={{ top: -2000, left: -2000, right: 2000, bottom: 2000 }}
             className="w-[3000px] h-[3000px] absolute cursor-grab active:cursor-grabbing"
             style={{
               backgroundImage: mapTheme === 'scifi' ? `url('/starmapposter3d.webp')` : `url('/fantasy-map.avif')`,
