@@ -58,12 +58,28 @@ export default function VoteButton({ questId, isSelected, voteCount: initialCoun
       try {
         await base44.entities.QuestVote.create({ quest_id: questId, adventurer_id: adventurerId });
         const quests = await base44.entities.Quest.filter({ id: questId });
+        const quest = quests[0];
         await base44.entities.Activity.create({
           type: 'quest_voted',
           adventurer_id: adventurerId,
           quest_id: questId,
-          quest_title: quests[0]?.title || '',
+          quest_title: quest?.title || '',
         });
+        // Notify the quest owner (if different adventurer)
+        if (quest?.adventurer_id && quest.adventurer_id !== adventurerId) {
+          const ownerProf = await base44.entities.AdventurerProfile.filter({ id: quest.adventurer_id });
+          const voterProf = await base44.entities.AdventurerProfile.filter({ id: adventurerId });
+          if (ownerProf[0]?.auth_id) {
+            await base44.entities.Notification.create({
+              target_auth_id: ownerProf[0].auth_id,
+              actor_name: voterProf[0]?.adventurer_name || 'Someone',
+              type: 'quest_vote',
+              content: `upvoted your quest "${quest.title}"`,
+              is_read: false,
+              link_url: '/QuestBoard',
+            });
+          }
+        }
       } catch (_) {}
     }
     setLoading(false);

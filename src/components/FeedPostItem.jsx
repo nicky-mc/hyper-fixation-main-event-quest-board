@@ -34,6 +34,20 @@ export default function FeedPostItem({ post, myProfile, onImageClick }) {
     setComments(prev => [...prev, created]);
     setNewComment('');
     setSubmitting(false);
+    // Notify post author if different person
+    if (post.author_id && post.author_id !== myProfile.id) {
+      const authorProf = await base44.entities.AdventurerProfile.filter({ id: post.author_id });
+      if (authorProf[0]?.auth_id) {
+        await base44.entities.Notification.create({
+          target_auth_id: authorProf[0].auth_id,
+          actor_name: myProfile.adventurer_name,
+          type: 'post_comment',
+          content: 'replied to your transmission',
+          is_read: false,
+          link_url: `/AdventurerProfile?name=${encodeURIComponent(authorProf[0].adventurer_name)}`,
+        });
+      }
+    }
   };
 
   return (
