@@ -651,6 +651,49 @@ export default function EpisodeCalendar() {
         )}
       </AnimatePresence>
 
+      {/* ══ ADD EVENT MODAL ═════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {showEventForm && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/92"
+            onClick={() => setShowEventForm(false)}>
+            <motion.div initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-md overflow-y-auto max-h-[90vh] rounded-xl bg-black/90 backdrop-blur-xl border border-white/10"
+              style={{ boxShadow: `0 0 60px ${C.cyan}33` }}>
+              <div className="flex items-center justify-between px-4 py-3 rounded-t-xl" style={{ background: C.cyan }}>
+                <div className="font-lcars uppercase font-black text-xs tracking-widest text-black">ADD COMMUNITY EVENT</div>
+                <button onClick={() => setShowEventForm(false)} className="text-black"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="p-5 space-y-4">
+                <LField label="Event Title *" value={eventForm.title} onChange={e => setEventForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Live Stream Watch Party" />
+                <LField label="Date *" value={eventForm.date} onChange={e => setEventForm(f => ({ ...f, date: e.target.value }))} type="date" />
+                <LField label="Time" value={eventForm.time} onChange={e => setEventForm(f => ({ ...f, time: e.target.value }))} placeholder="e.g. 7:00 PM EST" />
+                <LSelect label="Event Type" value={eventForm.event_type} onChange={e => setEventForm(f => ({ ...f, event_type: e.target.value }))}>
+                  {EVENT_TYPES.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
+                </LSelect>
+                <div>
+                  <div className="font-lcars text-[9px] uppercase tracking-[0.2em] mb-1 text-purple-300">Description</div>
+                  <textarea value={eventForm.description} onChange={e => setEventForm(f => ({ ...f, description: e.target.value }))}
+                    placeholder="Event details..." rows={3}
+                    className="w-full px-3 py-2 text-sm focus:outline-none resize-none bg-black/40 border border-white/10 text-slate-300 rounded-lg backdrop-blur-sm"
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <input type="checkbox" id="is_live" checked={eventForm.is_live}
+                    onChange={e => setEventForm(f => ({ ...f, is_live: e.target.checked }))}
+                    className="w-4 h-4 accent-red-500" />
+                  <label htmlFor="is_live" className="font-lcars text-[10px] uppercase tracking-widest text-red-400">Mark as LIVE NOW</label>
+                </div>
+                <LBtn onClick={handleSaveEvent} disabled={!eventForm.title || !eventForm.date} color={C.cyan} className="w-full text-center">
+                  COMMIT EVENT
+                </LBtn>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ══ ADMIN FORM MODAL ════════════════════════════════════════════════ */}
       <AnimatePresence>
         {showForm && (
