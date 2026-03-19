@@ -1,20 +1,23 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Crosshair, Rocket, MapPin, Send, ArrowBigUp, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { base44 } from '@/api/base44Client';
 
 export default function QuestWorldMap({ quests, onClose }) {
+  const navigate = useNavigate();
   const [activeNode, setActiveNode] = useState(null);
   const [mapTheme, setMapTheme] = useState('scifi');
   const [zoom, setZoom] = useState(0.35);
 
-  // Comments state
+  // Comment state
   const [comments, setComments] = useState([]);
+  const [commentProfiles, setCommentProfiles] = useState({}); // adventurer_id -> profile
   const [commentInput, setCommentInput] = useState('');
   const [sendingComment, setSendingComment] = useState(false);
   const [myProfile, setMyProfile] = useState(null);
-  const [commentVotes, setCommentVotes] = useState([]); // all CommentVote records for this quest's comments
+  const [commentVotes, setCommentVotes] = useState([]);
 
   const handleZoom = (amt) => setZoom(prev => Math.max(0.15, Math.min(prev + amt, 2)));
 
@@ -29,14 +32,24 @@ export default function QuestWorldMap({ quests, onClose }) {
 
   // Load comments + votes when activeNode changes
   useEffect(() => {
-    if (!activeNode) { setComments([]); setCommentVotes([]); return; }
+    if (!activeNode) { setComments([]); setCommentVotes([]); setCommentProfiles({}); return; }
+
     base44.entities.QuestComment.filter({ quest_id: activeNode.id }, '-created_date', 50)
-      .then(setComments).catch(() => {});
-    base44.entities.CommentVote
-      ? base44.entities.CommentVote.filter({ quest_id: activeNode.id }, '-created_date', 200)
-          .then(setCommentVotes).catch(() => {})
-      : setCommentVotes([]);
-  }, [activeNode?.id]);
+      .then(async (fetched) => {
+        setComments(fetched);
+        // Fetch profiles for each unique adventurer_id
+        const ids = [...new Set(fetched.map(c => c.adventurer_id).filter(Boolean))];
+        const profileMap = {};
+        await Promise.all(ids.map(async id => {
+          const profs = await base44.entities.AdventurerProfile.filter({ id }).catch(() => []);
+          if (profs[0]) profileMap[id] = profs[0];
+        }));
+        setCommentProfiles(profileMap);
+      }).catch(() => {});
+
+    base44.entities.CommentVote.filter({ quest_id: activeNode.id }, '-created_date', 200)
+      .then(setCommentVotes).catch(() => setCommentVotes([]));
+  }, [activeNode?.id, myProfile?.id]);
 
   const handleSendComment = async () => {
     if (!commentInput.trim() || !myProfile || sendingComment) return;
@@ -47,6 +60,8 @@ export default function QuestWorldMap({ quests, onClose }) {
       content: commentInput.trim(),
     });
     setComments(prev => [newComment, ...prev]);
+    // Add own profile to map so avatar shows immediately
+    setCommentProfiles(prev => ({ ...prev, [myProfile.id]: myProfile }));
     setCommentInput('');
     setSendingComment(false);
   };
@@ -65,6 +80,11 @@ export default function QuestWorldMap({ quests, onClose }) {
       });
       setCommentVotes(prev => [...prev, newVote]);
     }
+  };
+
+  const navigateToProfile = (adventurerName) => {
+    onClose();
+    navigate(`/AdventurerProfile?name=${encodeURIComponent(adventurerName)}`);
   };
 
   const getVoteCount = (commentId) => commentVotes.filter(v => v.comment_id === commentId).length;
@@ -150,6 +170,7 @@ export default function QuestWorldMap({ quests, onClose }) {
               const topPos = 20 + ((index * 37) % 60) + '%';
               const leftPos = 20 + ((index * 43) % 60) + '%';
               const isSelected = activeNode?.id === quest.id;
+              const nodeImg = quest.image_url;
 
               return (
                 <motion.div
@@ -172,12 +193,18 @@ export default function QuestWorldMap({ quests, onClose }) {
                     onPointerDown={e => e.stopPropagation()}
                     onClick={() => setActiveNode(quest)}
                     className={cn(
-                      "w-6 h-6 rounded-full border-2 transition-all duration-300",
+                      "w-6 h-6 rounded-full border-2 transition-all duration-300 overflow-hidden",
                       mapTheme === 'scifi'
-                        ? (isSelected ? "bg-amber-400 border-white scale-125 shadow-[0_0_15px_rgba(251,191,36,0.8)]" : "bg-purple-600 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.5)] hover:scale-110 hover:bg-amber-500")
-                        : (isSelected ? "bg-red-600 border-yellow-400 scale-125 shadow-lg" : "bg-yellow-700 border-yellow-300 shadow-md hover:scale-110 hover:bg-red-500")
+                        ? (isSelected ? "border-white scale-125 shadow-[0_0_15px_rgba(251,191,36,0.8)]" : "border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.5)] hover:scale-110")
+                        : (isSelected ? "border-yellow-400 scale-125 shadow-lg" : "border-yellow-300 shadow-md hover:scale-110")
                     )}
-                  />
+                  >
+                    {nodeImg ? (
+                      <img src={nodeImg} alt="" className="w-full h-full object-cover opacity-70" />
+                    ) : (
+                      <div className={cn("w-full h-full", mapTheme === 'scifi' ? (isSelected ? "bg-amber-400" : "bg-purple-600") : (isSelected ? "bg-red-600" : "bg-yellow-700"))} />
+                    )}
+                  </button>
                   <span className={cn(
                     "text-[10px] tracking-widest px-2 py-0.5 rounded border whitespace-nowrap",
                     mapTheme === 'scifi'
@@ -198,7 +225,7 @@ export default function QuestWorldMap({ quests, onClose }) {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 50 }}
-                className="absolute right-0 bottom-0 w-full md:w-80 md:top-0 h-[60%] md:h-full bg-gradient-to-t md:bg-gradient-to-b from-[#0d0d1a] to-[#080510]/95 border-t-2 md:border-t-0 md:border-l-2 border-amber-500/50 z-[110] flex flex-col backdrop-blur-md"
+                className="absolute right-0 bottom-0 w-full md:w-80 md:top-0 h-[65%] md:h-full bg-gradient-to-t md:bg-gradient-to-b from-[#0d0d1a] to-[#080510]/95 border-t-2 md:border-t-0 md:border-l-2 border-amber-500/50 z-[110] flex flex-col backdrop-blur-md"
               >
                 <button
                   onClick={() => setActiveNode(null)}
@@ -215,7 +242,16 @@ export default function QuestWorldMap({ quests, onClose }) {
                     <span className="text-xs bg-purple-900/50 border border-purple-500/30 text-purple-200 px-2 py-0.5 rounded">DC {activeNode.difficulty_class}</span>
                     <span className="text-xs text-slate-400 truncate">By {activeNode.quest_giver}</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed line-clamp-2">{activeNode.description}</p>
+                  <p className="text-xs text-slate-300 leading-relaxed line-clamp-2 mb-2">{activeNode.description}</p>
+                  {/* Quest image */}
+                  {activeNode.image_url && (
+                    <img
+                      key={activeNode.id}
+                      src={activeNode.image_url}
+                      alt="Quest Visual"
+                      className="w-full h-20 object-cover rounded-lg border border-white/10"
+                    />
+                  )}
                 </div>
 
                 {/* Comments list */}
@@ -229,16 +265,40 @@ export default function QuestWorldMap({ quests, onClose }) {
                   {comments.map(c => {
                     const voted = hasVoted(c.id);
                     const voteCount = getVoteCount(c.id);
+                    const author = commentProfiles[c.adventurer_id];
                     return (
                       <div key={c.id} className={cn(
                         "rounded-lg p-2 border text-xs leading-snug",
                         mapTheme === 'scifi'
-                          ? "bg-purple-950/40 border-purple-800/30 text-purple-100"
+                          ? "bg-purple-950/40 border-cyan-800/30 text-purple-100"
                           : "bg-stone-900/60 border-amber-800/30 text-amber-100 font-serif"
                       )}>
+                        {/* Author row */}
+                        <button
+                          onPointerDown={e => e.stopPropagation()}
+                          onClick={() => author && navigateToProfile(author.adventurer_name)}
+                          className="flex items-center gap-1.5 mb-1.5 group"
+                        >
+                          <div className={cn(
+                            "w-5 h-5 rounded-full overflow-hidden shrink-0 border flex items-center justify-center text-[8px] font-black text-white",
+                            mapTheme === 'scifi' ? "border-cyan-700/50 bg-purple-800" : "border-amber-700/50 bg-stone-700"
+                          )}>
+                            {author?.avatar_url
+                              ? <img src={author.avatar_url} alt={author.adventurer_name} className="w-full h-full object-cover" />
+                              : (author?.adventurer_name || '?').charAt(0).toUpperCase()
+                            }
+                          </div>
+                          <span className={cn(
+                            "text-[9px] font-bold group-hover:underline transition-all",
+                            mapTheme === 'scifi' ? "text-cyan-400" : "text-amber-400"
+                          )}>
+                            {author?.adventurer_name || 'Adventurer'}
+                          </span>
+                        </button>
+
                         <p>{c.content}</p>
-                        <div className="flex items-center justify-between mt-1.5">
-                          <span className="text-[9px] text-slate-600">{c.adventurer_id?.slice(0, 8) || 'Adventurer'}</span>
+
+                        <div className="flex items-center justify-end mt-1.5">
                           <button
                             onPointerDown={e => e.stopPropagation()}
                             onClick={() => handleToggleVote(c)}
