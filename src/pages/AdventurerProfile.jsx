@@ -913,6 +913,42 @@ export default function AdventurerProfile() {
                   </div>
                 )}
 
+                {/* ARTIFACTS / TROPHY ROOM */}
+                {activeTab === 'trophies' && (
+                  <div className="space-y-4">
+                    <div className="rounded-xl border border-amber-500/20 bg-black/50 backdrop-blur-md p-5">
+                      <h3 className="font-lcars text-sm font-black text-amber-400 uppercase tracking-widest mb-4">◈ Artifact Vault</h3>
+                      {inventory.length === 0 ? (
+                        <div className="py-12 text-center flex flex-col items-center gap-2 text-slate-600">
+                          <span className="text-4xl opacity-20">🏺</span>
+                          <p className="text-sm">No artifacts collected yet.</p>
+                          <p className="text-xs text-slate-700">Claim artifacts from completed quests on the Quest Map.</p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3">
+                          {inventory.map((item, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0, scale: 0.5 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: i * 0.05 }}
+                              className="group relative flex items-center justify-center w-14 h-14 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:border-amber-400 hover:bg-amber-500/20 cursor-default transition-all"
+                              style={{ boxShadow: '0 0 12px rgba(251,191,36,0.1)' }}
+                              title={item.quest_title}
+                            >
+                              <span className="text-2xl">{item.icon}</span>
+                              {/* Tooltip */}
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-[160px] px-2 py-1 rounded-lg bg-black/90 border border-amber-500/30 text-[9px] font-lcars text-amber-300 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center leading-tight">
+                                {item.quest_title}
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* ABOUT — gated by privacy */}
                 {activeTab === 'about' && !canSeePrivate && (
                   <PrivacyGate privacyLevel={privacyLevel} canSee={false} message={privacyGateMessage} />
