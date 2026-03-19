@@ -345,6 +345,11 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
                       className="w-full h-20 object-cover rounded-lg border border-white/10"
                     />
                   )}
+                  <ArtifactClaimButton
+                    quest={activeNode}
+                    myProfile={myProfile}
+                    onClaimed={(inv) => setMyProfile(prev => prev ? { ...prev, inventory: inv } : prev)}
+                  />
                 </div>
 
                 {/* Comments list */}
