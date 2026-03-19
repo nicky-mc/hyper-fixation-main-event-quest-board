@@ -6,6 +6,11 @@ import { cn } from '@/lib/utils';
 export default function QuestWorldMap({ quests, onClose }) {
   const [activeNode, setActiveNode] = useState(null);
   const [mapTheme, setMapTheme] = useState('scifi');
+  const [zoom, setZoom] = useState(0.5);
+
+  const handleZoom = (delta) => {
+    setZoom(prev => Math.min(Math.max(prev + delta, 0.2), 2));
+  };
 
   return (
     <div className="fixed top-[64px] left-0 md:left-[260px] right-0 bottom-0 z-[40] bg-black/40 backdrop-blur-sm p-4 flex items-center justify-center overflow-hidden">
@@ -21,6 +26,12 @@ export default function QuestWorldMap({ quests, onClose }) {
             EXIT
           </button>
 
+          {/* Zoom Controls */}
+          <div className="flex md:flex-col gap-2 w-full">
+            <button onClick={() => handleZoom(0.2)} className="flex-1 py-2 bg-amber-600 hover:bg-white hover:text-black text-black font-bold rounded-lg border border-amber-700 transition-all">+</button>
+            <button onClick={() => handleZoom(-0.2)} className="flex-1 py-2 bg-amber-600 hover:bg-white hover:text-black text-black font-bold rounded-lg border border-amber-700 transition-all">-</button>
+          </div>
+
           {/* Filler Bar */}
           <div className="hidden md:block flex-1 w-1/2 bg-amber-600 rounded-full my-2 opacity-50" />
 
@@ -35,13 +46,18 @@ export default function QuestWorldMap({ quests, onClose }) {
         </div>
 
         {/* The Screen */}
-        <div className="relative flex-1 overflow-hidden bg-[#080510]">
+        <div
+          onWheel={(e) => handleZoom(e.deltaY > 0 ? -0.1 : 0.1)}
+          className="relative flex-1 overflow-hidden bg-[#080510]"
+        >
 
           {/* Draggable Canvas */}
           <motion.div
             drag
             dragConstraints={{ top: -2500, left: -2500, right: 2500, bottom: 2500 }}
-            className="w-[3000px] h-[3000px] absolute cursor-grab active:cursor-grabbing"
+            animate={{ scale: zoom }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="w-[3000px] h-[3000px] absolute cursor-grab active:cursor-grabbing origin-center"
             style={{
               backgroundImage: mapTheme === 'scifi' ? `url('/starmapposter3d.webp')` : `url('/fantasy-map.avif')`,
               backgroundSize: 'cover',
@@ -82,7 +98,7 @@ export default function QuestWorldMap({ quests, onClose }) {
                   className="absolute flex flex-col items-center gap-2"
                   style={{ top: topPos, left: leftPos }}
                   initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
+                  animate={{ scale: zoom < 0.5 ? 1 / zoom * 0.5 : 1, opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
                 >
                   {isSelected && (
