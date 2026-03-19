@@ -207,12 +207,7 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
             drag
             dragConstraints={{ top: -2500, left: -2500, right: 2500, bottom: 2500 }}
             dragElastic={0.05}
-            animate={{ scale: zoom, x: canvasPos.x, y: canvasPos.y }}
-            transition={{ type: 'spring', stiffness: 180, damping: 28 }}
-            onDragStart={() => {
-              // After drag starts, reset canvasPos so it doesn't fight the drag
-              setCanvasPos({ x: 0, y: 0 });
-            }}
+            style={{ x, y, scale: zoom }}
             className="w-[3000px] h-[3000px] flex-shrink-0 cursor-grab active:cursor-grabbing origin-center"
             style={{
               backgroundImage: mapTheme === 'scifi' ? `url('/starmapposter3d.webp')` : `url('/fantasy-map.avif')`,
