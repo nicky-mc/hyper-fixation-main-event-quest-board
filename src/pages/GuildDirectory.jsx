@@ -19,9 +19,26 @@ export default function GuildDirectory() {
     base44.entities.AdventurerProfile.list('adventurer_name', 200)
       .then(data => { setProfiles(data); setLoading(false); })
       .catch(() => setLoading(false));
+    base44.auth.me().then(async u => {
+      if (!u) return;
+      const profs = await base44.entities.AdventurerProfile.filter({ auth_id: u.id });
+      const prof = profs[0];
+      if (!prof) return;
+      setMyProfile(prof);
+      const [sent, received] = await Promise.all([
+        base44.entities.Friendship.filter({ requester_id: prof.id, status: 'accepted' }),
+        base44.entities.Friendship.filter({ recipient_id: prof.id, status: 'accepted' }),
+      ]);
+      const ids = new Set([
+        ...sent.map(f => f.recipient_id),
+        ...received.map(f => f.requester_id),
+      ]);
+      setAllyIds(ids);
+    }).catch(() => {});
   }, []);
 
   const filteredProfiles = profiles.filter(p => {
+    if (viewMode === 'allies' && !allyIds.has(p.id)) return false;
     const q = searchQuery.toLowerCase();
     if (!q) return true;
     return (
