@@ -36,7 +36,7 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
   const handleZoom = (amt) => setZoom(prev => Math.max(0.15, Math.min(prev + amt, 2)));
 
   const resetView = () => {
-    setZoom(0.35);
+    setZoom(0.25);
     animate(x, 0, { type: 'spring', stiffness: 180, damping: 28 });
     animate(y, 0, { type: 'spring', stiffness: 180, damping: 28 });
   };
