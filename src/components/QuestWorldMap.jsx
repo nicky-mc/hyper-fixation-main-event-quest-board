@@ -18,9 +18,12 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
   const [activeNode, setActiveNode] = useState(null);
   const [mapTheme, setMapTheme] = useState('scifi');
   const [zoom, setZoom] = useState(0.35);
-  const [canvasPos, setCanvasPos] = useState({ x: 0, y: 0 });
-  const [targetingId, setTargetingId] = useState(null); // quest id being reticle'd
+  const [targetingId, setTargetingId] = useState(null);
   const screenRef = useRef(null);
+
+  // Motion values for smooth programmatic panning (compatible with drag)
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
   // Comment state
   const [comments, setComments] = useState([]);
