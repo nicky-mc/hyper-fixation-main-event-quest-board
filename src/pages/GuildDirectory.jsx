@@ -68,6 +68,22 @@ export default function GuildDirectory() {
 
           <div className="flex-1 flex flex-col gap-4 relative z-20 pt-4">
 
+            {/* View mode toggle */}
+            <div className="flex items-center gap-1 p-1 rounded-full bg-black/50 border border-purple-800/40 self-start">
+              {[{ id: 'all', label: 'All Adventurers', icon: Users }, { id: 'allies', label: 'My Allies', icon: UserCheck }].map(mode => (
+                <button key={mode.id} onClick={() => setViewMode(mode.id)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-4 py-1.5 rounded-full font-lcars text-[10px] font-black uppercase tracking-widest transition-all",
+                    viewMode === mode.id
+                      ? "bg-amber-500 text-black shadow-[0_0_12px_rgba(251,191,36,0.3)]"
+                      : "text-purple-400 hover:text-purple-200"
+                  )}>
+                  <mode.icon className="w-3 h-3" />
+                  {mode.label}
+                </button>
+              ))}
+            </div>
+
             {/* Search bar */}
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" />
