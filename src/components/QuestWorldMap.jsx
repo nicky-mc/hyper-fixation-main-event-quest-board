@@ -17,7 +17,7 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
   const navigate = useNavigate();
   const [activeNode, setActiveNode] = useState(null);
   const [mapTheme, setMapTheme] = useState('scifi');
-  const [zoom, setZoom] = useState(0.35);
+  const [zoom, setZoom] = useState(0.25);
   const [targetingId, setTargetingId] = useState(null);
   const screenRef = useRef(null);
 
