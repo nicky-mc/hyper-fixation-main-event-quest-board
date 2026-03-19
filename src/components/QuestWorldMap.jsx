@@ -6,170 +6,163 @@ import { cn } from '@/lib/utils';
 export default function QuestWorldMap({ quests, onClose }) {
   const [activeNode, setActiveNode] = useState(null);
   const [mapTheme, setMapTheme] = useState('scifi');
-  const [zoom, setZoom] = useState(0.4);
+  const [zoom, setZoom] = useState(0.35);
 
   const handleZoom = (amt) => setZoom(prev => Math.max(0.15, Math.min(prev + amt, 2)));
 
   return (
-    <div
-      onWheel={(e) => { e.preventDefault(); handleZoom(e.deltaY > 0 ? -0.05 : 0.05); }}
-      className="relative w-full h-[75vh] min-h-[500px] flex overflow-hidden z-10 bg-black rounded-[2rem] border-4 border-amber-500 shadow-2xl"
-    >
-      {/* LCARS Physical Bezel */}
-      <div className="w-16 md:w-28 bg-amber-500 flex flex-col items-center justify-between py-6 px-2 shrink-0 z-50 gap-3">
+    <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
 
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="w-full py-4 bg-red-600 hover:bg-red-500 text-black font-black font-lcars text-[10px] tracking-widest uppercase rounded-2xl transition-colors border-2 border-red-800"
-        >
-          EXIT
-        </button>
+      {/* PADD Frame */}
+      <div className="relative w-[95%] max-w-5xl h-[80vh] bg-black rounded-[2.5rem] border-4 border-amber-500 flex flex-col md:flex-row shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden">
 
-        {/* Zoom Controls */}
-        <div className="flex flex-col gap-2 w-full">
-          <button onClick={() => handleZoom(0.1)} className="w-full py-2 bg-amber-600 hover:bg-white text-black font-bold rounded-lg border-2 border-amber-800 transition-all text-lg">+</button>
-          <button onClick={() => handleZoom(-0.1)} className="w-full py-2 bg-amber-600 hover:bg-white text-black font-bold rounded-lg border-2 border-amber-800 transition-all text-lg">-</button>
-          <button onClick={() => setZoom(0.3)} className="w-full py-2 bg-blue-600 hover:bg-white text-black font-bold rounded-lg border-2 border-blue-800 text-[8px] leading-tight transition-all">ALL</button>
-        </div>
+        {/* LCARS Bezel */}
+        <div className="w-full md:w-32 bg-amber-500 flex md:flex-col items-center justify-between p-4 shrink-0 z-50">
 
-        {/* Filler */}
-        <div className="flex-1 w-1/2 bg-amber-600 rounded-full opacity-40" />
+          <button onClick={onClose} className="w-full py-2 bg-red-600 hover:bg-red-400 text-black font-black font-lcars text-xs rounded-full border-2 border-red-800 uppercase transition-colors">
+            EXIT
+          </button>
 
-        {/* Theme Toggle */}
-        <button
-          onClick={() => setMapTheme(prev => prev === 'scifi' ? 'fantasy' : 'scifi')}
-          className="w-full py-6 bg-purple-900 hover:bg-purple-800 text-purple-200 font-bold font-lcars text-[9px] tracking-widest uppercase rounded-2xl transition-colors border-2 border-purple-950 flex flex-col items-center justify-center gap-1"
-        >
-          <span>{mapTheme === 'scifi' ? 'FANT' : 'SCI-FI'}</span>
-          <span className="text-[7px] opacity-70">MODE</span>
-        </button>
-      </div>
-
-      {/* The Screen */}
-      <div className="relative flex-1 overflow-hidden bg-[#080510]">
-
-        {/* Draggable Canvas */}
-        <motion.div
-          drag
-          dragConstraints={{ top: -1500, left: -1500, right: 1500, bottom: 1500 }}
-          animate={{ scale: zoom }}
-          initial={{ scale: 0.4 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-          className="w-[3000px] h-[3000px] absolute origin-center cursor-grab active:cursor-grabbing"
-          style={{
-            backgroundImage: mapTheme === 'scifi' ? `url('/starmapposter3d.webp')` : `url('/fantasy-map.avif')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        >
-          {/* Central crosshair */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
-            <Crosshair className={cn("w-32 h-32", mapTheme === 'scifi' ? "text-cyan-500" : "text-amber-700")} />
+          <div className="flex md:flex-col gap-2 my-4">
+            <button onClick={() => handleZoom(0.1)} className="w-10 h-10 bg-amber-700 hover:bg-white text-white hover:text-black font-bold rounded-lg border border-amber-900 transition-colors text-lg">+</button>
+            <button onClick={() => handleZoom(-0.1)} className="w-10 h-10 bg-amber-700 hover:bg-white text-white hover:text-black font-bold rounded-lg border border-amber-900 transition-colors text-lg">-</button>
+            <button onClick={() => setZoom(0.35)} className="w-10 h-10 bg-blue-900 hover:bg-blue-700 text-white rounded-lg border border-blue-950 text-[8px] uppercase transition-colors leading-tight">FULL</button>
           </div>
 
-          {/* Animated Player Icon */}
-          <motion.div
-            className="absolute z-40 pointer-events-none"
-            initial={false}
-            animate={{
-              top: activeNode ? (20 + ((quests.findIndex(q => q.id === activeNode.id) * 37) % 60) + '%') : '50%',
-              left: activeNode ? (20 + ((quests.findIndex(q => q.id === activeNode.id) * 43) % 60) + '%') : '50%',
-            }}
-            transition={{ type: 'spring', stiffness: 40, damping: 12, mass: 0.8 }}
+          <button
+            onClick={() => setMapTheme(prev => prev === 'scifi' ? 'fantasy' : 'scifi')}
+            className="w-full py-2 bg-purple-900 hover:bg-purple-800 text-purple-200 font-bold font-lcars text-[10px] rounded-full border-2 border-purple-950 uppercase transition-colors"
           >
-            {mapTheme === 'scifi'
-              ? <Rocket className="w-8 h-8 -mt-10 -ml-4 transform rotate-45 text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-              : <MapPin className="w-10 h-10 -mt-10 -ml-5 text-red-600 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]" />
-            }
+            {mapTheme === 'scifi' ? 'FANTASY' : 'SCI-FI'}
+          </button>
+        </div>
+
+        {/* Screen */}
+        <div
+          className="relative flex-1 overflow-hidden bg-[#080510]"
+          onWheel={(e) => { e.preventDefault(); handleZoom(e.deltaY > 0 ? -0.05 : 0.05); }}
+        >
+          {/* Draggable Canvas */}
+          <motion.div
+            drag
+            dragConstraints={{ top: -2000, left: -2000, right: 2000, bottom: 2000 }}
+            animate={{ scale: zoom }}
+            initial={{ scale: 0.35 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+            className="w-[3000px] h-[3000px] absolute origin-center cursor-grab active:cursor-grabbing"
+            style={{
+              backgroundImage: mapTheme === 'scifi' ? `url('/starmapposter3d.webp')` : `url('/fantasy-map.avif')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          >
+            {/* Central crosshair */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
+              <Crosshair className={cn("w-32 h-32", mapTheme === 'scifi' ? "text-cyan-500" : "text-amber-700")} />
+            </div>
+
+            {/* Animated Player Icon */}
+            <motion.div
+              className="absolute z-40 pointer-events-none"
+              initial={false}
+              animate={{
+                top: activeNode ? (20 + ((quests.findIndex(q => q.id === activeNode.id) * 37) % 60) + '%') : '50%',
+                left: activeNode ? (20 + ((quests.findIndex(q => q.id === activeNode.id) * 43) % 60) + '%') : '50%',
+              }}
+              transition={{ type: 'spring', stiffness: 40, damping: 12, mass: 0.8 }}
+            >
+              {mapTheme === 'scifi'
+                ? <Rocket className="w-8 h-8 -mt-10 -ml-4 transform rotate-45 text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                : <MapPin className="w-10 h-10 -mt-10 -ml-5 text-red-600 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]" />
+              }
+            </motion.div>
+
+            {/* Quest Nodes */}
+            {quests.map((quest, index) => {
+              const topPos = 20 + ((index * 37) % 60) + '%';
+              const leftPos = 20 + ((index * 43) % 60) + '%';
+              const isSelected = activeNode?.id === quest.id;
+
+              return (
+                <motion.div
+                  key={quest.id}
+                  className="absolute flex flex-col items-center gap-2"
+                  style={{ top: topPos, left: leftPos }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: zoom < 0.5 ? 1 / zoom * 0.5 : 1, opacity: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  {isSelected && (
+                    <motion.div
+                      className="absolute rounded-full pointer-events-none border-2"
+                      style={{ width: '32px', height: '32px', top: '-4px', left: '-4px', borderColor: mapTheme === 'scifi' ? 'rgba(251,191,36,0.7)' : 'rgba(220,38,38,0.7)' }}
+                      animate={{ scale: [1, 1.8, 1], opacity: [0.8, 0, 0.8] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    />
+                  )}
+
+                  <button
+                    onPointerDown={e => e.stopPropagation()}
+                    onClick={() => setActiveNode(quest)}
+                    className={cn(
+                      "w-6 h-6 rounded-full border-2 transition-all duration-300",
+                      mapTheme === 'scifi'
+                        ? (isSelected ? "bg-amber-400 border-white scale-125 shadow-[0_0_15px_rgba(251,191,36,0.8)]" : "bg-purple-600 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.5)] hover:scale-110 hover:bg-amber-500")
+                        : (isSelected ? "bg-red-600 border-yellow-400 scale-125 shadow-lg" : "bg-yellow-700 border-yellow-300 shadow-md hover:scale-110 hover:bg-red-500")
+                    )}
+                  />
+
+                  <span className={cn(
+                    "text-[10px] tracking-widest px-2 py-0.5 rounded border whitespace-nowrap",
+                    mapTheme === 'scifi'
+                      ? "font-lcars text-cyan-200 bg-black/80 backdrop-blur-sm border-cyan-500/50"
+                      : "font-serif text-amber-100 bg-stone-900/90 border-amber-700/50"
+                  )}>
+                    {quest.title.length > 15 ? quest.title.substring(0, 15) + '...' : quest.title}
+                  </span>
+                </motion.div>
+              );
+            })}
           </motion.div>
 
-          {/* Quest Nodes */}
-          {quests.map((quest, index) => {
-            const topPos = 20 + ((index * 37) % 60) + '%';
-            const leftPos = 20 + ((index * 43) % 60) + '%';
-            const isSelected = activeNode?.id === quest.id;
-
-            return (
+          {/* Active Quest Data-Pad */}
+          <AnimatePresence>
+            {activeNode && (
               <motion.div
-                key={quest.id}
-                className="absolute flex flex-col items-center gap-2"
-                style={{ top: topPos, left: leftPos }}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: zoom < 0.5 ? 1 / zoom * 0.5 : 1, opacity: 1 }}
-                transition={{ delay: index * 0.05 }}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 50 }}
+                className="absolute right-0 bottom-0 w-full md:w-80 md:top-0 h-1/2 md:h-full bg-gradient-to-t md:bg-gradient-to-b from-[#0d0d1a] to-[#080510]/95 border-t-2 md:border-t-0 md:border-l-2 border-amber-500/50 z-[110] flex flex-col backdrop-blur-md"
               >
-                {isSelected && (
-                  <motion.div
-                    className="absolute rounded-full pointer-events-none border-2"
-                    style={{ width: '32px', height: '32px', top: '-4px', left: '-4px', borderColor: mapTheme === 'scifi' ? 'rgba(251,191,36,0.7)' : 'rgba(220,38,38,0.7)' }}
-                    animate={{ scale: [1, 1.8, 1], opacity: [0.8, 0, 0.8] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  />
-                )}
-
                 <button
-                  onPointerDown={e => e.stopPropagation()}
-                  onClick={() => setActiveNode(quest)}
-                  className={cn(
-                    "w-6 h-6 rounded-full border-2 transition-all duration-300",
-                    mapTheme === 'scifi'
-                      ? (isSelected ? "bg-amber-400 border-white scale-125 shadow-[0_0_15px_rgba(251,191,36,0.8)]" : "bg-purple-600 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.5)] hover:scale-110 hover:bg-amber-500")
-                      : (isSelected ? "bg-red-600 border-yellow-400 scale-125 shadow-lg" : "bg-yellow-700 border-yellow-300 shadow-md hover:scale-110 hover:bg-red-500")
-                  )}
-                />
+                  onClick={() => setActiveNode(null)}
+                  className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 bg-black/50 rounded-full z-10"
+                >
+                  <X className="w-4 h-4" />
+                </button>
 
-                <span className={cn(
-                  "text-[10px] tracking-widest px-2 py-0.5 rounded border whitespace-nowrap",
-                  mapTheme === 'scifi'
-                    ? "font-lcars text-cyan-200 bg-black/80 backdrop-blur-sm border-cyan-500/50"
-                    : "font-serif text-amber-100 bg-stone-900/90 border-amber-700/50"
-                )}>
-                  {quest.title.length > 15 ? quest.title.substring(0, 15) + '...' : quest.title}
-                </span>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* Active Quest Data-Pad */}
-        <AnimatePresence>
-          {activeNode && (
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              className="absolute right-0 bottom-0 w-full md:w-96 md:top-0 h-1/2 md:h-full bg-gradient-to-t md:bg-gradient-to-b from-[#0d0d1a] to-[#080510]/95 border-t-2 md:border-t-0 md:border-l-2 border-amber-500/50 shadow-[0_-10px_30px_rgba(0,0,0,0.8)] z-[110] flex flex-col backdrop-blur-md"
-            >
-              <button
-                onClick={() => setActiveNode(null)}
-                className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 bg-black/50 rounded-full z-10"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              <div className="p-4 md:p-6 flex-1 overflow-y-auto mt-6 md:mt-0">
-                <h3 className="text-[10px] font-lcars text-amber-500 tracking-widest uppercase mb-2">Target Acquired</h3>
-                <h2 className="text-xl md:text-2xl font-black text-white mb-2">{activeNode.title}</h2>
-                <div className="flex items-center gap-2 mb-3 flex-wrap">
-                  <span className="text-xs bg-purple-900/50 border border-purple-500/30 text-purple-200 px-2 py-1 rounded">DC {activeNode.difficulty_class}</span>
-                  <span className="text-xs text-slate-400 truncate">By {activeNode.quest_giver}</span>
-                  {activeNode.segment && (
-                    <span className="text-[9px] bg-cyan-900/30 border border-cyan-700/30 text-cyan-400 px-2 py-1 rounded font-lcars uppercase tracking-widest">
-                      {activeNode.segment}
-                    </span>
+                <div className="p-4 md:p-5 flex-1 overflow-y-auto mt-6 md:mt-0">
+                  <h3 className="text-[10px] font-lcars text-amber-500 tracking-widest uppercase mb-2">Target Acquired</h3>
+                  <h2 className="text-lg md:text-xl font-black text-white mb-2">{activeNode.title}</h2>
+                  <div className="flex items-center gap-2 mb-3 flex-wrap">
+                    <span className="text-xs bg-purple-900/50 border border-purple-500/30 text-purple-200 px-2 py-1 rounded">DC {activeNode.difficulty_class}</span>
+                    <span className="text-xs text-slate-400 truncate">By {activeNode.quest_giver}</span>
+                    {activeNode.segment && (
+                      <span className="text-[9px] bg-cyan-900/30 border border-cyan-700/30 text-cyan-400 px-2 py-1 rounded font-lcars uppercase tracking-widest">
+                        {activeNode.segment}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed mb-4 line-clamp-4 md:line-clamp-none">{activeNode.description}</p>
+                  {activeNode.image_url && (
+                    <img src={activeNode.image_url} alt="Quest Visual" className="w-full h-24 md:h-32 object-cover rounded-lg border border-white/10 mb-4" />
                   )}
                 </div>
-                <p className="text-xs md:text-sm text-slate-300 leading-relaxed mb-4 line-clamp-3 md:line-clamp-none">{activeNode.description}</p>
-                {activeNode.image_url && (
-                  <img src={activeNode.image_url} alt="Quest Visual" className="w-full h-24 md:h-40 object-cover rounded-lg border border-white/10 mb-4" />
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
