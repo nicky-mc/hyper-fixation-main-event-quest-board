@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Search, Users, Star, MapPin, Sword } from 'lucide-react';
+import { Search, Users, Star, MapPin, Sword, UserCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
@@ -11,6 +11,9 @@ export default function GuildDirectory() {
   const [profiles, setProfiles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('all'); // 'all' | 'allies'
+  const [myProfile, setMyProfile] = useState(null);
+  const [allyIds, setAllyIds] = useState(new Set());
 
   useEffect(() => {
     base44.entities.AdventurerProfile.list('adventurer_name', 200)

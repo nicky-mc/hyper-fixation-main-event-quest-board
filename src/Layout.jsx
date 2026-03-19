@@ -38,8 +38,7 @@ const NAV_ITEMS = [
   { label: 'Messages',      page: 'Messages',         icon: MessageCircle },
   { label: 'My Adventurer', page: 'MyAdventurer',     icon: User },
   { label: 'Episode Calendar', page: 'EpisodeCalendar', icon: CalendarDays },
-  { label: 'Friends', page: 'Friends', icon: UserPlus },
-  { label: 'Discover', page: 'Discover', icon: Compass },
+
   { label: 'The Tavern', page: 'GuildDirectory', icon: BookOpen },
   { label: 'The Archives', page: 'PodcastArchives', icon: Headphones },
 ];
