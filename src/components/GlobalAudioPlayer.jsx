@@ -135,6 +135,45 @@ export default function GlobalAudioPlayer({ currentTrack }) {
             }
           </motion.button>
 
+          {/* Waveform visualizer */}
+          {isPlaying && (
+            <div className="hidden sm:flex items-end gap-[3px] h-8 shrink-0 px-2">
+              {[0.4, 0.7, 1, 0.6, 0.9, 0.5, 0.8].map((base, i) => (
+                <motion.div
+                  key={i}
+                  className="w-1.5 rounded-full"
+                  style={{
+                    background: `linear-gradient(to top, #06b6d4, #f59e0b)`,
+                    boxShadow: '0 0 4px rgba(251,191,36,0.4)',
+                  }}
+                  animate={{
+                    height: [
+                      `${base * 12}px`,
+                      `${Math.min(base * (16 + Math.random() * 16), 32)}px`,
+                      `${base * 8}px`,
+                      `${Math.min(base * (14 + Math.random() * 14), 32)}px`,
+                      `${base * 12}px`,
+                    ],
+                  }}
+                  transition={{
+                    duration: 0.6 + i * 0.1,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: i * 0.08,
+                  }}
+                />
+              ))}
+              <div className="ml-1.5 flex flex-col justify-center">
+                <span className="font-lcars text-[8px] text-cyan-400 uppercase tracking-widest animate-pulse leading-tight">
+                  DECODING
+                </span>
+                <span className="font-lcars text-[8px] text-amber-500 uppercase tracking-widest animate-pulse leading-tight">
+                  SIGNAL...
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Track info */}
           <div className="flex-1 min-w-0">
             <p className="font-lcars text-xs text-amber-300 font-bold truncate tracking-widest uppercase">
