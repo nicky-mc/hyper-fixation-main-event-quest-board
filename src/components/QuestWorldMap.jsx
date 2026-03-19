@@ -161,7 +161,7 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
           <div className="flex md:flex-col gap-2 my-4">
             <button onClick={() => handleZoom(0.1)} className="w-10 h-10 bg-amber-700 hover:bg-white text-white hover:text-black font-bold rounded-lg border border-amber-900 transition-colors text-lg">+</button>
             <button onClick={() => handleZoom(-0.1)} className="w-10 h-10 bg-amber-700 hover:bg-white text-white hover:text-black font-bold rounded-lg border border-amber-900 transition-colors text-lg">-</button>
-            <button onClick={() => { setZoom(0.35); setCanvasPos({ x: 0, y: 0 }); }} className="w-10 h-10 bg-blue-900 hover:bg-blue-700 text-white rounded-lg border border-blue-950 text-[8px] uppercase transition-colors leading-tight">FULL</button>
+            <button onClick={resetView} className="w-10 h-10 bg-blue-900 hover:bg-blue-700 text-white rounded-lg border border-blue-950 text-[8px] uppercase transition-colors leading-tight">FULL</button>
           </div>
           <button
             onClick={() => setMapTheme(prev => prev === 'scifi' ? 'fantasy' : 'scifi')}
