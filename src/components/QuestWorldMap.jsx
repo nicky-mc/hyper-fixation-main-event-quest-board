@@ -1,19 +1,29 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Crosshair, Rocket, MapPin, Send, ArrowBigUp, Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { base44 } from '@/api/base44Client';
 
-export default function QuestWorldMap({ quests, onClose }) {
+// Canvas is 3000x3000px. Nodes use the same % math as placement.
+function getNodePercent(index) {
+  const top = 20 + ((index * 37) % 60); // percent
+  const left = 20 + ((index * 43) % 60); // percent
+  return { top, left };
+}
+
+export default function QuestWorldMap({ quests, onClose, targetQuest }) {
   const navigate = useNavigate();
   const [activeNode, setActiveNode] = useState(null);
   const [mapTheme, setMapTheme] = useState('scifi');
   const [zoom, setZoom] = useState(0.35);
+  const [canvasPos, setCanvasPos] = useState({ x: 0, y: 0 });
+  const [targetingId, setTargetingId] = useState(null); // quest id being reticle'd
+  const screenRef = useRef(null);
 
   // Comment state
   const [comments, setComments] = useState([]);
-  const [commentProfiles, setCommentProfiles] = useState({}); // adventurer_id -> profile
+  const [commentProfiles, setCommentProfiles] = useState({});
   const [commentInput, setCommentInput] = useState('');
   const [sendingComment, setSendingComment] = useState(false);
   const [myProfile, setMyProfile] = useState(null);
@@ -30,6 +40,42 @@ export default function QuestWorldMap({ quests, onClose }) {
     }).catch(() => {});
   }, []);
 
+  // Auto-pan when targetQuest changes
+  useEffect(() => {
+    if (!targetQuest) return;
+
+    const index = quests.findIndex(q => q.id === targetQuest.id);
+    if (index === -1) return;
+
+    const { top, left } = getNodePercent(index);
+    const CANVAS = 3000;
+    const targetZoom = 0.7;
+
+    // Pixel position of the node on the canvas
+    const nodeX = (left / 100) * CANVAS;
+    const nodeY = (top / 100) * CANVAS;
+
+    // Get viewport size of the screen area
+    const screen = screenRef.current;
+    const vpW = screen ? screen.clientWidth : 600;
+    const vpH = screen ? screen.clientHeight : 500;
+
+    // To center the node in the viewport after scaling:
+    // canvas is rendered at origin (center of screen by default via flex centering),
+    // so we need to offset: center of viewport - node position * scale
+    const offsetX = vpW / 2 - nodeX * targetZoom;
+    const offsetY = vpH / 2 - nodeY * targetZoom;
+
+    setZoom(targetZoom);
+    setCanvasPos({ x: offsetX, y: offsetY });
+    setActiveNode(targetQuest);
+
+    // Show targeting reticle for 2 seconds
+    setTargetingId(targetQuest.id);
+    const timer = setTimeout(() => setTargetingId(null), 2000);
+    return () => clearTimeout(timer);
+  }, [targetQuest?.id]);
+
   // Load comments + votes when activeNode changes
   useEffect(() => {
     if (!activeNode) { setComments([]); setCommentVotes([]); setCommentProfiles({}); return; }
@@ -37,7 +83,6 @@ export default function QuestWorldMap({ quests, onClose }) {
     base44.entities.QuestComment.filter({ quest_id: activeNode.id }, '-created_date', 50)
       .then(async (fetched) => {
         setComments(fetched);
-        // Fetch profiles for each unique adventurer_id
         const ids = [...new Set(fetched.map(c => c.adventurer_id).filter(Boolean))];
         const profileMap = {};
         await Promise.all(ids.map(async id => {
@@ -60,7 +105,6 @@ export default function QuestWorldMap({ quests, onClose }) {
       content: commentInput.trim(),
     });
     setComments(prev => [newComment, ...prev]);
-    // Add own profile to map so avatar shows immediately
     setCommentProfiles(prev => ({ ...prev, [myProfile.id]: myProfile }));
     setCommentInput('');
     setSendingComment(false);
@@ -104,7 +148,7 @@ export default function QuestWorldMap({ quests, onClose }) {
           <div className="flex md:flex-col gap-2 my-4">
             <button onClick={() => handleZoom(0.1)} className="w-10 h-10 bg-amber-700 hover:bg-white text-white hover:text-black font-bold rounded-lg border border-amber-900 transition-colors text-lg">+</button>
             <button onClick={() => handleZoom(-0.1)} className="w-10 h-10 bg-amber-700 hover:bg-white text-white hover:text-black font-bold rounded-lg border border-amber-900 transition-colors text-lg">-</button>
-            <button onClick={() => setZoom(0.35)} className="w-10 h-10 bg-blue-900 hover:bg-blue-700 text-white rounded-lg border border-blue-950 text-[8px] uppercase transition-colors leading-tight">FULL</button>
+            <button onClick={() => { setZoom(0.35); setCanvasPos({ x: 0, y: 0 }); }} className="w-10 h-10 bg-blue-900 hover:bg-blue-700 text-white rounded-lg border border-blue-950 text-[8px] uppercase transition-colors leading-tight">FULL</button>
           </div>
           <button
             onClick={() => setMapTheme(prev => prev === 'scifi' ? 'fantasy' : 'scifi')}
@@ -116,6 +160,7 @@ export default function QuestWorldMap({ quests, onClose }) {
 
         {/* Screen */}
         <div
+          ref={screenRef}
           className="relative flex-1 overflow-hidden bg-[#080510] flex items-center justify-center"
           onWheel={(e) => { e.preventDefault(); handleZoom(e.deltaY > 0 ? -0.05 : 0.05); }}
         >
@@ -127,13 +172,34 @@ export default function QuestWorldMap({ quests, onClose }) {
             </div>
           </div>
 
+          {/* Targeting status indicator */}
+          <AnimatePresence>
+            {targetingId && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/60 bg-black/80 backdrop-blur-md"
+                style={{ boxShadow: '0 0 20px rgba(251,191,36,0.4)' }}
+              >
+                <Crosshair className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '1s' }} />
+                <span className="font-lcars text-[10px] text-amber-400 uppercase tracking-widest">Target Acquired</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Draggable Canvas */}
           <motion.div
             drag
-            dragConstraints={{ top: -2000, left: -2000, right: 2000, bottom: 2000 }}
-            animate={{ scale: zoom }}
-            initial={{ scale: 0.35 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+            dragConstraints={{ top: -2500, left: -2500, right: 2500, bottom: 2500 }}
+            dragElastic={0.05}
+            animate={{ scale: zoom, x: canvasPos.x, y: canvasPos.y }}
+            transition={{ type: 'spring', stiffness: 180, damping: 28 }}
+            onDragStart={() => {
+              // After drag starts, reset canvasPos so it doesn't fight the drag
+              setCanvasPos({ x: 0, y: 0 });
+            }}
             className="w-[3000px] h-[3000px] flex-shrink-0 cursor-grab active:cursor-grabbing origin-center"
             style={{
               backgroundImage: mapTheme === 'scifi' ? `url('/starmapposter3d.webp')` : `url('/fantasy-map.avif')`,
@@ -170,6 +236,7 @@ export default function QuestWorldMap({ quests, onClose }) {
               const topPos = 20 + ((index * 37) % 60) + '%';
               const leftPos = 20 + ((index * 43) % 60) + '%';
               const isSelected = activeNode?.id === quest.id;
+              const isTargeting = targetingId === quest.id;
               const nodeImg = quest.image_url;
 
               return (
@@ -181,7 +248,33 @@ export default function QuestWorldMap({ quests, onClose }) {
                   animate={{ scale: zoom < 0.5 ? 1 / zoom * 0.5 : 1, opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  {isSelected && (
+                  {/* Targeting reticle — temporary overlay on warp-in */}
+                  <AnimatePresence>
+                    {isTargeting && (
+                      <motion.div
+                        className="absolute pointer-events-none z-50"
+                        initial={{ scale: 3, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 2, opacity: 0 }}
+                        transition={{ duration: 0.4 }}
+                        style={{ top: '-20px', left: '-20px' }}
+                      >
+                        <Crosshair
+                          className={cn("w-16 h-16", mapTheme === 'scifi' ? "text-amber-400" : "text-red-500")}
+                          style={{ filter: mapTheme === 'scifi' ? 'drop-shadow(0 0 8px rgba(251,191,36,0.9))' : 'drop-shadow(0 0 8px rgba(220,38,38,0.9))' }}
+                        />
+                        {/* Expanding ring */}
+                        <motion.div
+                          className="absolute inset-0 rounded-full border-2"
+                          style={{ borderColor: mapTheme === 'scifi' ? 'rgba(251,191,36,0.8)' : 'rgba(220,38,38,0.8)' }}
+                          animate={{ scale: [1, 2.5], opacity: [1, 0] }}
+                          transition={{ duration: 0.8, repeat: 2 }}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {isSelected && !isTargeting && (
                     <motion.div
                       className="absolute rounded-full pointer-events-none border-2"
                       style={{ width: '32px', height: '32px', top: '-4px', left: '-4px', borderColor: mapTheme === 'scifi' ? 'rgba(251,191,36,0.7)' : 'rgba(220,38,38,0.7)' }}
@@ -243,7 +336,6 @@ export default function QuestWorldMap({ quests, onClose }) {
                     <span className="text-xs text-slate-400 truncate">By {activeNode.quest_giver}</span>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed line-clamp-2 mb-2">{activeNode.description}</p>
-                  {/* Quest image */}
                   {activeNode.image_url && (
                     <img
                       key={activeNode.id}
@@ -273,7 +365,6 @@ export default function QuestWorldMap({ quests, onClose }) {
                           ? "bg-purple-950/40 border-cyan-800/30 text-purple-100"
                           : "bg-stone-900/60 border-amber-800/30 text-amber-100 font-serif"
                       )}>
-                        {/* Author row */}
                         <button
                           onPointerDown={e => e.stopPropagation()}
                           onClick={() => author && navigateToProfile(author.adventurer_name)}
