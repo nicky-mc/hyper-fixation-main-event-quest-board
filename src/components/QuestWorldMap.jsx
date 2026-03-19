@@ -61,28 +61,31 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
     const CANVAS = 3000;
     const targetZoom = 0.7;
 
-    // Pixel position of the node on the canvas
+    // Node pixel position on the 3000px canvas
     const nodeX = (left / 100) * CANVAS;
     const nodeY = (top / 100) * CANVAS;
 
-    // Get viewport size of the screen area
+    // Viewport size
     const screen = screenRef.current;
     const vpW = screen ? screen.clientWidth : 600;
     const vpH = screen ? screen.clientHeight : 500;
 
-    // To center the node in the viewport after scaling:
-    // canvas is rendered at origin (center of screen by default via flex centering),
-    // so we need to offset: center of viewport - node position * scale
-    const offsetX = vpW / 2 - nodeX * targetZoom;
-    const offsetY = vpH / 2 - nodeY * targetZoom;
+    // The canvas is centered in the viewport via flexbox.
+    // After scaling (origin-center), the canvas center sits at vpW/2, vpH/2.
+    // To bring node to center: offset = half-canvas - nodePos, then scale.
+    // With origin-center: translateX = (vpW/2 - nodeX * targetZoom) but canvas center = 0 in motion space
+    // Simplified: offset = -(nodeX - CANVAS/2) * targetZoom, -(nodeY - CANVAS/2) * targetZoom
+    const offsetX = -(nodeX - CANVAS / 2) * targetZoom;
+    const offsetY = -(nodeY - CANVAS / 2) * targetZoom;
 
     setZoom(targetZoom);
-    setCanvasPos({ x: offsetX, y: offsetY });
+    animate(x, offsetX, { type: 'spring', stiffness: 120, damping: 24 });
+    animate(y, offsetY, { type: 'spring', stiffness: 120, damping: 24 });
     setActiveNode(targetQuest);
 
-    // Show targeting reticle for 2 seconds
+    // Show targeting reticle for 2.5 seconds
     setTargetingId(targetQuest.id);
-    const timer = setTimeout(() => setTargetingId(null), 2000);
+    const timer = setTimeout(() => setTargetingId(null), 2500);
     return () => clearTimeout(timer);
   }, [targetQuest?.id]);
 
