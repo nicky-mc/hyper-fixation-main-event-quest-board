@@ -39,9 +39,16 @@ export default function QuestWorldMap({ quests, onClose }) {
 
         {/* Screen */}
         <div
-          className="relative flex-1 overflow-hidden bg-[#080510]"
+          className="relative flex-1 overflow-hidden bg-[#080510] flex items-center justify-center"
           onWheel={(e) => { e.preventDefault(); handleZoom(e.deltaY > 0 ? -0.05 : 0.05); }}
         >
+          {/* Sensor status */}
+          <div className="absolute top-4 right-4 z-20 pointer-events-none">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse" />
+              <span className="text-[10px] font-lcars text-cyan-500 tracking-[0.2em] uppercase">Sensors Online</span>
+            </div>
+          </div>
           {/* Draggable Canvas */}
           <motion.div
             drag
@@ -49,12 +56,14 @@ export default function QuestWorldMap({ quests, onClose }) {
             animate={{ scale: zoom }}
             initial={{ scale: 0.35 }}
             transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-            className="w-[3000px] h-[3000px] absolute origin-center cursor-grab active:cursor-grabbing"
+            className="w-[3000px] h-[3000px] flex-shrink-0 cursor-grab active:cursor-grabbing origin-center"
             style={{
               backgroundImage: mapTheme === 'scifi' ? `url('/starmapposter3d.webp')` : `url('/fantasy-map.avif')`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
+              backgroundColor: '#0a0a20',
+              border: '2px dashed rgba(168, 85, 247, 0.2)',
             }}
           >
             {/* Central crosshair */}
