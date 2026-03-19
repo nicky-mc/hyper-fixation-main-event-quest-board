@@ -241,8 +241,8 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
 
             {/* Quest Nodes */}
             {quests.map((quest, index) => {
-              const topPos = 20 + ((index * 37) % 60) + '%';
-              const leftPos = 20 + ((index * 43) % 60) + '%';
+              const topPos = 10 + ((index * 149) % 80) + '%';
+              const leftPos = 10 + ((index * 227) % 80) + '%';
               const isSelected = activeNode?.id === quest.id;
               const isTargeting = targetingId === quest.id;
               const nodeImg = quest.image_url;
