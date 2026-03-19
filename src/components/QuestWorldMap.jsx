@@ -228,8 +228,8 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
               className="absolute z-40 pointer-events-none"
               initial={false}
               animate={{
-                top: activeNode ? (20 + ((quests.findIndex(q => q.id === activeNode.id) * 37) % 60) + '%') : '50%',
-                left: activeNode ? (20 + ((quests.findIndex(q => q.id === activeNode.id) * 43) % 60) + '%') : '50%',
+                top: activeNode ? (10 + ((quests.findIndex(q => q.id === activeNode.id) * 149) % 80) + '%') : '50%',
+                left: activeNode ? (10 + ((quests.findIndex(q => q.id === activeNode.id) * 227) % 80) + '%') : '50%',
               }}
               transition={{ type: 'spring', stiffness: 40, damping: 12, mass: 0.8 }}
             >
