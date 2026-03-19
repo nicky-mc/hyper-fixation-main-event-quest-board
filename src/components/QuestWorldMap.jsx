@@ -6,10 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { base44 } from '@/api/base44Client';
 
-// Canvas is 3000x3000px. Nodes use the same % math as placement.
+// Canvas is 3000x3000px. Spread nodes across 10-90% using large primes to avoid clustering.
 function getNodePercent(index) {
-  const top = 20 + ((index * 37) % 60); // percent
-  const left = 20 + ((index * 43) % 60); // percent
+  const top  = 10 + ((index * 149) % 80);
+  const left = 10 + ((index * 227) % 80);
   return { top, left };
 }
 
