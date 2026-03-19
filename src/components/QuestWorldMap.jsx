@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Crosshair, Rocket, MapPin, Send, ArrowBigUp, Loader2 } from 'lucide-react';
+import ArtifactClaimButton from './ArtifactClaimButton';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
