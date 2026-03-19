@@ -390,10 +390,13 @@ export default function AdventurerProfile() {
 
   const canPostOnFeed = myProfile && profile && (isOwnProfile || isFriend || isCurrentUserAdmin);
 
+  const inventory = profile?.inventory || [];
+
   const tabs = [
     { id: 'quests', label: 'Quests', icon: Sword, count: myQuests.length },
     { id: 'lore', label: 'Lore Drops', icon: MessageCircle, count: comments.length },
     { id: 'feed', label: 'Comms Log', icon: Radio },
+    { id: 'trophies', label: 'Artifacts', icon: Trophy, count: inventory.length },
     { id: 'about', label: 'About', icon: Star },
   ];
 
