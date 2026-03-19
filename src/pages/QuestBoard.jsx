@@ -346,7 +346,11 @@ export default function QuestBoard() {
           </motion.button>
 
           {/* Live Feed */}
-          <ActivityDrawer isOpen={feedOpen} onOpenChange={setFeedOpen} />
+          <ActivityDrawer isOpen={feedOpen} onOpenChange={setFeedOpen} onQuestSelect={(q) => {
+            // Scroll to the quest card if visible, otherwise just open the board at top
+            const el = document.getElementById(`quest-${q.id}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }} />
         </motion.div>
 
         {/* ── NEXT SHOW BANNER ── */}
