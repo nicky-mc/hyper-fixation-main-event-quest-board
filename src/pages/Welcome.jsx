@@ -148,7 +148,7 @@ export default function Welcome() {
         </motion.div>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-          className="text-center text-[80px] text-green-700"
+          className="text-center text-[30px] text-green-700"
           style={{ fontFamily: "'Exo 2', sans-serif" }}>
           By joining, you agree to be an honorary adventurer of the guild.
         </motion.p>
