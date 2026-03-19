@@ -345,6 +345,24 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
                       className="w-full h-20 object-cover rounded-lg border border-white/10"
                     />
                   )}
+                  {/* Admin: set artifact icon */}
+                  {myProfile?.role === 'admin' && activeNode.status === 'completed' && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        defaultValue={activeNode.artifact_icon || ''}
+                        placeholder="🏆 Artifact emoji..."
+                        onBlur={async (e) => {
+                          const val = e.target.value.trim();
+                          if (val !== (activeNode.artifact_icon || '')) {
+                            await base44.entities.Quest.update(activeNode.id, { artifact_icon: val });
+                            setActiveNode(prev => ({ ...prev, artifact_icon: val }));
+                          }
+                        }}
+                        className="flex-1 bg-black/40 border border-amber-700/40 rounded-lg px-2 py-1 text-xs text-amber-200 placeholder:text-slate-600 focus:outline-none font-lcars"
+                      />
+                      <span className="text-[9px] text-slate-600 font-lcars uppercase tracking-widest shrink-0">Set Icon</span>
+                    </div>
+                  )}
                   <ArtifactClaimButton
                     quest={activeNode}
                     myProfile={myProfile}
