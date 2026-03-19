@@ -255,6 +255,10 @@ export default function AdventurerProfile() {
     } else {
       await base44.entities.AdventurerProfile.create(data);
     }
+    // If username changed, redirect to new URL so profile loads fresh with correct name
+    if (editName !== adventurerName) {
+      window.history.replaceState(null, '', `/AdventurerProfile?name=${encodeURIComponent(editName)}`);
+    }
     await loadAll();
     setEditing(false);
     setSaving(false);
