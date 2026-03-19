@@ -205,11 +205,10 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
           {/* Draggable Canvas */}
           <motion.div
             drag
-            dragConstraints={{ top: -2500, left: -2500, right: 2500, bottom: 2500 }}
+            dragConstraints={{ top: -1500, left: -1500, right: 1500, bottom: 1500 }}
             dragElastic={0.05}
-            style={{ x, y, scale: zoom }}
-            className="w-[3000px] h-[3000px] flex-shrink-0 cursor-grab active:cursor-grabbing origin-center"
             style={{
+              x, y, scale: zoom,
               backgroundImage: mapTheme === 'scifi' ? `url('/starmapposter3d.webp')` : `url('/fantasy-map.avif')`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
@@ -217,6 +216,7 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
               backgroundColor: '#0a0a20',
               border: '2px dashed rgba(168, 85, 247, 0.2)',
             }}
+            className="w-[3000px] h-[3000px] flex-shrink-0 cursor-grab active:cursor-grabbing origin-center relative"
           >
             {/* Central crosshair */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
