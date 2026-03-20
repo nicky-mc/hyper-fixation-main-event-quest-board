@@ -455,7 +455,7 @@ export default function QuestBoard() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
           className="mt-16 border border-purple-900/40 rounded-xl p-5 bg-white/[0.02]">
           <h3 className="text-center text-purple-300/60 text-xs tracking-[0.4em] uppercase font-mono mb-4">
-            — EPISODE SEGMENT MAP —
+            {txt.segmentMapTitle}
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-[10px]">
             {[
