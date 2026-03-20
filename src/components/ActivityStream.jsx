@@ -1,29 +1,73 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Send, X, Trash2, Music, Video, Image, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import {  Loader2, Send, X, Trash2, Music, Video, Image as ImageIcon, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { cn } from '@/lib/utils';
 
+/**
+ * MediaPreview: High-fidelity file rendering
+ * Swapped hardcoded black for var-aware transparency
+ */
 function MediaPreview({ url, type }) {
   if (!url) return null;
-  if (type === 'video') return <video src={url} controls className="mt-2 rounded-lg w-full max-h-48 object-contain bg-black/40" />;
-  if (type === 'audio') return <audio src={url} controls className="mt-2 w-full rounded-lg" />;
-  return <img src={url} alt="" className="mt-2 rounded-lg max-h-44 object-cover w-full" />;
+  if (type === 'video') return (
+    <video 
+      src={url} 
+      controls 
+      className="mt-2 rounded-lg w-full max-h-48 object-contain bg-black/40 border border-[var(--border-glow)]/20" 
+    />
+  );
+  if (type === 'audio') return (
+    <audio 
+      src={url} 
+      controls 
+      className="mt-2 w-full rounded-lg bg-[var(--panel-bg)]" 
+    />
+  );
+  return (
+    <img 
+      src={url} 
+      alt="" 
+      className="mt-2 rounded-lg max-h-44 object-cover w-full border border-[var(--border-glow)]/20 shadow-md" 
+    />
+  );
 }
 
+/**
+ * Avatar Component: Restoration of the glowing ring
+ * Writing fix: Name characters upscaled
+ */
 function Avatar({ name, url, size = 7 }) {
+  const sizeClass = `w-${size} h-${size}`;
   return url ? (
-    <img src={url} alt={name} className={`w-${size} h-${size} rounded-full object-cover shrink-0`}
-      style={{ border: '2px solid rgba(255,191,0,0.35)', boxShadow: '0 0 10px rgba(255,191,0,0.2)' }} />
+    <img 
+      src={url} 
+      alt={name} 
+      className={cn(sizeClass, "rounded-full object-cover shrink-0")}
+      style={{ 
+        border: '2px solid var(--accent)', 
+        boxShadow: '0 0 10px var(--border-glow)' 
+      }} 
+    />
   ) : (
-    <div className={`w-${size} h-${size} rounded-full bg-gradient-to-br from-purple-700 to-indigo-900 border border-purple-600/40 flex items-center justify-center text-[11px] font-black text-purple-200 shrink-0`}>
+    <div 
+      className={cn(
+        sizeClass, 
+        "rounded-full bg-gradient-to-br from-purple-700 to-indigo-900 border border-[var(--border-glow)]/40 flex items-center justify-center text-xs font-black text-white shrink-0"
+      )}
+    >
       {(name || '?').charAt(0).toUpperCase()}
     </div>
   );
 }
 
+/**
+ * PostComments: Threaded transmissions logic
+ * Writing fix: Upscaled from 10px/11px to text-xs
+ */
 function PostComments({ postId, myProfile, profiles }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,22 +100,22 @@ function PostComments({ postId, myProfile, profiles }) {
   };
 
   return (
-    <div className="border-t border-purple-900/30 px-4 py-3 space-y-2">
+    <div className="border-t border-[var(--border-glow)]/20 px-4 py-3 space-y-3">
       {loading ? (
-        <Loader2 className="w-3.5 h-3.5 text-purple-600 animate-spin mx-auto" />
+        <Loader2 className="w-4 h-4 text-[var(--accent)] animate-spin mx-auto" />
       ) : comments.length === 0 ? (
-        <p className="text-[10px] text-slate-600 text-center">No replies yet</p>
+        <p className="text-xs text-slate-600 text-center italic">No replies yet</p>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {comments.map(c => {
             const prof = Object.values(profiles).find(p => p.id === c.adventurer_id);
             const name = prof?.adventurer_name || 'Adventurer';
             return (
               <div key={c.id} className="flex gap-2">
                 <Avatar name={name} url={prof?.avatar_url} size={5} />
-                <div className="flex-1 bg-purple-950/40 border border-purple-900/30 rounded-lg px-2.5 py-1.5">
-                  <p className="text-[10px] font-bold text-purple-300">{name}</p>
-                  <p className="text-[11px] text-slate-300 leading-relaxed">{c.content}</p>
+                <div className="flex-1 bg-[var(--panel-bg)]/40 border border-[var(--border-glow)]/30 rounded-lg px-2.5 py-1.5">
+                  <p className="text-xs font-bold text-[var(--accent)]">{name}</p>
+                  <p className="text-xs text-slate-300 leading-relaxed">{c.content}</p>
                 </div>
               </div>
             );
@@ -85,11 +129,14 @@ function PostComments({ postId, myProfile, profiles }) {
             onChange={e => setText(e.target.value)}
             placeholder="Reply..."
             maxLength={200}
-            className="flex-1 px-2.5 py-1.5 rounded-lg bg-[#0d0820]/70 border border-purple-800/40 text-purple-100 placeholder:text-slate-600 text-[11px] focus:outline-none focus:border-purple-500"
+            className="flex-1 px-2.5 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-glow)]/40 text-white placeholder:text-slate-600 text-xs focus:outline-none focus:border-[var(--accent)]"
           />
-          <button type="submit" disabled={submitting || !text.trim()}
-            className="p-1.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white border border-purple-500/40 transition-all disabled:opacity-40">
-            {submitting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+          <button 
+            type="submit" 
+            disabled={submitting || !text.trim()}
+            className="p-2 rounded-lg bg-[var(--accent)] hover:brightness-110 text-[var(--bg-primary)] transition-all disabled:opacity-40"
+          >
+            {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
           </button>
         </form>
       )}
@@ -97,57 +144,61 @@ function PostComments({ postId, myProfile, profiles }) {
   );
 }
 
+/**
+ * PostItem: Individual feed entry
+ * Writing fix: Timestamps and Usernames upscaled
+ */
 function PostItem({ post, user, myProfile, onDelete, profiles }) {
   const [showComments, setShowComments] = useState(false);
   const profile = profiles?.[post.author_name];
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: -8 }} 
+      animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-      className="rounded-xl overflow-hidden hover-lift"
-      style={{ background: 'rgba(8,6,24,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.06)' }}
+      className="rounded-xl overflow-hidden hover-lift mb-3"
+      style={{ 
+        background: 'var(--panel-bg)', 
+        backdropFilter: 'blur(16px)', 
+        border: '1px solid var(--border-glow)' 
+      }}
     >
-      {/* Post header */}
-      <div className="px-4 py-2.5 flex items-center justify-between border-b border-purple-900/30">
+      <div className="px-4 py-3 flex items-center justify-between border-b border-[var(--border-glow)]/20">
         <div className="flex items-center gap-2">
           <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(post.author_name || '')}`}>
             <Avatar name={post.author_name} url={profile?.avatar_url} />
           </Link>
           <div>
             <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(post.author_name || '')}`}>
-              <p className="text-xs font-bold text-purple-200 hover:text-purple-100">{post.author_name}</p>
+              <p className="text-sm font-bold text-[var(--accent)] hover:brightness-125 transition-all">{post.author_name}</p>
             </Link>
-            <p className="text-[9px] text-slate-600">
+            <p className="text-[10px] text-slate-500 uppercase tracking-tight">
               {post.created_date ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true }) : 'just now'}
             </p>
           </div>
         </div>
         {user && (user.email === post.author_email || user.role === 'admin') && (
-          <button onClick={() => onDelete(post.id)} className="p-1 text-slate-600 hover:text-red-400 transition-colors">
-            <Trash2 className="w-3.5 h-3.5" />
+          <button onClick={() => onDelete(post.id)} className="p-1.5 text-slate-600 hover:text-red-400 transition-colors">
+            <Trash2 className="w-4 h-4" />
           </button>
         )}
       </div>
 
-      {/* Post body */}
       <div className="px-4 py-3">
-        <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+        <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{post.content}</p>
         <MediaPreview url={post.image_url} type={post.media_type} />
       </div>
 
-      {/* Comment toggle */}
       <button
         onClick={() => setShowComments(v => !v)}
-        className="w-full flex items-center gap-1.5 px-4 py-2 text-[10px] text-purple-600 hover:text-purple-400 hover:bg-purple-900/20 transition-colors border-t border-purple-900/20"
+        className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-colors border-t border-[var(--border-glow)]/20"
       >
-        <MessageCircle className="w-3 h-3" />
-        Reply
-        {showComments ? <ChevronUp className="w-3 h-3 ml-auto" /> : <ChevronDown className="w-3 h-3 ml-auto" />}
+        <MessageCircle className="w-3.5 h-3.5" />
+        {showComments ? 'Hide Replies' : 'View Replies'}
+        {showComments ? <ChevronUp className="w-3.5 h-3.5 ml-auto" /> : <ChevronDown className="w-3.5 h-3.5 ml-auto" />}
       </button>
-
-      {/* Comments section */}
       <AnimatePresence>
         {showComments && (
           <motion.div
@@ -174,7 +225,8 @@ export default function ActivityStream() {
   const [mediaType, setMediaType] = useState('image');
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting]     = useState(false);
-  const [profiles, setProfiles]   = useState({}); // adventurer_name -> profile
+  const [profiles, setProfiles]   = useState({}); 
+  
   const imageRef = useRef(null);
   const videoRef = useRef(null);
   const audioRef = useRef(null);
@@ -194,7 +246,6 @@ export default function ActivityStream() {
       const map = {};
       data.forEach(p => {
         map[p.adventurer_name] = p;
-        // Also index by id for comment lookups
         map[p.id] = p;
       });
       setProfiles(map);
@@ -217,26 +268,32 @@ export default function ActivityStream() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setMediaUrl(file_url);
-    setMediaType(type);
-    setUploading(false);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setMediaUrl(file_url);
+      setMediaType(type);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const submitPost = async (e) => {
     e.preventDefault();
     if (!content.trim() || posting || !user) return;
     setPosting(true);
-    await base44.entities.NewsPost.create({
-      author_name: user.full_name || user.email,
-      author_email: user.email,
-      content: content.trim(),
-      image_url: mediaUrl || undefined,
-      media_type: mediaUrl ? mediaType : undefined,
-    });
-    setContent('');
-    setMediaUrl('');
-    setPosting(false);
+    try {
+      await base44.entities.NewsPost.create({
+        author_name: user.full_name || user.email,
+        author_email: user.email,
+        content: content.trim(),
+        image_url: mediaUrl || undefined,
+        media_type: mediaUrl ? mediaType : undefined,
+      });
+      setContent('');
+      setMediaUrl('');
+    } finally {
+      setPosting(false);
+    }
   };
 
   const deletePost = async (id) => {
@@ -246,67 +303,94 @@ export default function ActivityStream() {
   return (
     <div className="flex flex-col h-full">
       {user ? (
-        <form onSubmit={submitPost} className="mb-3 space-y-2 p-3 rounded-xl border border-purple-900/40 bg-white/[0.02] shrink-0">
-          <p className="text-[10px] text-purple-600">Posting as <span className="text-purple-400 font-bold">{user.full_name || user.email}</span></p>
+        <form onSubmit={submitPost} className="mb-4 space-y-3 p-4 rounded-xl border border-[var(--border-glow)]/40 bg-[var(--panel-bg)]/30 shrink-0">
+          <p className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
+            Broadcasting as <span className="underline">{user.full_name || user.email}</span>
+          </p>
           <textarea
             value={content}
             onChange={e => setContent(e.target.value)}
-            placeholder="Share something with the crew..."
-            maxLength={500} rows={2}
-            className="w-full px-3 py-2 rounded-lg bg-[#0d0820]/70 border border-purple-800/40 text-purple-100 placeholder:text-slate-600 text-xs focus:outline-none focus:border-purple-500 resize-none"
+            placeholder="Share lore with the sector..."
+            maxLength={500} 
+            rows={2}
+            className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-glow)]/40 text-white placeholder:text-slate-600 text-xs focus:outline-none focus:border-[var(--accent)] resize-none"
           />
           {mediaUrl && (
-            <div className="relative rounded-lg overflow-hidden border border-purple-700/30">
+            <div className="relative rounded-lg overflow-hidden border border-[var(--accent)]/30">
               <MediaPreview url={mediaUrl} type={mediaType} />
-              <button type="button" onClick={() => setMediaUrl('')}
-                className="absolute top-1 right-1 bg-black/70 text-white rounded-full p-0.5 hover:bg-red-600/80">
-                <X className="w-3 h-3" />
+              <button 
+                type="button" 
+                onClick={() => setMediaUrl('')}
+                className="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 hover:bg-red-600/80 transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           )}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <input ref={imageRef} type="file" accept="image/*" className="hidden" onChange={e => handleUpload(e, 'image')} />
             <input ref={videoRef} type="file" accept="video/*" className="hidden" onChange={e => handleUpload(e, 'video')} />
             <input ref={audioRef} type="file" accept="audio/*" className="hidden" onChange={e => handleUpload(e, 'audio')} />
+            
             {uploading ? (
-              <Loader2 className="w-4 h-4 text-purple-500 animate-spin" />
+              <Loader2 className="w-5 h-5 text-[var(--accent)] animate-spin" />
             ) : (
               <>
                 <button type="button" onClick={() => imageRef.current?.click()} title="Upload image"
-                  className="p-1.5 rounded-lg border border-purple-800/40 bg-purple-900/20 text-purple-500 hover:text-purple-300 transition-all">
-                  <Image className="w-3.5 h-3.5" />
+                  className="p-2 rounded-lg border border-[var(--border-glow)]/40 bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-all">
+                  <ImageIcon className="w-4 h-4" />
                 </button>
                 <button type="button" onClick={() => videoRef.current?.click()} title="Upload video"
-                  className="p-1.5 rounded-lg border border-purple-800/40 bg-purple-900/20 text-purple-500 hover:text-purple-300 transition-all">
-                  <Video className="w-3.5 h-3.5" />
+                  className="p-2 rounded-lg border border-[var(--border-glow)]/40 bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-all">
+                  <Video className="w-4 h-4" />
                 </button>
                 <button type="button" onClick={() => audioRef.current?.click()} title="Upload audio"
-                  className="p-1.5 rounded-lg border border-purple-800/40 bg-purple-900/20 text-purple-500 hover:text-purple-300 transition-all">
-                  <Music className="w-3.5 h-3.5" />
+                  className="p-2 rounded-lg border border-[var(--border-glow)]/40 bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-all">
+                  <Music className="w-4 h-4" />
                 </button>
               </>
             )}
-            <button type="submit" disabled={posting || !content.trim()}
-              className="ml-auto p-1.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white border border-purple-500/40 transition-all disabled:opacity-40">
-              {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            
+            <button 
+              type="submit" 
+              disabled={posting || !content.trim()}
+              className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] hover:brightness-110 text-[var(--bg-primary)] font-bold text-xs transition-all disabled:opacity-40"
+            >
+              {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4" /> Transmit</>}
             </button>
           </div>
         </form>
       ) : (
-        <div className="mb-3 p-3 rounded-xl border border-purple-900/40 bg-white/[0.02] text-center text-xs text-slate-600">
-          <button onClick={() => base44.auth.redirectToLogin(window.location.pathname)} className="text-purple-400 hover:text-purple-300 underline">Login</button> to post
+        <div className="mb-4 p-4 rounded-xl border border-[var(--border-glow)]/40 bg-[var(--panel-bg)]/20 text-center text-xs text-slate-500">
+          <button 
+            onClick={() => base44.auth.redirectToLogin(window.location.pathname)} 
+            className="text-[var(--accent)] font-bold hover:underline"
+          >
+            Login
+          </button> to access sub-space frequencies.
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto space-y-2 pr-0.5">
+      <div className="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
         {loading ? (
-          <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 text-purple-600 animate-spin" /></div>
+          <div className="flex justify-center py-10">
+            <Loader2 className="w-6 h-6 text-[var(--accent)] animate-spin" />
+          </div>
         ) : posts.length === 0 ? (
-          <p className="text-center text-xs text-slate-600 py-6">No posts yet — be the first!</p>
+          <p className="text-center text-xs text-slate-600 py-10 italic">
+            Sector quiet... be the first to transmit.
+          </p>
         ) : (
           <AnimatePresence initial={false}>
             {posts.map(p => (
-              <PostItem key={p.id} post={p} user={user} myProfile={myProfile} onDelete={deletePost} profiles={profiles} />
+              <PostItem 
+                key={p.id} 
+                post={p} 
+                user={user} 
+                myProfile={myProfile} 
+                onDelete={deletePost} 
+                profiles={profiles} 
+              />
             ))}
           </AnimatePresence>
         )}
