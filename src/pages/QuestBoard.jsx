@@ -358,7 +358,7 @@ export default function QuestBoard() {
             className="font-lcars h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-cyan-800/50 bg-cyan-950/30 text-cyan-400 hover:border-cyan-600/70 font-bold text-sm"
             style={{ transition: 'all 0.5s ease-in-out' }}
           >
-            <Map className="w-4 h-4" /> Quest Map
+            <Map className="w-4 h-4" /> {txt.mapBtn}
           </motion.button>
 
           {/* Live Feed */}
