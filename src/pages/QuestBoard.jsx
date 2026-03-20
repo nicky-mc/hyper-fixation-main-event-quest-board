@@ -18,7 +18,7 @@ import RKOButton from '@/components/RKOButton';
 import NextShowBanner from '@/components/NextShowBanner';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useTheme, UI_TEXT } from '@/lib/ThemeContext';
-
+import ActivityDrawer from '@/components/ActivityDrawer';
 /**
  * Floating particle component for atmosphere
  */
