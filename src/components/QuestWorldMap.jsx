@@ -17,11 +17,16 @@ function getNodePercent(index) {
 export default function QuestWorldMap({ quests, onClose, targetQuest }) {
   const navigate = useNavigate();
   const shouldReduceMotion = useReducedMotion();
+  const { theme: globalTheme } = useTheme();
+
+  // Derive local map style from global theme; user can still override with the bezel toggle
+  const [mapTheme, setMapTheme] = useState(() =>
+    globalTheme === 'fantasy' ? 'fantasy' : 'scifi'
+  );
+  const highContrast = globalTheme === 'high-contrast';
+  const [showSettings, setShowSettings] = useState(false);
 
   const [activeNode, setActiveNode] = useState(null);
-  const [mapTheme, setMapTheme] = useState('scifi');
-  const [highContrast, setHighContrast] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [zoom, setZoom] = useState(0.25);
   const [targetingId, setTargetingId] = useState(null);
   const [liveAnnouncement, setLiveAnnouncement] = useState('');
