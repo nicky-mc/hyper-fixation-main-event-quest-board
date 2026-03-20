@@ -599,10 +599,4 @@ export default function QuestBoard() {
   );
 }
 
-/**
- * Utility Function: cn
- * Restoration for component logic independence
- */
-function cn(...classes) { return classes.filter(Boolean).join(' '); 
-}
 
