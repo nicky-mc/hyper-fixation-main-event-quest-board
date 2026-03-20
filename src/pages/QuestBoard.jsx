@@ -344,7 +344,7 @@ export default function QuestBoard() {
     </div>
   </motion.div>
 )}
-
+</motion.header>
         {/* ── ACTION BAR ── */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} 
