@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { base44 } from '@/api/base44Client';
+import { useTheme, UI_TEXT } from '@/lib/ThemeContext';
 
 // Canvas is 3000x3000px. Spread nodes across 10-90% using large primes to avoid clustering.
 function getNodePercent(index) {
