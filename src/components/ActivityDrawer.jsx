@@ -91,7 +91,7 @@ export default function ActivityDrawer({ isOpen, onOpenChange, onQuestSelect, la
         className="relative h-11 flex items-center gap-2 px-5 rounded-xl border-2 border-green-800/50 bg-green-950/30 text-green-400 hover:border-green-600/70 font-bold text-sm transition-all"
       >
         <Activity className="w-4 h-4" />
-        Live Feed
+        {label || 'Live Feed'}
         <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse border-2 border-[#050510]" />
       </motion.button>
 
