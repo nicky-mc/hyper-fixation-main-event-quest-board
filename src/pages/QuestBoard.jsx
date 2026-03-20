@@ -296,8 +296,8 @@ export default function QuestBoard() {
 
                 <span className="relative flex items-center gap-3" style={{ fontSize: '1.1rem', fontWeight: 800, letterSpacing: '0.08em' }}>
                   {isRolling
-                    ? <><Loader2 className="w-5 h-5 animate-spin" /> Rolling Initiative...</>
-                    : <><Swords className="w-5 h-5" /> Roll for Initiative!</>
+                    ? <><Loader2 className="w-5 h-5 animate-spin" /> {txt.rollingBtn}</>
+                    : <><Swords className="w-5 h-5" /> {txt.rollBtn}</>
                   }
                 </span>
               </motion.button>
