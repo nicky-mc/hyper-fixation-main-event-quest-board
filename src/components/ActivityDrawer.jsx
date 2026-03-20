@@ -79,7 +79,7 @@ function NewsFeedTab() {
   );
 }
 
-export default function ActivityDrawer({ isOpen, onOpenChange, onQuestSelect }) {
+export default function ActivityDrawer({ isOpen, onOpenChange, onQuestSelect, label }) {
   const [activeTab, setActiveTab] = useState('newest');
 
   return (
