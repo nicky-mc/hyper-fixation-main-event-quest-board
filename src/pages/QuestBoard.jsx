@@ -18,6 +18,7 @@ import RKOButton from '@/components/RKOButton';
 import NextShowBanner from '@/components/NextShowBanner';
 import { useTheme, UI_TEXT } from '@/lib/ThemeContext';
 import ActivityDrawer from '@/components/ActivityDrawer';
+import InitiativeButton from '@/components/InitiativeButton';
 /**
  * Floating particle component for atmosphere
  */
@@ -169,7 +170,7 @@ export default function QuestBoard() {
   };
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden max-w-[100vw] bg-transparent">
+    <div className="min-h-screen w-full relative overflow-x-hidden max-w-[100vw] bg-transparent">
       {/* ARIA Live Region for the Roll Result */}
       <div
         aria-live="assertive"
@@ -311,45 +312,31 @@ export default function QuestBoard() {
               transition={{ delay: 0.15 }}
               className="flex items-center justify-center gap-4 mt-7 flex-wrap"
             >
-              <motion.button
-                onClick={rollForInitiative}
-                disabled={pendingQuests.length === 0 || isRolling}
-                whileHover={{ scale: pendingQuests.length === 0 || isRolling ? 1 : 1.05, y: -2 }}
-                whileTap={{ scale: 0.96, y: 0 }}
-                className={cn(
-                  "relative h-16 px-10 rounded-2xl font-black text-white disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden transition-all duration-300",
-                  isRolling ? "artifact-btn-rolling" : "artifact-btn"
-                )}
-                style={{ border: `2px solid ${isRolling ? 'var(--accent)' : 'rgba(239,68,68,0.4)'}` }}
-              >
-                <motion.div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(239,68,68,0.3) 0%, transparent 60%)' }}
-                  animate={isRolling ? { opacity: [0.5, 1, 0.5] } : { opacity: 0.6 }}
-                  transition={{ duration: 0.4, repeat: isRolling ? Infinity : 0 }}
-                />
-                {isRolling && Array.from({ length: 10 }).map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute top-1/2 left-1/2 h-px"
-                    style={{
-                      originX: 0, originY: 0,
-                      rotate: `${i * 36}deg`,
-                      width: `${30 + Math.random() * 60}%`,
-                      background: 'linear-gradient(to right, transparent, var(--accent), white)',
-                    }}
-                    animate={{ scaleX: [0, 1, 0], opacity: [0, 1, 0] }}
-                    transition={{ duration: 0.4, delay: i * 0.04, repeat: Infinity, repeatDelay: 0.2 }}
-                  />
-                ))}
-                <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
-                <span className="relative flex items-center gap-3" style={{ fontSize: '1.1rem', fontWeight: 800, letterSpacing: '0.08em' }}>
-                  {isRolling
-                    ? <><Loader2 className="w-5 h-5 animate-spin" /> {txt.rollingBtn}</>
-                    : <><Swords className="w-5 h-5" /> {txt.rollBtn}</>
-                  }
-                </span>
-              </motion.button>
+             <InitiativeButton 
+  disabled={pendingQuests.length === 0}
+  onRollStart={() => setIsRolling(true)} 
+  onRollComplete={(result) => {
+    // 1. End the rolling state so the UI updates
+    setIsRolling(false); 
+
+    // 2. Logic: Pick a random quest from the current pending list
+    const randomIndex = Math.floor(Math.random() * pendingQuests.length);
+    const selected = pendingQuests[randomIndex];
+    
+    // 3. UI: Set the ID so the "Crown" announcement shows up
+    setSelectedQuestId(selected.id);
+    
+    // 4. Database: Update the quest status to completed
+    base44.entities.Quest.update(selected.id, { status: 'completed' });
+    
+    // 5. News: Broadcast the result to the community feed
+    base44.entities.NewsPost.create({
+      author_name: 'The Quest Board',
+      author_email: 'questboard@hme.app',
+      content: `⚔️ **NATURAL ${result} INITIATIVE** ⚔️\n\n"${selected.title}" has been selected for the next episode!\n\n🎯 Segment: ${selected.segment} · 🎲 DC: ${selected.difficulty_class}\n🧙 Submitted by: ${selected.quest_giver}\n\n🦈 Nicky & Charlotte are on the case!`,
+    }).then(() => loadQuests()); // Refresh the board data
+  }} 
+/>
               <RKOButton userIsAdmin={true} />
             </motion.div>
           )}
