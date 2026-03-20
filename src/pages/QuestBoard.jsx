@@ -16,7 +16,6 @@ import QuestCategoryFilter, { CATEGORIES, filterQuestsByCategory } from '@/compo
 import QuestWorldMap from '@/components/QuestWorldMap';
 import RKOButton from '@/components/RKOButton';
 import NextShowBanner from '@/components/NextShowBanner';
-import ThemeToggle from '@/components/ThemeToggle';
 import { useTheme, UI_TEXT } from '@/lib/ThemeContext';
 import ActivityDrawer from '@/components/ActivityDrawer';
 /**
@@ -373,10 +372,6 @@ export default function QuestBoard() {
             {user ? `${txt.postBtn} 🦈` : txt.postBtnGuest}
           </motion.button>
 
-          {/* Dimensional Shifter (Theme Toggle) */}
-          <div className="scale-110">
-            <ThemeToggle />
-          </div>
           {isAdmin && (
             <motion.button
               whileHover={{ scale: 1.04 }} 
