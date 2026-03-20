@@ -557,11 +557,11 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
 
                 {/* Comments list */}
                 <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                  <p className={cn("text-[9px] tracking-widest uppercase mb-2", hc ? "font-lcars text-white" : (mapTheme === 'scifi' ? "font-lcars text-cyan-400" : "font-serif text-amber-600"))}>
-                    ◈ Crew Transmissions ({comments.length})
+                  <p className={cn("text-[9px] tracking-widest uppercase mb-2", hc ? "font-lcars text-white" : (isWrestling ? "font-lcars text-rose-400" : (mapTheme === 'scifi' ? "font-lcars text-cyan-400" : "font-serif text-amber-600")))}>
+                    ◈ {txt.commentsLabel} ({comments.length})
                   </p>
                   {comments.length === 0 && (
-                    <p className={cn("text-[10px] text-center py-4", hc ? "text-white" : "text-slate-600")}>No transmissions yet.</p>
+                    <p className={cn("text-[10px] text-center py-4", hc ? "text-white" : "text-slate-600")}>No {txt.commentsLabel.toLowerCase()} yet.</p>
                   )}
                   {comments.map(c => {
                     const voted = hasVoted(c.id);
