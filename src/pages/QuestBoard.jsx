@@ -149,6 +149,15 @@ export default function QuestBoard() {
   return (
     <div className="min-h-screen w-full relative overflow-hidden max-w-[100vw]"
       style={{ background: 'linear-gradient(135deg, #050510 0%, #0a0518 30%, #080d1a 60%, #050a10 100%)', backgroundAttachment: 'fixed' }}>
+
+      {/* Task 3: ARIA live region for initiative rolls & announcements */}
+      <div
+        aria-live="assertive"
+        aria-atomic="true"
+        style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}
+      >
+        {srAnnouncement}
+      </div>
       {/* Optimized Background Layer */}
       <div className="absolute inset-0 h-full pointer-events-none overflow-hidden transform-gpu translate-z-0" style={{ backfaceVisibility: 'hidden' }}>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] opacity-20 rounded-full transform-gpu"
