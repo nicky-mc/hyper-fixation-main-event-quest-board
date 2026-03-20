@@ -402,10 +402,10 @@ export default function QuestBoard() {
               <Fish className="w-10 h-10 text-cyan-700/50" />
             </div>
             <h3 className="text-3xl text-purple-300/70 mb-2">
-              The Board Awaits, Adventurer...
+              {txt.noQuests}
             </h3>
             <p className="text-slate-600 max-w-md text-sm">
-              No quests posted yet. Even the sharks are waiting. Be the first!
+              {txt.noQuestsDesc}
             </p>
           </motion.div>
         ) : displayedQuests.length === 0 ? (
