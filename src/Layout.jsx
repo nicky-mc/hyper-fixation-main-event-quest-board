@@ -2,24 +2,43 @@ import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { MessageCircle, User, Rss, LogOut, LogIn, Trophy, Menu, X, CalendarDays, ChevronRight, BookOpen, Headphones } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {  MessageCircle, User,  Rss, LogOut,  LogIn,  Trophy,  Menu,  X, CalendarDays,  ChevronRight, BookOpen, Headphones } from 'lucide-react';
+import { motion,  AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import MessageToast from '@/components/MessageToast';
 import GlobalAudioPlayer from '@/components/GlobalAudioPlayer';
 import NotificationCenter from '@/components/NotificationCenter';
 import { useAdventurerSync } from '@/components/useAdventurerSync';
 
-// Global adventurer context
+// --- THEME ENGINE IMPORTS ---
+import { useTheme } from '@/lib/ThemeContext';
+import ThemeToggle from '@/components/ThemeToggle';
+
+// Global adventurer context for deep-tree access
 export const AdventurerContext = createContext(null);
 export const useAdventurer = () => useContext(AdventurerContext);
 
-// Global audio context
-export const AudioContext = createContext({ activeEpisode: null, setActiveEpisode: () => {} });
+// Global audio context for persistent playback
+export const AudioContext = createContext({ 
+  activeEpisode: null, 
+  setActiveEpisode: () => {} 
+});
 
+/**
+ * SwordsIcon: Custom SVG for Quest Board Navigation
+ * High-fidelity vector preservation
+ */
 function SwordsIcon({ className }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg 
+      className={className} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="1.8" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
       <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
       <line x1="13" y1="19" x2="15" y2="17" />
       <polyline points="9.5 6.5 6 3 3 6 6.5 9.5" />
@@ -31,28 +50,30 @@ function SwordsIcon({ className }) {
   );
 }
 
+// Navigation Schema
 const NAV_ITEMS = [
-  { label: 'Quest Board',   page: 'QuestBoard',      icon: SwordsIcon },
-  { label: 'News Feed',     page: 'NewsFeed',         icon: Rss },
-  { label: 'Hall of Fame',  page: 'CompletedQuests',  icon: Trophy },
-  { label: 'Messages',      page: 'Messages',         icon: MessageCircle },
-  { label: 'My Adventurer', page: 'MyAdventurer',     icon: User },
+  { label: 'Quest Board',      page: 'QuestBoard',      icon: SwordsIcon },
+  { label: 'News Feed',        page: 'NewsFeed',        icon: Rss },
+  { label: 'Hall of Fame',     page: 'CompletedQuests', icon: Trophy },
+  { label: 'Messages',         page: 'Messages',        icon: MessageCircle },
+  { label: 'My Adventurer',    page: 'MyAdventurer',    icon: User },
   { label: 'Episode Calendar', page: 'EpisodeCalendar', icon: CalendarDays },
-
-  { label: 'The Tavern', page: 'GuildDirectory', icon: BookOpen },
-  { label: 'The Archives', page: 'PodcastArchives', icon: Headphones },
+  { label: 'The Tavern',       page: 'GuildDirectory',  icon: BookOpen },
+  { label: 'The Archives',     page: 'PodcastArchives', icon: Headphones },
 ];
 
 export default function Layout({ children, currentPageName }) {
   const { profile } = useAdventurerSync();
+  const { theme } = useTheme(); 
   const [activeEpisode, setActiveEpisode] = useState(null);
-  const [user, setUser]             = useState(null);
+  const [user, setUser] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [expanded, setExpanded]     = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const location = useLocation();
   const lastUnreadFetch = useRef(0);
 
+  // Auth & Profile Lifecycle
   useEffect(() => {
     base44.auth.me().then(u => {
       setUser(u);
@@ -62,9 +83,12 @@ export default function Layout({ children, currentPageName }) {
 
   const loadUnread = async (profileId) => {
     const now = Date.now();
-    if (now - lastUnreadFetch.current < 30000) return; // 30s cooldown
+    if (now - lastUnreadFetch.current < 30000) return;
     lastUnreadFetch.current = now;
-    const msgs = await base44.entities.Message.filter({ recipient_id: profileId, read: false });
+    const msgs = await base44.entities.Message.filter({ 
+      recipient_id: profileId, 
+      read: false 
+    });
     setUnreadCount(msgs.length);
   };
 
@@ -78,49 +102,69 @@ export default function Layout({ children, currentPageName }) {
     return unsub;
   }, [profile]);
 
-  // Ping last_active on every navigation
   useEffect(() => {
     if (!profile) return;
-    base44.entities.AdventurerProfile.update(profile.id, { last_active: new Date().toISOString() }).catch(() => {});
+    base44.entities.AdventurerProfile.update(profile.id, { 
+      last_active: new Date().toISOString() 
+    }).catch(() => {});
   }, [location.pathname, profile?.id]);
 
-  const handleLogin  = () => base44.auth.redirectToLogin(window.location.pathname);
+  const handleLogin = () => base44.auth.redirectToLogin(window.location.pathname);
   const handleLogout = () => base44.auth.logout('/');
 
-  // Sidebar content shared between desktop & mobile
+  /**
+   * SidebarContent: Internal sub-component for nav rendering
+   * Shared between Desktop Floating Sidebar and Mobile Drawer
+   */
   const SidebarContent = ({ onNav }) => (
     <>
-      {/* Divider */}
-      <div className="mx-3 mb-3 mt-3 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.4), transparent)' }} />
+      {/* Visual Divider */}
+      <div 
+        className="mx-3 mb-3 mt-3 h-px" 
+        style={{ 
+          background: 'linear-gradient(90deg, transparent, var(--accent), transparent)' 
+        }} 
+      />
 
-      {/* Nav items */}
       <nav className="flex flex-col gap-1 flex-1 px-2">
         {NAV_ITEMS.map(({ label, page, icon: Icon }) => {
           const active = currentPageName === page;
           const badge = page === 'Messages' ? unreadCount : 0;
+          
           return (
-            <Link key={page} to={createPageUrl(page)} onClick={onNav}
+            <Link 
+              key={page} 
+              to={createPageUrl(page)} 
+              onClick={onNav}
               className={cn(
                 "relative flex items-center gap-3 px-2.5 py-2.5 rounded-xl transition-all duration-500 group",
-                active ? "text-red-400" : "text-slate-500 hover:text-red-400"
+                active ? "text-[var(--accent)]" : "text-slate-500 hover:text-[var(--accent)]"
               )}
               style={active ? {
-                background: 'rgba(239,68,68,0.1)',
-                border: '1px solid rgba(239,68,68,0.25)',
-                boxShadow: '0 0 16px rgba(239,68,68,0.15)',
+                background: 'rgba(var(--accent-rgb, 239, 68, 68), 0.1)',
+                border: '1px solid var(--border-glow)',
+                boxShadow: '0 0 16px rgba(var(--accent-rgb, 239, 68, 68), 0.15)',
               } : {
                 border: '1px solid transparent',
-              }}>
-              <div className="relative shrink-0 transition-all duration-500"
-                style={{ filter: active ? 'drop-shadow(0 0 6px rgba(239,68,68,0.8))' : '' }}>
-                <Icon className="w-5 h-5 transition-all duration-500 group-hover:[filter:drop-shadow(0_0_6px_rgba(239,68,68,0.9))]" />
+              }}
+            >
+              <div 
+                className="relative shrink-0 transition-all duration-500"
+                style={{ 
+                  filter: active ? 'drop-shadow(0 0 6px var(--accent))' : '' 
+                }}
+              >
+                <Icon className="w-5 h-5 transition-all duration-500 group-hover:[filter:drop-shadow(0_0_6px_var(--accent))]" />
                 {badge > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center"
-                    style={{ boxShadow: '0 0 8px rgba(239,68,68,0.7)' }}>
+                  <span 
+                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center"
+                    style={{ boxShadow: '0 0 8px rgba(239,68,68,0.7)' }}
+                  >
                     {badge > 9 ? '9+' : badge}
                   </span>
                 )}
               </div>
+
               <AnimatePresence>
                 {expanded && (
                   <motion.span
@@ -128,7 +172,8 @@ export default function Layout({ children, currentPageName }) {
                     animate={{ opacity: 1, x: 0, width: 'auto' }}
                     exit={{ opacity: 0, x: -8, width: 0 }}
                     className="text-xs font-semibold whitespace-nowrap overflow-hidden"
-                    style={{ letterSpacing: '0.05em' }}>
+                    style={{ letterSpacing: '0.05em' }}
+                  >
                     {label}
                   </motion.span>
                 )}
@@ -137,29 +182,44 @@ export default function Layout({ children, currentPageName }) {
           );
         })}
       </nav>
-
-      {/* Bottom: user */}
+      {/* Sidebar User Action Section */}
       <div className="mt-auto px-2 pb-3 shrink-0">
-        <div className="mx-1 mb-2 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.3), transparent)' }} />
+        <div 
+          className="mx-1 mb-2 h-px" 
+          style={{ 
+            background: 'linear-gradient(90deg, transparent, var(--accent), transparent)' 
+          }} 
+        />
         {user ? (
           <>
             <AnimatePresence>
               {expanded && (
-                <motion.p
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="text-[9px] text-slate-600 text-center mb-1.5 px-2 truncate">
+                <motion.p 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
+                  exit={{ opacity: 0 }}
+                  className="text-[9px] text-slate-600 text-center mb-1.5 px-2 truncate"
+                >
                   {user.full_name || user.email}
                 </motion.p>
               )}
             </AnimatePresence>
-            <button onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl text-slate-500 hover:text-red-400 transition-all duration-500 hover:bg-red-900/20 group"
-              style={{ border: '1px solid transparent' }}>
-              <LogOut className="w-4 h-4 shrink-0 group-hover:[filter:drop-shadow(0_0_5px_rgba(239,68,68,0.8))]" />
+            <button 
+              onClick={handleLogout} 
+              className="w-full flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl text-slate-500 hover:text-[var(--accent)] transition-all duration-500 hover:bg-red-900/20 group"
+              style={{ border: '1px solid transparent' }}
+            >
+              <LogOut 
+                className="w-4 h-4 shrink-0 group-hover:[filter:drop-shadow(0_0_5px_var(--accent))]" 
+              />
               <AnimatePresence>
                 {expanded && (
-                  <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }} exit={{ opacity: 0, width: 0 }}
-                    className="text-xs font-semibold overflow-hidden whitespace-nowrap">
+                  <motion.span 
+                    initial={{ opacity: 0, width: 0 }} 
+                    animate={{ opacity: 1, width: 'auto' }} 
+                    exit={{ opacity: 0, width: 0 }}
+                    className="text-xs font-semibold overflow-hidden whitespace-nowrap"
+                  >
                     Logout
                   </motion.span>
                 )}
@@ -167,14 +227,22 @@ export default function Layout({ children, currentPageName }) {
             </button>
           </>
         ) : (
-          <button onClick={handleLogin}
+          <button 
+            onClick={handleLogin} 
             className="w-full flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl text-amber-500/70 hover:text-amber-400 transition-all duration-500 hover:bg-amber-900/20 group"
-            style={{ border: '1px solid transparent' }}>
-            <LogIn className="w-4 h-4 shrink-0 group-hover:[filter:drop-shadow(0_0_5px_rgba(251,191,36,0.8))]" />
+            style={{ border: '1px solid transparent' }}
+          >
+            <LogIn 
+              className="w-4 h-4 shrink-0 group-hover:[filter:drop-shadow(0_0_5px_rgba(251,191,36,0.8))]" 
+            />
             <AnimatePresence>
               {expanded && (
-                <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }} exit={{ opacity: 0, width: 0 }}
-                  className="text-xs font-semibold overflow-hidden whitespace-nowrap">
+                <motion.span 
+                  initial={{ opacity: 0, width: 0 }} 
+                  animate={{ opacity: 1, width: 'auto' }} 
+                  exit={{ opacity: 0, width: 0 }}
+                  className="text-xs font-semibold overflow-hidden whitespace-nowrap"
+                >
                   Login
                 </motion.span>
               )}
@@ -188,40 +256,53 @@ export default function Layout({ children, currentPageName }) {
   return (
     <AudioContext.Provider value={{ activeEpisode, setActiveEpisode }}>
     <AdventurerContext.Provider value={profile}>
-      <div className="min-h-screen flex relative" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
+      <div className="min-h-screen flex relative bg-transparent">
 
-      {/* Deep Space Nebula overlays */}
-      <div className="fixed inset-0 pointer-events-none z-0 transform-gpu translate-z-0">
-        {/* Nebula color clouds */}
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-20 transform-gpu translate-z-0"
-          style={{ background: 'radial-gradient(circle, rgba(120,40,200,0.6) 0%, transparent 70%)', filter: 'blur(80px)' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full opacity-15 transform-gpu translate-z-0"
-          style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.5) 0%, transparent 70%)', filter: 'blur(100px)' }} />
-        <div className="absolute top-1/3 right-0 w-[400px] h-[400px] rounded-full opacity-15 transform-gpu translate-z-0"
-          style={{ background: 'radial-gradient(circle, rgba(0,180,220,0.4) 0%, transparent 70%)', filter: 'blur(80px)' }} />
-        {/* Wood-grain texture overlay */}
-        <div className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: `repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 2px,
-              rgba(255,255,255,0.03) 2px,
-              rgba(255,255,255,0.03) 3px
-            ), repeating-linear-gradient(
-              90deg,
-              transparent,
-              transparent 8px,
-              rgba(255,255,255,0.015) 8px,
-              rgba(255,255,255,0.015) 9px
-            )`,
-          }} />
-        {/* Starfield dots */}
-        <div className="absolute inset-0 opacity-30"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
-      </div>
+      {/* ── THE NEBULA OVERLAYS (Restored Verbosity) ── */}
+      {theme === 'sci-fi' && (
+        <div className="fixed inset-0 pointer-events-none z-0 transform-gpu translate-z-0">
+          <div 
+            className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-20 transform-gpu"
+            style={{ 
+              background: 'radial-gradient(circle, rgba(120,40,200,0.6) 0%, transparent 70%)', 
+              filter: 'blur(80px)' 
+            }} 
+          />
+          <div 
+            className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full opacity-15 transform-gpu"
+            style={{ 
+              background: 'radial-gradient(circle, rgba(220,38,38,0.5) 0%, transparent 70%)', 
+              filter: 'blur(100px)' 
+            }} 
+          />
+          <div 
+            className="absolute top-1/3 right-0 w-[400px] h-[400px] rounded-full opacity-15 transform-gpu"
+            style={{ 
+              background: 'radial-gradient(circle, rgba(0,180,220,0.4) 0%, transparent 70%)', 
+              filter: 'blur(80px)' 
+            }} 
+          />
+          <div 
+            className="absolute inset-0 opacity-[0.04]"
+            style={{ 
+              backgroundImage: `repeating-linear-gradient(
+                0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 3px
+              ), repeating-linear-gradient(
+                90deg, transparent, transparent 8px, rgba(255,255,255,0.015) 8px, rgba(255,255,255,0.015) 9px
+              )` 
+            }} 
+          />
+          <div 
+            className="absolute inset-0 opacity-30" 
+            style={{ 
+              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)', 
+              backgroundSize: '50px 50px' 
+            }} 
+          />
+        </div>
+      )}
 
-      {/* ── DESKTOP FLOATING SIDEBAR ── */}
+      {/* ── DESKTOP SIDEBAR (Explicit Style Restored) ── */}
       <motion.aside
         onHoverStart={() => setExpanded(true)}
         onHoverEnd={() => setExpanded(false)}
@@ -231,61 +312,69 @@ export default function Layout({ children, currentPageName }) {
         style={{
           backdropFilter: 'blur(24px) saturate(2)',
           WebkitBackdropFilter: 'blur(24px) saturate(2)',
-          background: 'rgba(8, 6, 24, 0.65)',
-          border: '1px solid rgba(204,0,0,0.2)',
+          background: 'var(--panel-bg)',
+          border: '1px solid var(--border-glow)',
           boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(204,0,0,0.08)',
         }}
       >
-        {/* Command Red top accent */}
-        <div className="absolute inset-x-0 top-0 h-0.5 rounded-t-2xl"
-          style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)' }} />
-        {/* Command Red left glow edge */}
-        <div className="absolute left-0 top-8 bottom-8 w-0.5 rounded-full"
-          style={{ background: 'linear-gradient(180deg, transparent, rgba(239,68,68,0.6), transparent)' }} />
-
+        <div 
+          className="absolute inset-x-0 top-0 h-0.5 rounded-t-2xl" 
+          style={{ 
+            background: 'linear-gradient(90deg, transparent, var(--accent), var(--magic-gold), var(--accent), transparent)' 
+          }} 
+        />
         <SidebarContent onNav={() => {}} />
       </motion.aside>
 
-      {/* ── MOBILE DRAWER OVERLAY ── */}
+      {/* ── MOBILE DRAWER (Full Metadata Restoration) ── */}
       <AnimatePresence>
         {mobileOpen && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="md:hidden fixed inset-0 z-[110] bg-black/70 backdrop-blur-sm transform-gpu will-change-transform"
-              onClick={() => setMobileOpen(false)}
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="md:hidden fixed inset-0 z-[110] bg-black/70 backdrop-blur-sm" 
+              onClick={() => setMobileOpen(false)} 
             />
-            <motion.div
-              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+            <motion.div 
+              initial={{ x: '-100%' }} 
+              animate={{ x: 0 }} 
+              exit={{ x: '-100%' }} 
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="md:hidden fixed left-0 top-0 bottom-0 w-72 z-[120] flex flex-col overflow-hidden transform-gpu will-change-transform"
-              style={{
-                background: 'rgba(8, 6, 24, 0.97)',
-                borderRight: '1px solid rgba(204,0,0,0.25)',
-                boxShadow: '4px 0 40px rgba(0,0,0,0.8)',
-                WebkitTransform: 'translateZ(0)',
-                transform: 'translateZ(0)',
-              }}>
-              {/* Top accent */}
-              <div className="absolute inset-x-0 top-0 h-0.5"
-                style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)' }} />
-
-              {/* Close button */}
-              <button onClick={() => setMobileOpen(false)}
-                className="absolute top-3 right-3 p-2 rounded-lg text-slate-500 hover:text-red-400 transition-colors">
+              className="md:hidden fixed left-0 top-0 bottom-0 w-72 z-[120] flex flex-col overflow-hidden"
+              style={{ 
+                background: 'var(--bg-primary)', 
+                borderRight: '1px solid var(--border-glow)', 
+                boxShadow: '4px 0 40px rgba(0,0,0,0.8)' 
+              }}
+            >
+              <div 
+                className="absolute inset-x-0 top-0 h-0.5" 
+                style={{ 
+                  background: 'linear-gradient(90deg, transparent, var(--accent), var(--magic-gold), var(--accent), transparent)' 
+                }} 
+              />
+              <button 
+                onClick={() => setMobileOpen(false)} 
+                className="absolute top-3 right-3 p-2 text-slate-500 hover:text-[var(--accent)]"
+              >
                 <X className="w-5 h-5" />
               </button>
 
-              {/* Profile section at top */}
               {profile && (
-                <Link to={`/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-5 pt-8 pb-5 border-b border-red-900/30 group">
-                  <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-amber-500/40 group-hover:border-amber-400 transition-colors"
-                    style={{ boxShadow: '0 0 16px rgba(251,191,36,0.2)' }}>
-                    {profile.avatar_url
-                      ? <img src={profile.avatar_url} alt={profile.adventurer_name} className="w-full h-full object-cover" />
-                      : <div className="w-full h-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-2xl font-black text-white">
+                <Link 
+                  to={`/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`} 
+                  onClick={() => setMobileOpen(false)} 
+                  className="flex items-center gap-3 px-5 pt-8 pb-5 border-b border-red-900/30 group"
+                >
+                  <div 
+                    className="w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-amber-500/40" 
+                    style={{ boxShadow: '0 0 16px rgba(251,191,36,0.2)' }}
+                  >
+                    {profile.avatar_url 
+                      ? <img src={profile.avatar_url} className="w-full h-full object-cover" /> 
+                      : <div className="w-full h-full bg-slate-800 flex items-center justify-center text-white">
                           {(profile.adventurer_name || '?').charAt(0).toUpperCase()}
                         </div>
                     }
@@ -299,96 +388,72 @@ export default function Layout({ children, currentPageName }) {
                   </div>
                 </Link>
               )}
-
-              {/* Nav items */}
               <nav className="flex flex-col gap-1 px-3 py-4 flex-1 overflow-y-auto">
-                {NAV_ITEMS.map(({ label, page, icon: Icon }) => {
-                  const badge = page === 'Messages' ? unreadCount : 0;
-                  return (
-                    <Link key={page} to={createPageUrl(page)} onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-red-400 hover:bg-red-900/20 transition-all group"
-                      style={{ border: '1px solid transparent' }}>
-                      <div className="relative shrink-0">
-                        <Icon className="w-5 h-5 group-hover:[filter:drop-shadow(0_0_6px_rgba(239,68,68,0.9))]" />
-                        {badge > 0 && (
-                          <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center">
-                            {badge > 9 ? '9+' : badge}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-sm font-semibold">{label}</span>
-                    </Link>
-                  );
-                })}
+                <SidebarContent onNav={() => setMobileOpen(false)} />
               </nav>
-
-              {/* Bottom: logout */}
-              <div className="px-3 pb-6 border-t border-red-900/20 pt-3">
-                {user ? (
-                  <button onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-900/20 transition-all group">
-                    <LogOut className="w-5 h-5 group-hover:[filter:drop-shadow(0_0_5px_rgba(239,68,68,0.8))]" />
-                    <span className="text-sm font-semibold">Logout</span>
-                  </button>
-                ) : (
-                  <button onClick={handleLogin}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-amber-400/80 hover:text-amber-300 hover:bg-amber-900/20 transition-all">
-                    <LogIn className="w-5 h-5" />
-                    <span className="text-sm font-semibold">Login</span>
-                  </button>
-                )}
-              </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* ── TOP BAR (All Screens) ── */}
-      <header className="fixed top-0 w-full h-16 z-[100] px-4 bg-[#05050A] grid grid-cols-3 items-center transform-gpu translate-z-0">
-        <div className="absolute inset-x-0 bottom-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, #CC0000, #FFBF00, #CC0000, transparent)', boxShadow: '0 2px 10px rgba(204,0,0,0.5)' }} />
-
-        {/* Left: Hamburger */}
+      {/* ── HEADER (Balanced Restoration) ── */}
+      <header 
+        className="fixed top-0 w-full h-16 z-[100] px-4 grid grid-cols-3 items-center transform-gpu translate-z-0" 
+        style={{ 
+          background: 'var(--bg-primary)', 
+          borderBottom: '2px solid var(--border-glow)' 
+        }}
+      >
+        <div 
+          className="absolute inset-x-0 bottom-0 h-[2px]" 
+          style={{ 
+            background: 'linear-gradient(90deg, transparent, var(--accent), var(--magic-gold), var(--accent), transparent)', 
+            boxShadow: '0 2px 10px rgba(204,0,0,0.5)' 
+          }} 
+        />
         <div className="flex justify-start">
-          <button onClick={() => setMobileOpen(true)}
-            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-red-400 transition-colors">
+          <button 
+            onClick={() => setMobileOpen(true)} 
+            className="md:hidden p-1.5 text-slate-400 hover:text-[var(--accent)]"
+          >
             <Menu className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Center: Logo */}
         <div className="flex justify-center">
           <Link to={createPageUrl('QuestBoard')} className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full overflow-hidden"
-              style={{ border: '1px solid rgba(255,191,0,0.5)', boxShadow: '0 0 10px rgba(255,191,0,0.25)' }}>
-              <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" alt="HME Logo" className="w-full h-full object-cover" />
+            <div className="w-7 h-7 rounded-full overflow-hidden border border-amber-500/50">
+              <img 
+                src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg" 
+                className="w-full h-full object-cover" 
+              />
             </div>
-            <span className="font-black text-base" style={{ background: 'linear-gradient(90deg, #CC0000, #FFBF00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              <span className="md:hidden">HME</span>
-              <span className="hidden md:inline tracking-widest text-sm">HYPER-FIXATION MAIN EVENT</span>
+            <span className="font-black text-base text-[var(--accent)] tracking-widest text-sm uppercase hidden md:inline">
+              HYPER-FIXATION MAIN EVENT
             </span>
+            <span className="md:hidden font-black text-[var(--accent)]">HME</span>
           </Link>
         </div>
 
-        {/* Right: Bell then Avatar */}
         <div className="flex justify-end items-center gap-4 pr-2">
+          <ThemeToggle />
           {profile && <NotificationCenter profile={profile} />}
           {profile && (
-            <Link to={`/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`}
-              className="w-7 h-7 rounded-full overflow-hidden border border-amber-500/40 hover:border-amber-400 transition-colors"
-              style={{ boxShadow: '0 0 8px rgba(251,191,36,0.15)' }}>
-              {profile.avatar_url
-                ? <img src={profile.avatar_url} alt={profile.adventurer_name} className="w-full h-full object-cover" />
-                : <div className="w-full h-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-xs font-black text-white">
-                    {(profile.adventurer_name || '?').charAt(0).toUpperCase()}
-                  </div>
+            <Link 
+              to={`/AdventurerProfile?name=${encodeURIComponent(profile.adventurer_name)}`} 
+              className="w-7 h-7 rounded-full overflow-hidden border border-amber-500/40"
+            >
+              {profile.avatar_url 
+                ? <img src={profile.avatar_url} className="w-full h-full object-cover" /> 
+                : <div className="w-full h-full bg-slate-800" />
               }
             </Link>
           )}
         </div>
       </header>
 
-      {/* ── MAIN CONTENT ── */}
-      <main className={`flex-1 relative z-10 md:pl-24 pt-16 md:pt-16 min-h-screen transition-all duration-300 ${activeEpisode ? 'pb-32' : 'pb-6'}`}>
+      {/* ── MAIN CONTENT (Final Padding) ── */}
+      <main className={`flex-1 relative z-10 md:pl-24 pt-16 min-h-screen transition-all duration-300 ${activeEpisode ? 'pb-32' : 'pb-6'}`}>
         {children}
       </main>
 
