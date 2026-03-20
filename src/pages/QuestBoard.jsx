@@ -137,7 +137,7 @@ export default function QuestBoard() {
        setSelectedQuestId(selected.id);
        setIsRolling(false);
        // Task 3: announce result to screen readers
-       setSrAnnouncement(`Dungeon Master rolled initiative: "${selected.title}" has been selected for the next episode!`);
+       setSrAnnouncement(`${txt.rollBtn}: "${selected.title}" has been selected for the next episode!`);
        // Mark as completed (removes from board) and post to News Feed
        base44.entities.Quest.update(selected.id, { status: 'completed' });
        base44.entities.NewsPost.create({
