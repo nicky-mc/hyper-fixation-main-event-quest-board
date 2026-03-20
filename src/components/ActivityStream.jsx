@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * MediaPreview: High-fidelity file rendering
- * Swapped hardcoded black for var-aware transparency
+ * Fix: Variable-aware borders to prevent "Ghost Borders" in light themes
  */
 function MediaPreview({ url, type }) {
   if (!url) return null;
@@ -17,14 +17,14 @@ function MediaPreview({ url, type }) {
     <video 
       src={url} 
       controls 
-      className="mt-2 rounded-lg w-full max-h-48 object-contain bg-black/40 border border-[var(--border-glow)]/20" 
+      className="mt-2 rounded-lg w-full max-h-48 object-contain bg-black/40 border border-[var(--border-glow)]/20 shadow-md" 
     />
   );
   if (type === 'audio') return (
     <audio 
       src={url} 
       controls 
-      className="mt-2 w-full rounded-lg bg-[var(--panel-bg)]" 
+      className="mt-2 w-full rounded-lg bg-[var(--panel-bg)] border border-[var(--border-glow)]/30" 
     />
   );
   return (
@@ -38,7 +38,7 @@ function MediaPreview({ url, type }) {
 
 /**
  * Avatar Component: Restoration of the glowing ring
- * Writing fix: Name characters upscaled
+ * Fix: Text color variable for non-image avatars
  */
 function Avatar({ name, url, size = 7 }) {
   const sizeClass = `w-${size} h-${size}`;
@@ -56,7 +56,7 @@ function Avatar({ name, url, size = 7 }) {
     <div 
       className={cn(
         sizeClass, 
-        "rounded-full bg-gradient-to-br from-purple-700 to-indigo-900 border border-[var(--border-glow)]/40 flex items-center justify-center text-xs font-black text-white shrink-0"
+        "rounded-full bg-gradient-to-br from-purple-700 to-indigo-900 border border-[var(--border-glow)]/40 flex items-center justify-center text-xs font-black text-white shrink-0 shadow-lg"
       )}
     >
       {(name || '?').charAt(0).toUpperCase()}
@@ -66,7 +66,7 @@ function Avatar({ name, url, size = 7 }) {
 
 /**
  * PostComments: Threaded transmissions logic
- * Writing fix: Upscaled from 10px/11px to text-xs
+ * Fix: Changed bg-purple-950 (hard dark) to var-aware background
  */
 function PostComments({ postId, myProfile, profiles }) {
   const [comments, setComments] = useState([]);
@@ -104,7 +104,7 @@ function PostComments({ postId, myProfile, profiles }) {
       {loading ? (
         <Loader2 className="w-4 h-4 text-[var(--accent)] animate-spin mx-auto" />
       ) : comments.length === 0 ? (
-        <p className="text-xs text-slate-600 text-center italic">No replies yet</p>
+        <p className="text-xs text-[var(--text-muted)] text-center italic font-medium">No replies yet</p>
       ) : (
         <div className="space-y-3">
           {comments.map(c => {
@@ -113,9 +113,9 @@ function PostComments({ postId, myProfile, profiles }) {
             return (
               <div key={c.id} className="flex gap-2">
                 <Avatar name={name} url={prof?.avatar_url} size={5} />
-                <div className="flex-1 bg-[var(--panel-bg)]/40 border border-[var(--border-glow)]/30 rounded-lg px-2.5 py-1.5">
+                <div className="flex-1 bg-[var(--panel-bg)]/60 border border-[var(--border-glow)]/30 rounded-lg px-2.5 py-1.5 shadow-sm">
                   <p className="text-xs font-bold text-[var(--accent)]">{name}</p>
-                  <p className="text-xs text-slate-300 leading-relaxed">{c.content}</p>
+                  <p className="text-xs text-[var(--text-primary)] leading-relaxed font-medium">{c.content}</p>
                 </div>
               </div>
             );
@@ -129,12 +129,12 @@ function PostComments({ postId, myProfile, profiles }) {
             onChange={e => setText(e.target.value)}
             placeholder="Reply..."
             maxLength={200}
-            className="flex-1 px-2.5 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-glow)]/40 text-white placeholder:text-slate-600 text-xs focus:outline-none focus:border-[var(--accent)]"
+            className="flex-1 px-2.5 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-glow)]/40 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] text-xs focus:outline-none focus:border-[var(--accent)]"
           />
           <button 
             type="submit" 
             disabled={submitting || !text.trim()}
-            className="p-2 rounded-lg bg-[var(--accent)] hover:brightness-110 text-[var(--bg-primary)] transition-all disabled:opacity-40"
+            className="p-2 rounded-lg bg-[var(--accent)] hover:brightness-110 text-[var(--bg-primary)] transition-all disabled:opacity-40 shadow-md"
           >
             {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
           </button>
@@ -143,10 +143,9 @@ function PostComments({ postId, myProfile, profiles }) {
     </div>
   );
 }
-
 /**
  * PostItem: Individual feed entry
- * Writing fix: Timestamps and Usernames upscaled
+ * Fix: Replaced hardcoded text-slate/purple with theme variables
  */
 function PostItem({ post, user, myProfile, onDelete, profiles }) {
   const [showComments, setShowComments] = useState(false);
@@ -158,47 +157,56 @@ function PostItem({ post, user, myProfile, onDelete, profiles }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-      className="rounded-xl overflow-hidden hover-lift mb-3"
+      className="rounded-xl overflow-hidden hover-lift mb-4 shadow-sm"
       style={{ 
         background: 'var(--panel-bg)', 
         backdropFilter: 'blur(16px)', 
         border: '1px solid var(--border-glow)' 
       }}
     >
+      {/* Post header */}
       <div className="px-4 py-3 flex items-center justify-between border-b border-[var(--border-glow)]/20">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(post.author_name || '')}`}>
             <Avatar name={post.author_name} url={profile?.avatar_url} />
           </Link>
           <div>
             <Link to={createPageUrl('AdventurerProfile') + `?name=${encodeURIComponent(post.author_name || '')}`}>
-              <p className="text-sm font-bold text-[var(--accent)] hover:brightness-125 transition-all">{post.author_name}</p>
+              <p className="text-sm font-bold text-[var(--accent)] hover:brightness-125 transition-all">
+                {post.author_name}
+              </p>
             </Link>
-            <p className="text-[10px] text-slate-500 uppercase tracking-tight">
+            <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-tight">
               {post.created_date ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true }) : 'just now'}
             </p>
           </div>
         </div>
         {user && (user.email === post.author_email || user.role === 'admin') && (
-          <button onClick={() => onDelete(post.id)} className="p-1.5 text-slate-600 hover:text-red-400 transition-colors">
+          <button onClick={() => onDelete(post.id)} className="p-1.5 text-[var(--text-muted)] hover:text-red-500 transition-colors">
             <Trash2 className="w-4 h-4" />
           </button>
         )}
       </div>
 
-      <div className="px-4 py-3">
-        <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+      {/* Post body */}
+      <div className="px-4 py-4">
+        <p className="text-sm text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap font-medium">
+          {post.content}
+        </p>
         <MediaPreview url={post.image_url} type={post.media_type} />
       </div>
 
+      {/* Reply toggle */}
       <button
         onClick={() => setShowComments(v => !v)}
         className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-colors border-t border-[var(--border-glow)]/20"
       >
-        <MessageCircle className="w-3.5 h-3.5" />
-        {showComments ? 'Hide Replies' : 'View Replies'}
-        {showComments ? <ChevronUp className="w-3.5 h-3.5 ml-auto" /> : <ChevronDown className="w-3.5 h-3.5 ml-auto" />}
+        <MessageCircle className="w-4 h-4" />
+        {showComments ? 'Hide Transmission' : 'View Replies'}
+        {showComments ? <ChevronUp className="w-4 h-4 ml-auto" /> : <ChevronDown className="w-4 h-4 ml-auto" />}
       </button>
+
+      {/* Comments section */}
       <AnimatePresence>
         {showComments && (
           <motion.div
@@ -303,9 +311,9 @@ export default function ActivityStream() {
   return (
     <div className="flex flex-col h-full">
       {user ? (
-        <form onSubmit={submitPost} className="mb-4 space-y-3 p-4 rounded-xl border border-[var(--border-glow)]/40 bg-[var(--panel-bg)]/30 shrink-0">
-          <p className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
-            Broadcasting as <span className="underline">{user.full_name || user.email}</span>
+        <form onSubmit={submitPost} className="mb-4 space-y-3 p-4 rounded-xl border border-[var(--border-glow)]/40 bg-[var(--panel-bg)]/30 shrink-0 shadow-md">
+          <p className="text-xs font-black text-[var(--accent)] uppercase tracking-widest">
+            Broadcasting as: <span className="underline decoration-dotted">{user.full_name || user.email}</span>
           </p>
           <textarea
             value={content}
@@ -313,40 +321,42 @@ export default function ActivityStream() {
             placeholder="Share lore with the sector..."
             maxLength={500} 
             rows={2}
-            className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-glow)]/40 text-white placeholder:text-slate-600 text-xs focus:outline-none focus:border-[var(--accent)] resize-none"
+            className="w-full px-3 py-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-glow)]/40 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] text-sm focus:outline-none focus:border-[var(--accent)] resize-none transition-all font-medium"
           />
           {mediaUrl && (
-            <div className="relative rounded-lg overflow-hidden border border-[var(--accent)]/30">
+            <div className="relative rounded-lg overflow-hidden border border-[var(--accent)]/30 shadow-2xl">
               <MediaPreview url={mediaUrl} type={mediaType} />
               <button 
                 type="button" 
                 onClick={() => setMediaUrl('')}
-                className="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 hover:bg-red-600/80 transition-colors"
+                className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
           )}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-2">
             <input ref={imageRef} type="file" accept="image/*" className="hidden" onChange={e => handleUpload(e, 'image')} />
             <input ref={videoRef} type="file" accept="video/*" className="hidden" onChange={e => handleUpload(e, 'video')} />
             <input ref={audioRef} type="file" accept="audio/*" className="hidden" onChange={e => handleUpload(e, 'audio')} />
             
             {uploading ? (
-              <Loader2 className="w-5 h-5 text-[var(--accent)] animate-spin" />
+              <div className="flex items-center gap-2 text-xs font-bold text-[var(--accent)] animate-pulse">
+                <Loader2 className="w-5 h-5 animate-spin" /> UPLOADING...
+              </div>
             ) : (
               <>
                 <button type="button" onClick={() => imageRef.current?.click()} title="Upload image"
-                  className="p-2 rounded-lg border border-[var(--border-glow)]/40 bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-all">
-                  <ImageIcon className="w-4 h-4" />
+                  className="p-2.5 rounded-lg border border-[var(--border-glow)]/40 bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-all shadow-sm">
+                  <ImageIcon className="w-5 h-5" />
                 </button>
                 <button type="button" onClick={() => videoRef.current?.click()} title="Upload video"
-                  className="p-2 rounded-lg border border-[var(--border-glow)]/40 bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-all">
-                  <Video className="w-4 h-4" />
+                  className="p-2.5 rounded-lg border border-[var(--border-glow)]/40 bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-all shadow-sm">
+                  <Video className="w-5 h-5" />
                 </button>
                 <button type="button" onClick={() => audioRef.current?.click()} title="Upload audio"
-                  className="p-2 rounded-lg border border-[var(--border-glow)]/40 bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-all">
-                  <Music className="w-4 h-4" />
+                  className="p-2.5 rounded-lg border border-[var(--border-glow)]/40 bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-all shadow-sm">
+                  <Music className="w-5 h-5" />
                 </button>
               </>
             )}
@@ -354,31 +364,31 @@ export default function ActivityStream() {
             <button 
               type="submit" 
               disabled={posting || !content.trim()}
-              className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--accent)] hover:brightness-110 text-[var(--bg-primary)] font-bold text-xs transition-all disabled:opacity-40"
+              className="ml-auto flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[var(--accent)] hover:brightness-110 text-[var(--bg-primary)] font-black text-xs uppercase tracking-widest transition-all disabled:opacity-40 shadow-lg"
             >
               {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4" /> Transmit</>}
             </button>
           </div>
         </form>
       ) : (
-        <div className="mb-4 p-4 rounded-xl border border-[var(--border-glow)]/40 bg-[var(--panel-bg)]/20 text-center text-xs text-slate-500">
+        <div className="mb-4 p-5 rounded-xl border border-[var(--border-glow)]/40 bg-[var(--panel-bg)]/20 text-center text-xs text-[var(--text-muted)] font-medium shadow-inner">
           <button 
             onClick={() => base44.auth.redirectToLogin(window.location.pathname)} 
             className="text-[var(--accent)] font-bold hover:underline"
           >
             Login
-          </button> to access sub-space frequencies.
+          </button> to access dimensional transmissions.
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar">
         {loading ? (
-          <div className="flex justify-center py-10">
-            <Loader2 className="w-6 h-6 text-[var(--accent)] animate-spin" />
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-8 h-8 text-[var(--accent)] animate-spin" />
           </div>
         ) : posts.length === 0 ? (
-          <p className="text-center text-xs text-slate-600 py-10 italic">
-            Sector quiet... be the first to transmit.
+          <p className="text-center text-xs text-[var(--text-muted)] py-12 italic font-medium">
+            Sector quiet... be the first to transmit into the lore.
           </p>
         ) : (
           <AnimatePresence initial={false}>
