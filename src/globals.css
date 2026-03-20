@@ -2,6 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── QUAD-GENRE THEME TOKENS ── */
+[data-theme='sci-fi'] {
+  --bg-primary: #080510;
+  --accent: #f59e0b;
+  --border-glow: #06b6d4;
+  --panel-bg: rgba(20, 20, 40, 0.8);
+  --font-display: 'Impact', sans-serif;
+}
+
+[data-theme='fantasy'] {
+  --bg-primary: #1a120b;
+  --accent: #d4af37;
+  --border-glow: #3d2b1f;
+  --panel-bg: #f5e6ca;
+  --font-display: 'Cormorant SC', serif;
+  --texture-url: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7z' fill='%23000' fill-opacity='0.05'/%3E%3C/svg%3E");
+}
+
+[data-theme='wrestling'] {
+  --bg-primary: #121212;
+  --accent: #e11d48;
+  --border-glow: #94a3b8;
+  --panel-bg: #1e293b;
+  --font-display: 'Impact', sans-serif;
+  --texture-url: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #334155 10px, #334155 20px);
+}
+
+[data-theme='high-contrast'] {
+  --bg-primary: #000000;
+  --accent: #ffff00;
+  --border-glow: #ffffff;
+  --panel-bg: #000000;
+  --font-display: sans-serif;
+  --texture-url: none;
+}
+
 /* ── EXPERT SPOUSES CUSTOM FONTS ── */
 @font-face {
   font-family: 'ITC Serif Gothic';
