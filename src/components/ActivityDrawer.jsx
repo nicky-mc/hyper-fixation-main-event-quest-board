@@ -27,19 +27,19 @@ function NewestQuestsTab({ onSelectQuest }) {
 
   return (
     <div className="space-y-2">
-      {quests.length === 0 && <p className="text-center text-slate-600 text-xs py-8">No quests yet.</p>}
+      {quests.length === 0 && <p className="text-center text-[var(--text-muted)] text-xs py-8 font-medium">No quests yet.</p>}
       {quests.map(q => (
         <button key={q.id} onClick={() => onSelectQuest?.(q)}
-          className="w-full text-left p-3 rounded-xl border border-[var(--border-glow)]/30 bg-[var(--panel-bg)] hover:border-[var(--accent)]/40 transition-all group">
+          className="w-full text-left p-3 rounded-xl border border-[var(--border-glow)]/30 bg-[var(--panel-bg)] hover:border-[var(--accent)]/40 transition-all group shadow-sm">
           <div className="flex items-start gap-2">
-            <div className="w-1 h-full min-h-[2rem] rounded-full bg-gradient-to-b from-[var(--accent)] to-indigo-600 shrink-0 mt-0.5" />
+            <div className="w-1.5 h-full min-h-[2.5rem] rounded-full bg-gradient-to-b from-[var(--accent)] to-amber-600 shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <p className="font-bold text-[var(--accent)] text-sm truncate group-hover:brightness-125 transition-colors">{q.title}</p>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[10px] font-lcars text-[var(--accent)] opacity-80 uppercase tracking-widest">{q.segment}</span>
-                <span className="text-[10px] text-slate-500">· DC {q.difficulty_class}</span>
+                <span className="text-[10px] font-lcars text-[var(--accent)] opacity-80 uppercase tracking-widest font-bold">{q.segment}</span>
+                <span className="text-[10px] text-[var(--text-muted)] font-medium">· DC {q.difficulty_class}</span>
               </div>
-              <p className="text-[11px] text-slate-500 mt-1 truncate">by {q.quest_giver}</p>
+              <p className="text-[11px] text-[var(--text-muted)] mt-1 truncate italic">by {q.quest_giver}</p>
             </div>
           </div>
         </button>
@@ -62,17 +62,17 @@ function NewsFeedTab() {
 
   return (
     <div className="space-y-3">
-      {posts.length === 0 && <p className="text-center text-slate-600 text-xs py-8">No news yet.</p>}
+      {posts.length === 0 && <p className="text-center text-[var(--text-muted)] text-xs py-8 font-medium">No news yet.</p>}
       {posts.map(p => (
-        <div key={p.id} className="p-3 rounded-xl border border-[var(--border-glow)]/30 bg-[var(--panel-bg)]/50">
-          <p className="text-[10px] font-lcars text-[var(--accent)] uppercase tracking-widest mb-1">{p.author_name}</p>
-          <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 whitespace-pre-line">{p.content}</p>
+        <div key={p.id} className="p-3 rounded-xl border border-[var(--border-glow)]/30 bg-[var(--panel-bg)]/50 shadow-sm">
+          <p className="text-[10px] font-lcars text-[var(--accent)] uppercase tracking-widest font-black mb-1">{p.author_name}</p>
+          <p className="text-xs text-[var(--text-primary)] leading-relaxed line-clamp-3 whitespace-pre-line font-medium">{p.content}</p>
           {p.image_url && (
-            <img src={p.image_url} alt="" className="mt-2 w-full h-20 object-cover rounded-lg border border-white/10" />
+            <img src={p.image_url} alt="" className="mt-2 w-full h-20 object-cover rounded-lg border border-[var(--border-glow)]/20" />
           )}
         </div>
       ))}
-      <Link to={createPageUrl('NewsFeed')} className="block text-center text-xs font-lcars text-[var(--accent)] hover:brightness-125 uppercase tracking-widest pt-2 transition-colors">
+      <Link to={createPageUrl('NewsFeed')} className="block text-center text-xs font-lcars text-[var(--accent)] hover:brightness-125 uppercase tracking-widest pt-2 transition-colors font-bold">
         View Full News Feed →
       </Link>
     </div>
@@ -84,7 +84,6 @@ export default function ActivityDrawer({ isOpen, onOpenChange, onQuestSelect, la
 
   return (
     <>
-      {/* Trigger button - Refactored for Themes & Size */}
       <motion.button
         whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
         onClick={() => onOpenChange(true)}
@@ -95,7 +94,6 @@ export default function ActivityDrawer({ isOpen, onOpenChange, onQuestSelect, la
         <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[var(--accent)] animate-pulse border-2 border-[var(--bg-primary)]" />
       </motion.button>
 
-      {/* Backdrop */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -107,7 +105,6 @@ export default function ActivityDrawer({ isOpen, onOpenChange, onQuestSelect, la
         )}
       </AnimatePresence>
 
-      {/* Drawer */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -116,29 +113,27 @@ export default function ActivityDrawer({ isOpen, onOpenChange, onQuestSelect, la
             className="fixed right-0 bottom-0 w-full sm:max-w-sm z-50 flex flex-col border-l border-[var(--border-glow)]/50 shadow-2xl"
             style={{ top: '56px', background: 'var(--bg-primary)' }}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--border-glow)]/20 shrink-0">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[var(--accent)]" />
-                <span className="font-black text-[var(--accent)] font-lcars tracking-widest text-base uppercase">Sub-Space Feed</span>
+                <Activity className="w-5 h-5 text-[var(--accent)]" />
+                <span className="font-black text-[var(--accent)] font-lcars tracking-widest text-lg uppercase">Sub-Space Feed</span>
                 <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
               </div>
-              <button onClick={() => onOpenChange(false)} className="p-1.5 text-slate-500 hover:text-[var(--accent)] transition-colors">
-                <X className="w-5 h-5" />
+              <button onClick={() => onOpenChange(false)} className="p-1.5 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            {/* Tabs */}
             <div className="flex border-b border-[var(--border-glow)]/20 shrink-0">
               {TABS.map(tab => {
                 const Icon = tab.icon;
                 return (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      "flex-1 flex flex-col items-center gap-1 py-3 text-[10px] font-lcars font-black uppercase tracking-widest transition-all border-b-2",
+                      "flex-1 flex flex-col items-center gap-1.5 py-4 text-xs font-lcars font-black uppercase tracking-widest transition-all border-b-2",
                       activeTab === tab.id
-                        ? "border-[var(--accent)] text-[var(--accent)]"
-                        : "border-transparent text-slate-600 hover:text-[var(--accent)]/60"
+                        ? "border-[var(--accent)] text-[var(--accent)] bg-[var(--accent)]/5"
+                        : "border-transparent text-[var(--text-muted)] hover:text-[var(--accent)]"
                     )}>
                     <Icon className="w-4 h-4" />
                     {tab.label}
@@ -147,8 +142,7 @@ export default function ActivityDrawer({ isOpen, onOpenChange, onQuestSelect, la
               })}
             </div>
 
-            {/* Tab content */}
-            <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
               {activeTab === 'newest' && (
                 <NewestQuestsTab onSelectQuest={(q) => { onOpenChange(false); onQuestSelect?.(q); }} />
               )}
