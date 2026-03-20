@@ -5,13 +5,14 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import QuestCard from '@/components/QuestCard';
 import QuestSubmissionDrawer from '@/components/QuestSubmissionDrawer';
-
 import HostSettingsModal from '@/components/HostSettingsModal';
 import QuestCategoryFilter, { CATEGORIES, filterQuestsByCategory } from '@/components/QuestCategoryFilter';
 import QuestWorldMap from '@/components/QuestWorldMap';
 import RKOButton from '@/components/RKOButton';
 import ActivityDrawer from '@/components/ActivityDrawer';
 import NextShowBanner from '@/components/NextShowBanner';
+import ThemeToggle from '@/components/ThemeToggle';
+import { useTheme, UI_TEXT } from '@/lib/ThemeContext';
 
 // Floating particle component for atmosphere
 function Particle({ style }) {
