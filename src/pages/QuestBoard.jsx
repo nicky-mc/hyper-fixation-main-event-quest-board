@@ -58,6 +58,8 @@ export default function QuestBoard() {
   const [srAnnouncement, setSrAnnouncement] = useState('');
 
   const isAdmin = user?.role === 'admin';
+  const { theme } = useTheme();
+  const txt = UI_TEXT[theme] || UI_TEXT['sci-fi'];
 
   const loadQuests = async () => {
     const data = await base44.entities.Quest.list('-created_date', 100);
