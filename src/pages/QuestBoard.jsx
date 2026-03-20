@@ -319,7 +319,7 @@ export default function QuestBoard() {
             style={{ transition: 'all 0.5s ease-in-out' }}
           >
             <Plus className="w-4 h-4" />
-            {user ? 'Post a Quest 🦈' : 'Login to Post 🦈'}
+            {user ? `${txt.postBtn} 🦈` : txt.postBtnGuest}
           </motion.button>
 
           {/* Sort by Votes — admin only */}
