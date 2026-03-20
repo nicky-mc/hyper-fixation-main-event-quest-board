@@ -1,163 +1,148 @@
 import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/AuthContext';
+import { useTheme, UI_TEXT } from '@/lib/ThemeContext';
+import { Swords, Scroll, Trophy, Users, Loader2, Sparkles, Shield, Star } from 'lucide-react';
 
 const FEATURES = [
-  { icon: '⚔️', title: 'Quest Board', desc: 'Submit and vote on show topics & side quests' },
-  { icon: '📜', title: 'Lore Archive', desc: 'Browse every episode and completed quest' },
-  { icon: '🏆', title: 'Hall of Fame', desc: 'Track legendary quests that made the show' },
-  { icon: '👥', title: 'Adventurer Network', desc: 'Connect with fellow adventurers' },
+  { icon: <Swords className="w-6 h-6" />, title: 'Quest Board', desc: 'Submit and vote on show topics & side quests' },
+  { icon: <Scroll className="w-6 h-6" />, title: 'Lore Archive', desc: 'Browse every episode and completed quest' },
+  { icon: <Trophy className="w-6 h-6" />, title: 'Hall of Fame', desc: 'Track legendary quests that made the show' },
+  { icon: <Users className="w-6 h-6" />, title: 'Adventurer Network', desc: 'Connect with fellow adventurers' },
 ];
 
 export default function Welcome() {
   const { isAuthenticated, isLoadingAuth } = useAuth();
+  const { theme } = useTheme();
 
   const handleLogin = () => base44.auth.redirectToLogin('/QuestBoard');
 
-  // If already logged in and auth check complete, redirect to QuestBoard
   if (isAuthenticated && !isLoadingAuth) {
     return <Navigate to="/QuestBoard" replace />;
   }
 
-  // Show loading while auth is checking
   if (isLoadingAuth) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      <div className="fixed inset-0 flex items-center justify-center bg-[var(--bg-primary)]">
+        <Loader2 className="w-10 h-10 animate-spin text-[var(--accent)]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 pb-[max(3rem,env(safe-area-inset-bottom))] relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
-
-      {/* Background effects */}
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden bg-[var(--bg-primary)] transition-colors duration-700">
+      
+      {/* GENRE-AWARE BACKGROUND EFFECTS */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-20"
-          style={{ background: 'radial-gradient(circle, rgba(120,40,200,0.6) 0%, transparent 70%)', filter: 'blur(80px)' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full opacity-15"
-          style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.5) 0%, transparent 70%)', filter: 'blur(100px)' }} />
-        <div className="absolute inset-0 opacity-25"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
-        <div className="absolute inset-x-0 top-0 h-0.5"
-          style={{ background: 'linear-gradient(90deg, transparent, #dc2626, #fbbf24, #dc2626, transparent)' }} />
+        <div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[600px] opacity-20"
+          style={{ background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)', filter: 'blur(80px)' }} 
+        />
+        <div className="absolute inset-0 opacity-[0.03]" 
+             style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/carbon-fibre.png")' }} />
       </div>
 
-      <div className="relative w-full max-w-2xl mx-auto z-10">
+      <div className="relative w-full max-w-3xl mx-auto z-10 flex flex-col items-center">
 
-        {/* Logo & Title */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-          className="flex flex-col items-center mb-10">
-          <div className="w-36 h-36 rounded-full overflow-hidden mb-5"
-            style={{
-              border: '2px solid rgba(251,191,36,0.5)',
-              boxShadow: '0 0 40px rgba(251,191,36,0.3), 0 0 80px rgba(239,68,68,0.2)',
-            }}>
-            <img src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg"
-              alt="The Hyper-Fixation Main Event" className="w-full h-full object-cover" />
+        {/* LOGO & HERO SECTION */}
+        <motion.div 
+          initial={{ opacity: 0, y: -30 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          className="flex flex-col items-center mb-12 text-center"
+        >
+          <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-[var(--accent)] shadow-[0_0_50px_var(--border-glow)] mb-8">
+            <img 
+              src="https://media.base44.com/images/public/699740722645ce51e91244be/097d3b10a_IMG-20260306-WA0005.jpg"
+              alt="HME Logo" 
+              className="w-full h-full object-cover" 
+            />
           </div>
 
-          <h1 className="text-4xl sm:text-5xl font-black text-center leading-tight mb-6"
-            style={{
-              fontFamily: "'Orbitron', sans-serif",
-              background: 'linear-gradient(135deg, #fbbf24, #f97316)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-            Welcome to the Hyper-Fixation Main Event!
+          <h1 
+            className="text-4xl sm:text-6xl font-black leading-none mb-8 tracking-tighter"
+            style={{ color: 'var(--accent)', textShadow: '0 0 30px var(--border-glow)' }}
+          >
+            HYPER-FIXATION <br/>
+            <span className="text-[var(--text-primary)] opacity-90 text-3xl sm:text-5xl uppercase">Main Event</span>
           </h1>
-          <div className="text-slate-300 text-center text-sm sm:text-base max-w-xl space-y-4"
-            style={{ fontFamily: "'Exo 2', sans-serif", lineHeight: '1.8' }}>
-            <p>Step inside, Adventurer. Whether you've just dropped out of warp, crawled from a dungeon, or climbed through the ropes of the squared circle, you've found the right tavern.</p>
-            <p>This is the official Side Quest Board for Nicky and Charlotte's quest to bridge the Executive Function Gap. We're here to talk deep-lore, geek sociology, and the beautiful chaos of neurodivergent life.</p>
-            <p className="text-amber-300 font-semibold">The Current Objective: We need your input! Look at the board below, check your current Mana levels, and submit a Side Quest for us to tackle on the show.</p>
-            <p className="text-red-400 font-semibold">Roll for Initiative, the portal is open.</p>
+
+          {/* THE NEW NARRATIVE SECTION */}
+          <div className="max-w-2xl space-y-6 px-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-[var(--accent)] mb-2">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 shadow-sm">
+                <Star className="w-4 h-4 fill-current" />
+                <span className="text-xs font-black uppercase tracking-widest">Nicky: Captain / Bard-Sorcerer</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 shadow-sm">
+                <Shield className="w-4 h-4" />
+                <span className="text-xs font-black uppercase tracking-widest">Charlotte: Tactical Barbarian-Druid</span>
+              </div>
+            </div>
+
+            <p className="text-sm sm:text-xl text-[var(--text-primary)] leading-relaxed font-medium">
+              We aren't experts, we are just two adventurers exploring the <span className="text-[var(--accent)] underline decoration-dotted underline-offset-4">lore of life</span>, pop culture, and deep dives. 
+            </p>
+            
+            <p className="text-xs sm:text-base text-[var(--text-muted)] italic font-semibold border-t border-[var(--border-glow)]/20 pt-4">
+              Step inside, Adventurer. Submit your topics below, and we'll <span className="text-[var(--accent)] not-italic">Roll for Initiative</span> to pick our next discussion!
+            </p>
           </div>
         </motion.div>
 
-        {/* Main Card */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}
-          className="rounded-2xl overflow-hidden mb-6"
-          style={{
-            background: 'rgba(8, 6, 24, 0.72)',
-            border: '1px solid rgba(239,68,68,0.2)',
-            boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(20px)',
-          }}>
-          <div className="h-0.5" style={{ background: 'linear-gradient(90deg, transparent, #dc2626, #fbbf24, #dc2626, transparent)' }} />
+        {/* MAIN ACCESS CARD */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }} 
+          animate={{ opacity: 1, scale: 1 }} 
+          className="w-full rounded-3xl overflow-hidden border-2 border-[var(--border-glow)] bg-[var(--panel-bg)] backdrop-blur-xl shadow-2xl mb-8"
+        >
+          <div className="h-2 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent opacity-50" />
 
-          <div className="p-8 sm:p-10">
-            <h2 className="text-2xl font-black text-amber-300 mb-2 text-center"
-              style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '1.2rem', letterSpacing: '0.1em' }}>
-              ENTER THE GUILD
-            </h2>
-            <p className="text-slate-500 text-center text-xs mb-8" style={{ fontFamily: "'Exo 2', sans-serif" }}>
-              Join the community or log in to access the Quest Board
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <button onClick={handleLogin}
-                className="flex-1 min-h-[50px] sm:py-4 rounded-xl font-black text-base transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
-                style={{
-                  fontFamily: "'Exo 2', sans-serif",
-                  background: 'radial-gradient(ellipse at 50% 0%, #ef4444 0%, #b91c1c 50%, #7f1d1d 100%)',
-                  boxShadow: '0 0 0 1px rgba(239,68,68,0.4), 0 0 30px rgba(239,68,68,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
-                  color: '#fff',
-                  letterSpacing: '0.08em',
-                }}>
+          <div className="p-8 sm:p-12">
+            <div className="flex flex-col sm:flex-row gap-5 mb-12">
+              {/* Ready Player One (Primary) */}
+              <button 
+                onClick={handleLogin}
+                className="flex-1 min-h-[68px] rounded-2xl font-black text-lg transition-all hover:scale-[1.03] active:scale-[0.97] flex items-center justify-center gap-3 bg-[var(--accent)] text-[var(--bg-primary)] shadow-[0_10px_40px_rgba(var(--accent-rgb),0.3)]"
+              >
                 ⚔️ Ready Player One
               </button>
-              <button onClick={handleLogin}
-                className="flex-1 min-h-[50px] sm:py-4 rounded-xl font-black text-base transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
-                style={{
-                  fontFamily: "'Exo 2', sans-serif",
-                  background: 'rgba(251,191,36,0.1)',
-                  border: '2px solid rgba(251,191,36,0.4)',
-                  boxShadow: '0 0 20px rgba(251,191,36,0.1)',
-                  color: '#fbbf24',
-                  letterSpacing: '0.08em',
-                }}>
+              
+              {/* Insert Coin (Secondary) */}
+              <button 
+                onClick={handleLogin}
+                className="flex-1 min-h-[68px] rounded-2xl font-black text-lg transition-all hover:scale-[1.03] active:scale-[0.97] flex items-center justify-center gap-3 border-2 border-[var(--accent)] text-[var(--accent)] bg-transparent hover:bg-[var(--accent)]/10"
+              >
                 📜 Insert Coin
               </button>
             </div>
 
-            {/* Divider */}
-            <div className="flex items-center gap-3 mb-8">
-              <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.3))' }} />
-              <span className="text-[10px] text-slate-600 uppercase tracking-widest" style={{ fontFamily: "'Exo 2', sans-serif" }}>Features</span>
-              <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, rgba(239,68,68,0.3), transparent)' }} />
-            </div>
-
-            {/* Feature Grid */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Feature Grid: Upscaled & Theme-Aware */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {FEATURES.map((f, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.07 }}
-                  className="p-4 rounded-xl"
-                  style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.12)' }}>
-                  <div className="text-2xl mb-2">{f.icon}</div>
-                  <p className="text-xs font-bold text-red-300 mb-0.5" style={{ fontFamily: "'Exo 2', sans-serif" }}>{f.title}</p>
-                  <p className="text-[10px] text-slate-600 leading-relaxed">{f.desc}</p>
-                </motion.div>
+                <div 
+                  key={i}
+                  className="flex items-center gap-4 p-4 rounded-2xl border border-[var(--border-glow)]/20 bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
+                >
+                  <div className="text-[var(--accent)] shrink-0 bg-[var(--accent)]/10 p-2 rounded-lg">
+                    {f.icon}
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-[var(--text-primary)] uppercase tracking-wider">{f.title}</p>
+                    <p className="text-xs text-[var(--text-muted)] leading-tight">{f.desc}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </motion.div>
 
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-          className="text-center text-[20px] text-green-700"
-          style={{ fontFamily: "'Exo 2', sans-serif" }}>
-          By joining, you agree to be an honorary adventurer of the guild.
-        </motion.p>
+        <p className="text-[11px] font-black text-[var(--accent)] opacity-40 uppercase tracking-[0.4em] text-center">
+          The Portal is Open // Co-Op Mode Active
+        </p>
       </div>
-
-
-
-      {/* Safe area padding for mobile */}
-      <div className="h-[env(safe-area-inset-bottom)]" />
+      <div className="h-[env(safe-area-inset-bottom)] pb-8" />
     </div>
   );
 }
