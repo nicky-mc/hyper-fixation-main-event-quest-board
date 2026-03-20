@@ -469,7 +469,9 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
                           "w-full h-full",
                           hc
                             ? (isSelected ? "bg-yellow-400" : "bg-white")
-                            : (mapTheme === 'scifi' ? (isSelected ? "bg-amber-400" : "bg-purple-600") : (isSelected ? "bg-red-600" : "bg-yellow-700"))
+                            : isWrestling
+                            ? (isSelected ? "bg-rose-500" : "bg-slate-600")
+                            : (mapTheme === 'scifi' ? (isSelected ? "bg-amber-400" : "bg-purple-600") : (isSelected ? "bg-amber-500" : "bg-stone-600"))
                         )} />
                       )}
                     </button>
