@@ -304,43 +304,46 @@ export default function QuestBoard() {
             ))}
           </div>
 
-          {/* Admin Command Deck */}
-          {isAdmin && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              transition={{ delay: 0.15 }}
-              className="flex items-center justify-center gap-4 mt-7 flex-wrap"
-            >
-             <InitiativeButton 
-  disabled={pendingQuests.length === 0}
-  onRollStart={() => setIsRolling(true)} 
-  onRollComplete={(result) => {
-    // 1. End the rolling state so the UI updates
-    setIsRolling(false); 
+         {/* Admin Command Deck */}
+{isAdmin && (
+  <motion.div 
+    initial={{ opacity: 0, scale: 0.95 }} 
+    animate={{ opacity: 1, scale: 1 }} 
+    className="flex flex-col items-center justify-center mt-7"
+  >
+    {/* This container puts the Dice/Initiative and RKO side-by-side */}
+    <div className="flex flex-row items-end justify-center gap-6 flex-wrap">
+      
+      {/* The Big D20 Engine */}
+      <div className="flex-shrink-0">
+        <InitiativeButton 
+          disabled={pendingQuests.length === 0}
+          onRollStart={() => setIsRolling(true)}
+          onRollComplete={(result) => {
+            setIsRolling(false);
+            const randomIndex = Math.floor(Math.random() * pendingQuests.length);
+            const selected = pendingQuests[randomIndex];
+            setSelectedQuestId(selected.id);
+            
+            base44.entities.Quest.update(selected.id, { status: 'completed' });
+            
+            base44.entities.NewsPost.create({
+              author_name: 'The Quest Board',
+              author_email: 'questboard@hme.app',
+              content: `⚔️ **NATURAL ${result} INITIATIVE** ⚔️\n\n"${selected.title}" has been selected!\n\n🎯 Segment: ${selected.segment}\n🧙 Submitted by: ${selected.quest_giver}`,
+            }).then(() => loadQuests());
+          }} 
+        />
+      </div>
 
-    // 2. Logic: Pick a random quest from the current pending list
-    const randomIndex = Math.floor(Math.random() * pendingQuests.length);
-    const selected = pendingQuests[randomIndex];
-    
-    // 3. UI: Set the ID so the "Crown" announcement shows up
-    setSelectedQuestId(selected.id);
-    
-    // 4. Database: Update the quest status to completed
-    base44.entities.Quest.update(selected.id, { status: 'completed' });
-    
-    // 5. News: Broadcast the result to the community feed
-    base44.entities.NewsPost.create({
-      author_name: 'The Quest Board',
-      author_email: 'questboard@hme.app',
-      content: `⚔️ **NATURAL ${result} INITIATIVE** ⚔️\n\n"${selected.title}" has been selected for the next episode!\n\n🎯 Segment: ${selected.segment} · 🎲 DC: ${selected.difficulty_class}\n🧙 Submitted by: ${selected.quest_giver}\n\n🦈 Nicky & Charlotte are on the case!`,
-    }).then(() => loadQuests()); // Refresh the board data
-  }} 
-/>
-              <RKOButton userIsAdmin={true} />
-            </motion.div>
-          )}
-        </motion.header>
+      {/* The RKO Button (Aligned to the bottom of the Initiative Button) */}
+      <div className="pb-10 sm:pb-12"> 
+        <RKOButton userIsAdmin={true} />
+      </div>
+      
+    </div>
+  </motion.div>
+)}
 
         {/* ── ACTION BAR ── */}
         <motion.div 
