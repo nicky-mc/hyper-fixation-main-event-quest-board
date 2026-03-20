@@ -322,28 +322,40 @@
 .face-3d:nth-child(19) { transform: rotateY(-252deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
 .face-3d:nth-child(20) { transform: rotateY(-324deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
 
-/* --- LANDING ROTATIONS --- */
-.die-3d[data-face="1"] { transform: rotateX(-53deg) rotateY(0deg); }
-.die-3d[data-face="2"] { transform: rotateX(-53deg) rotateY(72deg); }
-.die-3d[data-face="3"] { transform: rotateX(-53deg) rotateY(144deg); }
-.die-3d[data-face="4"] { transform: rotateX(-53deg) rotateY(216deg); }
-.die-3d[data-face="5"] { transform: rotateX(-53deg) rotateY(288deg); }
-.die-3d[data-face="6"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(0deg); }
-.die-3d[data-face="7"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(72deg); }
-.die-3d[data-face="8"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(144deg); }
-.die-3d[data-face="9"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(216deg); }
-.die-3d[data-face="10"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(288deg); }
-.die-3d[data-face="11"] { transform: rotateX(11deg) rotateY(-36deg); }
-.die-3d[data-face="12"] { transform: rotateX(11deg) rotateY(-108deg); }
-.die-3d[data-face="13"] { transform: rotateX(11deg) rotateY(-180deg); }
-.die-3d[data-face="14"] { transform: rotateX(11deg) rotateY(-252deg); }
-.die-3d[data-face="15"] { transform: rotateX(11deg) rotateY(-324deg); }
-.die-3d[data-face="16"] { transform: rotateX(-127deg) rotateY(36deg); }
-.die-3d[data-face="17"] { transform: rotateX(-127deg) rotateY(108deg); }
-.die-3d[data-face="18"] { transform: rotateX(-127deg) rotateY(180deg); }
-.die-3d[data-face="19"] { transform: rotateX(-127deg) rotateY(252deg); }
-.die-3d[data-face="20"] { transform: rotateX(-127deg) rotateY(324deg); }
+/* --- CALIBRATED LANDING ROTATIONS --- */
+.die-3d[data-face="1"]  { transform: rotateX(-53deg) rotateY(0deg); }
+.die-3d[data-face="2"]  { transform: rotateX(-53deg) rotateY(72deg); }
+.die-3d[data-face="3"]  { transform: rotateX(-53deg) rotateY(144deg); }
+.die-3d[data-face="4"]  { transform: rotateX(-53deg) rotateY(216deg); }
+.die-3d[data-face="5"]  { transform: rotateX(-53deg) rotateY(288deg); }
 
+/* The Bottom Half (Calibrated flipping) */
+.die-3d[data-face="16"] { transform: rotateX(127deg) rotateY(-72deg); } 
+.die-3d[data-face="17"] { transform: rotateX(127deg) rotateY(-144deg); }
+.die-3d[data-face="18"] { transform: rotateX(127deg) rotateY(-216deg); }
+.die-3d[data-face="19"] { transform: rotateX(127deg) rotateY(-288deg); }
+.die-3d[data-face="20"] { transform: rotateX(127deg) rotateY(-360deg); }
+
+/* The Middle Ring Up */
+.die-3d[data-face="6"]  { transform: rotateX(11deg) rotateY(0deg) rotateZ(180deg); }
+.die-3d[data-face="7"]  { transform: rotateX(11deg) rotateY(72deg) rotateZ(180deg); }
+.die-3d[data-face="8"]  { transform: rotateX(11deg) rotateY(144deg) rotateZ(180deg); }
+.die-3d[data-face="9"]  { transform: rotateX(11deg) rotateY(216deg) rotateZ(180deg); }
+.die-3d[data-face="10"] { transform: rotateX(11deg) rotateY(288deg) rotateZ(180deg); }
+
+/* The Middle Ring Down */
+.die-3d[data-face="11"] { transform: rotateX(-11deg) rotateY(36deg); }
+.die-3d[data-face="12"] { transform: rotateX(-11deg) rotateY(108deg); }
+.die-3d[data-face="13"] { transform: rotateX(-11deg) rotateY(180deg); }
+.die-3d[data-face="14"] { transform: rotateX(-11deg) rotateY(252deg); }
+.die-3d[data-face="15"] { transform: rotateX(-11deg) rotateY(324deg); }
+
+/* Clarity Fix: Underline the 6 and 9 */
+.face-3d:nth-child(6)::before,
+.face-3d:nth-child(9)::before {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 @keyframes roll-die {
   0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
   100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg); }
