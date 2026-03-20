@@ -54,6 +54,7 @@ export default function QuestBoard() {
   const [targetQuest, setTargetQuest] = useState(null);
   const [allVotes, setAllVotes] = useState([]);
   const [currentAdventurerId, setCurrentAdventurerId] = useState(null);
+  const [srAnnouncement, setSrAnnouncement] = useState('');
 
   const isAdmin = user?.role === 'admin';
 
