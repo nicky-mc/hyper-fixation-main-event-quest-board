@@ -443,7 +443,7 @@ export default function QuestBoard() {
                 style={{ background: 'linear-gradient(135deg, rgba(120,53,15,0.3), rgba(13,8,32,0.8))' }}>
                 <Crown className="w-6 h-6 text-amber-400" />
                 <span className="text-xl text-amber-200 font-bold">
-                  Quest locked in for the episode! Nicky & Charlotte are on the case. 🦈⚔️
+                  {txt.selectedMsg}
                 </span>
                 <Crown className="w-6 h-6 text-amber-400" />
               </div>
