@@ -480,6 +480,8 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
                       "text-[10px] tracking-widest px-2 py-0.5 rounded border whitespace-nowrap",
                       hc
                         ? "font-lcars text-white bg-black border-yellow-400 font-bold"
+                        : isWrestling
+                        ? "font-lcars text-slate-200 bg-slate-900/90 border-slate-500/50 uppercase"
                         : (mapTheme === 'scifi'
                           ? "font-lcars text-cyan-200 bg-black/80 backdrop-blur-sm border-cyan-500/50"
                           : "font-serif text-amber-100 bg-stone-900/90 border-amber-700/50")
