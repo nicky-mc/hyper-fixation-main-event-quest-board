@@ -21,13 +21,15 @@ import { useTheme, UI_TEXT } from '@/lib/ThemeContext';
 
 /**
  * Floating particle component for atmosphere
- * Restoration of original high-fidelity motion cycles
  */
 function Particle({ style }) {
   return (
     <motion.div
       className="absolute rounded-full pointer-events-none"
-      style={{ ...style,这将使 willChange: 'opacity, transform' }}
+      style={{ 
+        ...style, 
+        willChange: 'opacity, transform' 
+      }}
       animate={{ y: [0, -30, 0], opacity: [0.3, 0.8, 0.3] }}
       transition={{ 
         duration: 3 + Math.random() * 4, 
@@ -37,7 +39,6 @@ function Particle({ style }) {
     />
   );
 }
-
 const particles = Array.from({ length: 8 }, (_, i) => ({
   id: i,
   style: {
