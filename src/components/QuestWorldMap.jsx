@@ -449,13 +449,17 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
                       aria-label={`Sector: ${quest.title} — quest by ${quest.quest_giver}, Difficulty Class ${quest.difficulty_class}`}
                       aria-pressed={isSelected}
                       className={cn(
-                        "w-6 h-6 rounded-full border-2 transition-all duration-300 overflow-hidden",
+                        "w-6 h-6 border-2 transition-all duration-300 overflow-hidden",
                         "focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-1 focus:ring-offset-black",
+                        // Shape: circle for sci-fi/HC, octagon-ish (rounded-sm) for fantasy, square for wrestling
+                        hc ? "rounded-full" : (isWrestling ? "rounded-sm" : (mapTheme === 'fantasy' ? "rounded-[30%]" : "rounded-full")),
                         hc
                           ? (isSelected ? "border-yellow-300 scale-125 ring-2 ring-yellow-300" : "border-white hover:border-yellow-300 hover:scale-110")
+                          : isWrestling
+                          ? (isSelected ? "border-rose-400 scale-125 shadow-[0_0_20px_rgba(225,29,72,0.9)]" : "border-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.4)] hover:scale-110 hover:border-rose-400")
                           : (mapTheme === 'scifi'
                             ? (isSelected ? "border-white scale-125 shadow-[0_0_15px_rgba(251,191,36,0.8)]" : "border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.5)] hover:scale-110")
-                            : (isSelected ? "border-yellow-400 scale-125 shadow-lg" : "border-yellow-300 shadow-md hover:scale-110"))
+                            : (isSelected ? "border-yellow-400 scale-125 shadow-[0_0_12px_rgba(212,175,55,0.7)]" : "border-amber-600 shadow-md hover:scale-110"))
                       )}
                     >
                       {nodeImg ? (
