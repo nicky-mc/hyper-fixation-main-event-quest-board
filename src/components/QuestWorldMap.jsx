@@ -180,14 +180,14 @@ export default function QuestWorldMap({ quests, onClose, targetQuest }) {
   const getVoteCount = (commentId) => commentVotes.filter(v => v.comment_id === commentId).length;
   const hasVoted = (commentId) => myProfile && commentVotes.some(v => v.comment_id === commentId && v.adventurer_id === myProfile.id);
 
-  // Task 2: High-contrast style helpers
-  const hc = highContrast;
-  const screenBg = hc ? 'bg-black' : 'bg-[#080510]';
-  const bezelBg = hc ? 'bg-yellow-400' : 'bg-amber-500';
-  const panelBg = hc ? 'bg-black border-yellow-400' : 'bg-gradient-to-t md:bg-gradient-to-b from-[#0d0d1a] to-[#080510]/95 border-amber-500/50';
-  const textPrimary = hc ? 'text-white' : 'text-white';
-  const textAccent = hc ? 'text-yellow-300' : 'text-amber-400';
-  const textMuted = hc ? 'text-white' : 'text-slate-300';
+  const txt = UI_TEXT[globalTheme] || UI_TEXT['sci-fi'];
+  const hc = globalTheme === 'high-contrast';
+  const isWrestling = globalTheme === 'wrestling';
+
+  // Theme-derived style helpers
+  const screenBg = hc ? 'bg-black' : (isWrestling ? 'bg-[#121212]' : 'bg-[#080510]');
+  const bezelBg = hc ? 'bg-yellow-400' : (isWrestling ? 'bg-rose-700' : 'bg-amber-500');
+  const panelBg = hc ? 'bg-black border-yellow-400' : (isWrestling ? 'bg-[#1e293b] border-rose-500/50' : 'bg-gradient-to-t md:bg-gradient-to-b from-[#0d0d1a] to-[#080510]/95 border-amber-500/50');
 
   return (
     <div
