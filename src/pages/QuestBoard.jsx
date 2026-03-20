@@ -362,10 +362,13 @@ export default function QuestBoard() {
           </motion.button>
 
           {/* Live Feed */}
-          <ActivityDrawer isOpen={feedOpen} onOpenChange={setFeedOpen} onQuestSelect={(q) => {
+          <ActivityDrawer isOpen={feedOpen} onOpenChange={setFeedOpen} label={txt.feedLabel} onQuestSelect={(q) => {
             setTargetQuest(q);
             setMapOpen(true);
           }} />
+
+          {/* Theme Toggle */}
+          <ThemeToggle />
         </motion.div>
 
         {/* ── NEXT SHOW BANNER ── */}
