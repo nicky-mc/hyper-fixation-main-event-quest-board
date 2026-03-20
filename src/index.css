@@ -224,27 +224,31 @@
   color: var(--bg-primary); 
   text-shadow: 0 0 8px rgba(251, 191, 36, 0.5); 
 }
-/* D20 Geometry Variables */
+/* ── 7. THE D20 ARTIFACT ENGINE (COMPLETE) ── */
 :root {
   --container-size: 160px;
   --face-width: 80px;
-  --face-height: 68px; /* 80 * 0.86 */
-  --transition-duration: 0.5s;
+  --face-height: 68px;
+  --transition-duration: 0.8s;
   --animation-duration: 3s;
-  --die-color: rgba(185, 28, 28, 0.85); /* red-700 */
+  /* Link to your theme accent! */
+  --die-color: var(--accent); 
   --angle: 53deg;
   --ring-angle: -11deg;
-  --side-angle: 72deg; /* 360/5 */
-  --translate-z: 26.8px; /* faceWidth * 0.335 */
-  --translate-y: -10.2px; /* faceHeight * -0.15 */
-  --translate-ring-z: 60px; /* faceWidth * 0.75 */
-  --translate-ring-y: 42.84px; /* ringY math */
+  --side-angle: 72deg;
+  --translate-z: 26.8px;
+  --translate-y: -10.2px;
+  --translate-ring-z: 60px;
+  --translate-ring-y: 42.84px;
 }
 
 .die-container {
   width: var(--container-size);
   height: var(--container-size);
   perspective: 1500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .die-3d {
@@ -252,11 +256,11 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform var(--transition-duration) ease-out;
+  transition: transform var(--transition-duration) cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .die-3d.rolling {
-  animation: roll-die var(--animation-duration) linear;
+  animation: roll-die var(--animation-duration) linear infinite;
 }
 
 .face-3d {
@@ -271,9 +275,7 @@
   height: 0px;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  opacity: 0.9;
 }
 
 .face-3d::before {
@@ -283,28 +285,66 @@
   left: -40px;
   color: #fff;
   text-shadow: 1px 1px 3px #000;
-  font-size: 30px;
+  font-size: 28px;
   text-align: center;
   width: 80px;
+  font-family: var(--font-display);
+  font-weight: 900;
 }
 
-/* Rotation Math for Faces 1-20 (Truncated for space, apply to all 20) */
+/* --- FULL 20-SIDED GEOMETRY MATH --- */
+
+/* Top Faces (1-5) */
 .face-3d:nth-child(1) { transform: rotateY(0deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
 .face-3d:nth-child(2) { transform: rotateY(-72deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
 .face-3d:nth-child(3) { transform: rotateY(-144deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
 .face-3d:nth-child(4) { transform: rotateY(-216deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
 .face-3d:nth-child(5) { transform: rotateY(-288deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
-/* ... continue for all 20 faces following your original nth-child logic ... */
+
+/* Middle Ring Up (6-10) */
+.face-3d:nth-child(6) { transform: rotateY(0deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(7) { transform: rotateY(-72deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(8) { transform: rotateY(-144deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(9) { transform: rotateY(-216deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(10) { transform: rotateY(-288deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+
+/* Middle Ring Down (11-15) */
+.face-3d:nth-child(11) { transform: rotateY(-36deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(12) { transform: rotateY(-108deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(13) { transform: rotateY(-180deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(14) { transform: rotateY(-252deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(15) { transform: rotateY(-324deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
+
+/* Bottom Faces (16-20) */
+.face-3d:nth-child(16) { transform: rotateY(-36deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
+.face-3d:nth-child(17) { transform: rotateY(-108deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
+.face-3d:nth-child(18) { transform: rotateY(-180deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
+.face-3d:nth-child(19) { transform: rotateY(-252deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
+.face-3d:nth-child(20) { transform: rotateY(-324deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
+
+/* --- LANDING ROTATIONS --- */
+.die-3d[data-face="1"] { transform: rotateX(-53deg) rotateY(0deg); }
+.die-3d[data-face="2"] { transform: rotateX(-53deg) rotateY(72deg); }
+.die-3d[data-face="3"] { transform: rotateX(-53deg) rotateY(144deg); }
+.die-3d[data-face="4"] { transform: rotateX(-53deg) rotateY(216deg); }
+.die-3d[data-face="5"] { transform: rotateX(-53deg) rotateY(288deg); }
+.die-3d[data-face="6"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(0deg); }
+.die-3d[data-face="7"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(72deg); }
+.die-3d[data-face="8"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(144deg); }
+.die-3d[data-face="9"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(216deg); }
+.die-3d[data-face="10"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(288deg); }
+.die-3d[data-face="11"] { transform: rotateX(11deg) rotateY(-36deg); }
+.die-3d[data-face="12"] { transform: rotateX(11deg) rotateY(-108deg); }
+.die-3d[data-face="13"] { transform: rotateX(11deg) rotateY(-180deg); }
+.die-3d[data-face="14"] { transform: rotateX(11deg) rotateY(-252deg); }
+.die-3d[data-face="15"] { transform: rotateX(11deg) rotateY(-324deg); }
+.die-3d[data-face="16"] { transform: rotateX(-127deg) rotateY(36deg); }
+.die-3d[data-face="17"] { transform: rotateX(-127deg) rotateY(108deg); }
+.die-3d[data-face="18"] { transform: rotateX(-127deg) rotateY(180deg); }
+.die-3d[data-face="19"] { transform: rotateX(-127deg) rotateY(252deg); }
+.die-3d[data-face="20"] { transform: rotateX(-127deg) rotateY(324deg); }
 
 @keyframes roll-die {
-  10% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) }
-  30% { transform: rotateX(120deg) rotateY(240deg) rotateZ(0deg) translateX(20px) translateY(20px) }
-  50% { transform: rotateX(240deg) rotateY(480deg) rotateZ(0deg) translateX(-20px) translateY(-20px) }
-  70% { transform: rotateX(360deg) rotateY(720deg) rotateZ(0deg) }
-  90% { transform: rotateX(480deg) rotateY(960deg) rotateZ(0deg) }
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg); }
 }
-
-/* Data face positions */
-.die-3d[data-face="1"] { transform: rotateX(-53deg) rotateY(0deg); }
-.die-3d[data-face="20"] { transform: rotateX(127deg) rotateY(-360deg); }
-/* Add all data-face positions 1-20 */
