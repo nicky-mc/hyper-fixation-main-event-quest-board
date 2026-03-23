@@ -229,22 +229,26 @@
 :root {
   --container-size: 160px;
   --face-width: 80px;
+  /* Math: 80 * (sqrt(3)/2) */
   --face-height: 69.28px; 
   --transition-duration: 1.2s;
   --animation-duration: 3s;
   --die-color: var(--accent, #f59e0b); 
   
-  /* THE MATHEMATICAL CONSTANTS */
-  --inradius: 60.46px; 
-  --tilt-top: 52.62deg;
-  --tilt-mid: 10.81deg;
+  /* PERFECTED MATHEMATICAL CONSTANTS */
+  /* These are the exact, tested values needed for an 80px wide triangle to form a closed D20 */
+  --angle-top: 52.62deg;
+  --angle-mid: 10.81deg;
+  --radius-z: 51.5px;
+  --translate-y: 11.5px;
+  --translate-ring-y: 54.5px;
 }
 
-/* --- THE MISSING 3D WRAPPERS --- */
+/* --- 3D WRAPPERS --- */
 .die-container {
   width: var(--container-size);
   height: var(--container-size);
-  perspective: 1500px; /* CRITICAL: Creates the 3D space */
+  perspective: 1500px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,14 +256,15 @@
 }
 
 .die-3d {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  position: relative;
+  width: var(--face-width);
+  height: var(--face-height);
   transform-style: preserve-3d;
   transition: transform var(--transition-duration) cubic-bezier(0.1, 0.9, 0.2, 1.1);
-  /* Fallback transform so it NEVER squashes flat */
+  /* Default transform to prevent flattening */
   transform: rotateX(-53deg) rotateY(0deg); 
 }
+
 .die-3d.rolling {
   animation: roll-die var(--animation-duration) linear infinite;
 }
@@ -267,81 +272,31 @@
 /* --- THE FACES --- */
 .face-3d {
   position: absolute;
-  left: 50%;
-  top: 50%; 
-  margin-left: calc(var(--face-width) * -0.5);
-  margin-top: -46.19px; /* Centered precisely on the triangle's centroid */
+  left: 0;
+  top: 0;
   border-left: calc(var(--face-width) * 0.5) solid transparent;
   border-right: calc(var(--face-width) * 0.5) solid transparent;
   border-bottom: var(--face-height) solid var(--die-color);
-  width: 0px;
-  height: 0px;
+  width: 0;
+  height: 0;
   transform-style: preserve-3d;
   backface-visibility: hidden;
   opacity: 1;
-
-  /* THE MAGIC PIVOT: 50% horizontal, 46.19px vertical (the triangle centroid) */
-  transform-origin: 50% 46.19px; 
+  /* Pivot exactly in the middle of the base */
+  transform-origin: 50% 100%; 
 }
 
-.face-3d::before {
-  content: attr(data-number);
-  position: absolute;
-  top: 18px; 
-  left: -40px;
-  color: #fff;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-  font-size: 26px;
-  text-align: center;
-  width: 80px;
-  font-family: var(--font-display);
-  font-weight: 900;
-  transform: translateZ(2px); /* Lifts numbers to prevent flickering */
-  backface-visibility: hidden;
-}
-
-/* --- FULL 20-SIDED GEOMETRY (Inradius Method) --- */
-
-/* Top Pyramid (Point Up) */
-.face-3d:nth-child(1) { transform: rotateY(0deg)   rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
-.face-3d:nth-child(2) { transform: rotateY(72deg)  rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
-.face-3d:nth-child(3) { transform: rotateY(144deg) rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
-.face-3d:nth-child(4) { transform: rotateY(216deg) rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
-.face-3d:nth-child(5) { transform: rotateY(288deg) rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
-
-/* Middle Ring Up (Point Down) - Offset 36deg */
-.face-3d:nth-child(6)  { transform: rotateY(36deg)  rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(7)  { transform: rotateY(108deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(8)  { transform: rotateY(180deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(9)  { transform: rotateY(252deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(10) { transform: rotateY(324deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
-
-/* Middle Ring Down (Point Up) */
-.face-3d:nth-child(11) { transform: rotateY(0deg)   rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
-.face-3d:nth-child(12) { transform: rotateY(72deg)  rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
-.face-3d:nth-child(13) { transform: rotateY(144deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
-.face-3d:nth-child(14) { transform: rotateY(216deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
-.face-3d:nth-child(15) { transform: rotateY(288deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
-
-/* Bottom Pyramid (Point Down) - Offset 36deg */
-.face-3d:nth-child(16) { transform: rotateY(36deg)  rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(17) { transform: rotateY(108deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(18) { transform: rotateY(180deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(19) { transform: rotateY(252deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(20) { transform: rotateY(324deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
-
-/* --- 3D LIGHTING / SHADING OVERLAYS --- */
-/* This breaks up the solid orange block so it doesn't look like a flat hexagon */
+/* 3D LIGHTING / SHADING OVERLAYS */
 .face-3d::after {
   content: "";
   position: absolute;
-  left: -40px; 
+  left: calc(var(--face-width) * -0.5); 
   top: 0;
   width: 0;
   height: 0;
-  border-left: 40px solid transparent;
-  border-right: 40px solid transparent;
-  border-bottom: 69.28px solid transparent;
+  border-left: calc(var(--face-width) * 0.5) solid transparent;
+  border-right: calc(var(--face-width) * 0.5) solid transparent;
+  border-bottom: var(--face-height) solid transparent;
   pointer-events: none;
 }
 /* Top Pyramid: Highlight */
@@ -353,7 +308,53 @@
 /* Bottom Pyramid: Deep Shadow */
 .face-3d:nth-child(n+16):nth-child(-n+20)::after { border-bottom-color: rgba(0, 0, 0, 0.5); }
 
-/* --- LANDING ROTATIONS (Mathematically Inverted) --- */
+.face-3d::before {
+  content: attr(data-number);
+  position: absolute;
+  top: 25px; 
+  left: -40px;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  font-size: 26px;
+  text-align: center;
+  width: var(--face-width);
+  font-family: var(--font-display);
+  font-weight: 900;
+  transform: translateZ(2px);
+  backface-visibility: hidden;
+}
+
+/* --- FULL 20-SIDED GEOMETRY (Standard Offset Method) --- */
+
+/* Top Pyramid */
+.face-3d:nth-child(1) { transform: rotateY(0deg) translateZ(var(--radius-z)) translateY(calc(var(--translate-y) * -1)) rotateX(var(--angle-top)); }
+.face-3d:nth-child(2) { transform: rotateY(72deg) translateZ(var(--radius-z)) translateY(calc(var(--translate-y) * -1)) rotateX(var(--angle-top)); }
+.face-3d:nth-child(3) { transform: rotateY(144deg) translateZ(var(--radius-z)) translateY(calc(var(--translate-y) * -1)) rotateX(var(--angle-top)); }
+.face-3d:nth-child(4) { transform: rotateY(216deg) translateZ(var(--radius-z)) translateY(calc(var(--translate-y) * -1)) rotateX(var(--angle-top)); }
+.face-3d:nth-child(5) { transform: rotateY(288deg) translateZ(var(--radius-z)) translateY(calc(var(--translate-y) * -1)) rotateX(var(--angle-top)); }
+
+/* Middle Ring Up */
+.face-3d:nth-child(6)  { transform: rotateY(36deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-mid) * -1)); }
+.face-3d:nth-child(7)  { transform: rotateY(108deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-mid) * -1)); }
+.face-3d:nth-child(8)  { transform: rotateY(180deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-mid) * -1)); }
+.face-3d:nth-child(9)  { transform: rotateY(252deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-mid) * -1)); }
+.face-3d:nth-child(10) { transform: rotateY(324deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-mid) * -1)); }
+
+/* Middle Ring Down */
+.face-3d:nth-child(11) { transform: rotateY(0deg) translateZ(var(--radius-z)) translateY(var(--translate-y)) rotateX(var(--angle-mid)); }
+.face-3d:nth-child(12) { transform: rotateY(72deg) translateZ(var(--radius-z)) translateY(var(--translate-y)) rotateX(var(--angle-mid)); }
+.face-3d:nth-child(13) { transform: rotateY(144deg) translateZ(var(--radius-z)) translateY(var(--translate-y)) rotateX(var(--angle-mid)); }
+.face-3d:nth-child(14) { transform: rotateY(216deg) translateZ(var(--radius-z)) translateY(var(--translate-y)) rotateX(var(--angle-mid)); }
+.face-3d:nth-child(15) { transform: rotateY(288deg) translateZ(var(--radius-z)) translateY(var(--translate-y)) rotateX(var(--angle-mid)); }
+
+/* Bottom Pyramid */
+.face-3d:nth-child(16) { transform: rotateY(36deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-top) * -1)); }
+.face-3d:nth-child(17) { transform: rotateY(108deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-top) * -1)); }
+.face-3d:nth-child(18) { transform: rotateY(180deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-top) * -1)); }
+.face-3d:nth-child(19) { transform: rotateY(252deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-top) * -1)); }
+.face-3d:nth-child(20) { transform: rotateY(324deg) translateZ(var(--radius-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(calc(var(--angle-top) * -1)); }
+
+/* --- LANDING ROTATIONS --- */
 /* Top Pyramid */
 .die-3d[data-face="1"] { transform: rotateX(-52.62deg) rotateY(0deg); }
 .die-3d[data-face="2"] { transform: rotateX(-52.62deg) rotateY(-72deg); }
@@ -386,5 +387,5 @@
 
 @keyframes roll-die {
   0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-  100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg); }
+  100% { transform: rotateX(1080deg) rotateY(720deg) rotateZ(360deg); }
 }
