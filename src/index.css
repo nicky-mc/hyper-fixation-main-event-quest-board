@@ -318,7 +318,7 @@
   backface-visibility: hidden;
 }
 
-//* --- FULL 20-SIDED GEOMETRY (Centroid Method) --- */
+/* --- FULL 20-SIDED GEOMETRY (Centroid Method) --- */
 
 /* Top Pyramid (Point Up) */
 .face-3d:nth-child(1) { transform: rotateY(0deg)   rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
