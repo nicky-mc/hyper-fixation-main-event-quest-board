@@ -330,27 +330,57 @@
 .face-3d:nth-child(19) { transform: rotateY(252deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
 .face-3d:nth-child(20) { transform: rotateY(324deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
 
-/* --- LANDING ROTATIONS --- */
-.die-3d[data-face="1"]  { transform: rotateX(-53deg) rotateY(0deg); }
-.die-3d[data-face="2"]  { transform: rotateX(-53deg) rotateY(72deg); }
-.die-3d[data-face="3"]  { transform: rotateX(-53deg) rotateY(144deg); }
-.die-3d[data-face="4"]  { transform: rotateX(-53deg) rotateY(216deg); }
-.die-3d[data-face="5"]  { transform: rotateX(-53deg) rotateY(288deg); }
-.die-3d[data-face="6"]  { transform: rotateX(11deg) rotateZ(180deg) rotateY(0deg); }
-.die-3d[data-face="7"]  { transform: rotateX(11deg) rotateZ(180deg) rotateY(72deg); }
-.die-3d[data-face="8"]  { transform: rotateX(11deg) rotateZ(180deg) rotateY(144deg); }
-.die-3d[data-face="9"]  { transform: rotateX(11deg) rotateZ(180deg) rotateY(216deg); }
-.die-3d[data-face="10"] { transform: rotateX(11deg) rotateZ(180deg) rotateY(288deg); }
-.die-3d[data-face="11"] { transform: rotateX(-11deg) rotateY(36deg); }
-.die-3d[data-face="12"] { transform: rotateX(-11deg) rotateY(108deg); }
-.die-3d[data-face="13"] { transform: rotateX(-11deg) rotateY(180deg); }
-.die-3d[data-face="14"] { transform: rotateX(-11deg) rotateY(252deg); }
-.die-3d[data-face="15"] { transform: rotateX(-11deg) rotateY(324deg); }
-.die-3d[data-face="16"] { transform: rotateX(127deg) rotateY(-72deg); } 
-.die-3d[data-face="17"] { transform: rotateX(127deg) rotateY(-144deg); }
-.die-3d[data-face="18"] { transform: rotateX(127deg) rotateY(-216deg); }
-.die-3d[data-face="19"] { transform: rotateX(127deg) rotateY(-288deg); }
-.die-3d[data-face="20"] { transform: rotateX(127deg) rotateY(-360deg); }
+/* --- 3D LIGHTING / SHADING OVERLAYS --- */
+/* This breaks up the solid orange block so it doesn't look like a flat hexagon */
+.face-3d::after {
+  content: "";
+  position: absolute;
+  left: -40px; 
+  top: 0;
+  width: 0;
+  height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 69.28px solid transparent;
+  pointer-events: none;
+}
+/* Top Pyramid: Highlight */
+.face-3d:nth-child(n+1):nth-child(-n+5)::after { border-bottom-color: rgba(255, 255, 255, 0.15); }
+/* Mid Up: Neutral-light */
+.face-3d:nth-child(n+6):nth-child(-n+10)::after { border-bottom-color: rgba(0, 0, 0, 0.05); }
+/* Mid Down: Shadow */
+.face-3d:nth-child(n+11):nth-child(-n+15)::after { border-bottom-color: rgba(0, 0, 0, 0.25); }
+/* Bottom Pyramid: Deep Shadow */
+.face-3d:nth-child(n+16):nth-child(-n+20)::after { border-bottom-color: rgba(0, 0, 0, 0.5); }
+
+/* --- LANDING ROTATIONS (Mathematically Inverted) --- */
+/* Top Pyramid */
+.die-3d[data-face="1"] { transform: rotateX(-52.62deg) rotateY(0deg); }
+.die-3d[data-face="2"] { transform: rotateX(-52.62deg) rotateY(-72deg); }
+.die-3d[data-face="3"] { transform: rotateX(-52.62deg) rotateY(-144deg); }
+.die-3d[data-face="4"] { transform: rotateX(-52.62deg) rotateY(-216deg); }
+.die-3d[data-face="5"] { transform: rotateX(-52.62deg) rotateY(-288deg); }
+
+/* Middle Ring Up */
+.die-3d[data-face="6"] { transform: rotateZ(180deg) rotateX(-10.81deg) rotateY(-36deg); }
+.die-3d[data-face="7"] { transform: rotateZ(180deg) rotateX(-10.81deg) rotateY(-108deg); }
+.die-3d[data-face="8"] { transform: rotateZ(180deg) rotateX(-10.81deg) rotateY(-180deg); }
+.die-3d[data-face="9"] { transform: rotateZ(180deg) rotateX(-10.81deg) rotateY(-252deg); }
+.die-3d[data-face="10"] { transform: rotateZ(180deg) rotateX(-10.81deg) rotateY(-324deg); }
+
+/* Middle Ring Down */
+.die-3d[data-face="11"] { transform: rotateX(10.81deg) rotateY(0deg); }
+.die-3d[data-face="12"] { transform: rotateX(10.81deg) rotateY(-72deg); }
+.die-3d[data-face="13"] { transform: rotateX(10.81deg) rotateY(-144deg); }
+.die-3d[data-face="14"] { transform: rotateX(10.81deg) rotateY(-216deg); }
+.die-3d[data-face="15"] { transform: rotateX(10.81deg) rotateY(-288deg); }
+
+/* Bottom Pyramid */
+.die-3d[data-face="16"] { transform: rotateZ(180deg) rotateX(52.62deg) rotateY(-36deg); }
+.die-3d[data-face="17"] { transform: rotateZ(180deg) rotateX(52.62deg) rotateY(-108deg); }
+.die-3d[data-face="18"] { transform: rotateZ(180deg) rotateX(52.62deg) rotateY(-180deg); }
+.die-3d[data-face="19"] { transform: rotateZ(180deg) rotateX(52.62deg) rotateY(-252deg); }
+.die-3d[data-face="20"] { transform: rotateZ(180deg) rotateX(52.62deg) rotateY(-324deg); }
 
 .face-3d:nth-child(6)::before, .face-3d:nth-child(9)::before { text-decoration: underline; }
 
