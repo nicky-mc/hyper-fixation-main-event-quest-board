@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Swords, Loader2, Star } from 'lucide-react';
+import { Swords, Loader2, Star, Skull } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -7,15 +7,14 @@ export default function InitiativeButton({ onRollComplete, disabled }) {
   const [isRolling, setIsRolling] = useState(false);
   const [dieFace, setDieFace] = useState(1);
   const [isCritical, setIsCritical] = useState(false);
+  const [isFail, setIsFail] = useState(false); // NEW: Track Nat 1s
 
   const rollDice = () => {
     if (isRolling || disabled) return;
 
     setIsRolling(true);
     setIsCritical(false);
-    
-    // We REMOVE setDieFace(null) so the die remembers its last position
-    // while the spin animation takes over.
+    setIsFail(false); // Reset fail state
 
     setTimeout(() => {
       const result = Math.floor(Math.random() * 20) + 1;
@@ -24,6 +23,7 @@ export default function InitiativeButton({ onRollComplete, disabled }) {
       setIsRolling(false);
       
       if (result === 20) setIsCritical(true);
+      if (result === 1) setIsFail(true); // Trigger fail state
 
       if (onRollComplete) onRollComplete(result);
     }, 3000);
@@ -33,15 +33,32 @@ export default function InitiativeButton({ onRollComplete, disabled }) {
     <div className="flex flex-col items-center gap-8 py-10">
       
       {/* ── 3D DICE VIEWPORT ── */}
-      <div className="die-container relative">
-        {/* Critical Hit Glow */}
+      {/* We wrap the container in a motion.div to animate the actual die when it lands */}
+      <motion.div 
+        className="die-container relative"
+        animate={
+          isFail ? { x: [-15, 15, -10, 10, -5, 5, 0] } : // Violent shake for Nat 1
+          isCritical ? { y: [0, -10, 0] } : // Triumphant float for Nat 20
+          {}
+        }
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+      >
+        {/* Glow Effects */}
         <AnimatePresence>
           {isCritical && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1.5 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-[var(--accent)] rounded-full blur-[50px] opacity-30 z-0"
+              className="absolute inset-0 bg-yellow-400 rounded-full blur-[60px] opacity-40 z-0"
+            />
+          )}
+          {isFail && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1.2 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-red-700 rounded-full blur-[60px] opacity-60 z-0"
             />
           )}
         </AnimatePresence>
@@ -59,7 +76,7 @@ export default function InitiativeButton({ onRollComplete, disabled }) {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* ── THE ACTION BUTTON ── */}
       <motion.button
@@ -106,11 +123,13 @@ export default function InitiativeButton({ onRollComplete, disabled }) {
             <>
               {isCritical ? (
                 <Star className="w-8 h-8 text-white fill-white animate-bounce" />
+              ) : isFail ? (
+                <Skull className="w-8 h-8 text-white animate-pulse" />
               ) : (
                 <Swords className="w-8 h-8 text-white group-hover:rotate-12 transition-transform" />
               )}
               <span className="font-lcars tracking-widest text-2xl uppercase text-white">
-                {isCritical ? "CRITICAL HIT!" : "Roll for Initiative!"}
+                {isCritical ? "CRITICAL HIT!" : isFail ? "CRITICAL FAILURE!" : "Roll for Initiative!"}
               </span>
             </>
           )}
@@ -123,7 +142,12 @@ export default function InitiativeButton({ onRollComplete, disabled }) {
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-lcars text-[var(--accent)] text-lg tracking-[0.3em] uppercase font-bold"
+            className={cn(
+              "font-lcars text-lg tracking-[0.3em] uppercase font-bold",
+              isCritical ? "text-yellow-400 scale-110 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" : 
+              isFail ? "text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" : 
+              "text-[var(--accent)]"
+            )}
           >
             Result: {dieFace}
           </motion.p>
