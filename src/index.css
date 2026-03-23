@@ -229,18 +229,18 @@
 :root {
   --container-size: 160px;
   --face-width: 80px;
-  --face-height: 69.2px; 
+  --face-height: 69.28px; /* Mathematically: (80 * sqrt(3)) / 2 */
   --transition-duration: 1.2s;
   --animation-duration: 3s;
   --die-color: var(--accent, #f59e0b); 
   
-  /* PRECISION GAP CLOSERS */
-  --angle: 53deg;
-  --ring-angle: -11deg;
-  --translate-z: 33.5px;
-  --translate-y: -11px;
-  --translate-ring-z: 58px;
-  --translate-ring-y: 40px;
+  /* Precision Math for Edge=80px (Scale 0.8 of Sarah's repo) */
+  --angle: 52.62deg;
+  --ring-angle: 10.81deg;
+  --translate-z: 26.83px;
+  --translate-y: -10.25px;
+  --translate-ring-z: 47.41px;
+  --translate-ring-y: 10.14px;
 }
 
 .die-container {
@@ -268,19 +268,18 @@
 .face-3d {
   position: absolute;
   left: 50%;
-  top: 15%; /* BACK TO ORIGINAL PIVOT */
-  margin: 0 calc(var(--face-width) * -0.5);
+  top: 50%; /* CRITICAL: Center the faces for rotational symmetry */
+  margin-left: calc(var(--face-width) * -0.5);
+  margin-top: calc(var(--face-height) * -0.5);
   border-left: calc(var(--face-width) * 0.5) solid transparent;
   border-right: calc(var(--face-width) * 0.5) solid transparent;
   border-bottom: var(--face-height) solid var(--die-color);
   width: 0px;
   height: 0px;
   transform-style: preserve-3d;
-  /* GHOSTING FIX: Hides numbers from the back of the die */
-  backface-visibility: hidden; 
-  opacity: 1; 
+  backface-visibility: hidden;
+  opacity: 1;
 }
-
 .face-3d::before {
   content: attr(data-number);
   position: absolute;
@@ -296,34 +295,35 @@
   transform: translateZ(2px); /* Lifts numbers off surface */
 }
 
-/* --- FULL 20-SIDED GEOMETRY --- */
+/* --- FULL 20-SIDED GEOMETRY (Precision Snap) --- */
 
-/* Top Pyramid */
+/* Top Pyramid (1-5) */
 .face-3d:nth-child(1) { transform: rotateY(0deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
-.face-3d:nth-child(2) { transform: rotateY(-72deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
-.face-3d:nth-child(3) { transform: rotateY(-144deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
-.face-3d:nth-child(4) { transform: rotateY(-216deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
-.face-3d:nth-child(5) { transform: rotateY(-288deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
+.face-3d:nth-child(2) { transform: rotateY(72deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
+.face-3d:nth-child(3) { transform: rotateY(144deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
+.face-3d:nth-child(4) { transform: rotateY(216deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
+.face-3d:nth-child(5) { transform: rotateY(288deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
 
-/* Middle Ring */
-.face-3d:nth-child(6) { transform: rotateY(0deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(7) { transform: rotateY(-72deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(8) { transform: rotateY(-144deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(9) { transform: rotateY(-216deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(10) { transform: rotateY(-288deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+/* Middle Ring Up (6-10) */
+.face-3d:nth-child(6) { transform: rotateY(36deg) rotateX(var(--ring-angle)) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg); }
+.face-3d:nth-child(7) { transform: rotateY(108deg) rotateX(var(--ring-angle)) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg); }
+.face-3d:nth-child(8) { transform: rotateY(180deg) rotateX(var(--ring-angle)) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg); }
+.face-3d:nth-child(9) { transform: rotateY(252deg) rotateX(var(--ring-angle)) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg); }
+.face-3d:nth-child(10) { transform: rotateY(324deg) rotateX(var(--ring-angle)) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg); }
 
-.face-3d:nth-child(11) { transform: rotateY(-36deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(12) { transform: rotateY(-108deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(13) { transform: rotateY(-180deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(14) { transform: rotateY(-252deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(15) { transform: rotateY(-324deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
+/* Middle Ring Down (11-15) */
+.face-3d:nth-child(11) { transform: rotateY(0deg) rotateX(calc(var(--ring-angle) * -1)) translateZ(var(--translate-ring-z)) translateY(calc(var(--translate-ring-y) * -1)); }
+.face-3d:nth-child(12) { transform: rotateY(72deg) rotateX(calc(var(--ring-angle) * -1)) translateZ(var(--translate-ring-z)) translateY(calc(var(--translate-ring-y) * -1)); }
+.face-3d:nth-child(13) { transform: rotateY(144deg) rotateX(calc(var(--ring-angle) * -1)) translateZ(var(--translate-ring-z)) translateY(calc(var(--translate-ring-y) * -1)); }
+.face-3d:nth-child(14) { transform: rotateY(216deg) rotateX(calc(var(--ring-angle) * -1)) translateZ(var(--translate-ring-z)) translateY(calc(var(--ring-angle) * -1)); }
+.face-3d:nth-child(15) { transform: rotateY(288deg) rotateX(calc(var(--ring-angle) * -1)) translateZ(var(--translate-ring-z)) translateY(calc(var(--ring-angle) * -1)); }
 
-/* Bottom Pyramid - FIXED OFFSET (76px) */
-.face-3d:nth-child(16) { transform: rotateY(-36deg) translateZ(var(--translate-z)) translateY(76px) rotateZ(180deg) rotateX(var(--angle)); }
-.face-3d:nth-child(17) { transform: rotateY(-108deg) translateZ(var(--translate-z)) translateY(76px) rotateZ(180deg) rotateX(var(--angle)); }
-.face-3d:nth-child(18) { transform: rotateY(-180deg) translateZ(var(--translate-z)) translateY(76px) rotateZ(180deg) rotateX(var(--angle)); }
-.face-3d:nth-child(19) { transform: rotateY(-252deg) translateZ(var(--translate-z)) translateY(76px) rotateZ(180deg) rotateX(var(--angle)); }
-.face-3d:nth-child(20) { transform: rotateY(-324deg) translateZ(var(--translate-z)) translateY(76px) rotateZ(180deg) rotateX(var(--angle)); }
+/* Bottom Pyramid (16-20) */
+.face-3d:nth-child(16) { transform: rotateY(36deg) translateY(calc(var(--translate-y) * -1)) translateZ(var(--translate-z)) rotateX(calc(var(--angle) * -1)) rotateZ(180deg); }
+.face-3d:nth-child(17) { transform: rotateY(108deg) translateY(calc(var(--translate-y) * -1)) translateZ(var(--translate-z)) rotateX(calc(var(--angle) * -1)) rotateZ(180deg); }
+.face-3d:nth-child(18) { transform: rotateY(180deg) translateY(calc(var(--translate-y) * -1)) translateZ(var(--translate-z)) rotateX(calc(var(--angle) * -1)) rotateZ(180deg); }
+.face-3d:nth-child(19) { transform: rotateY(252deg) translateY(calc(var(--translate-y) * -1)) translateZ(var(--translate-z)) rotateX(calc(var(--angle) * -1)) rotateZ(180deg); }
+.face-3d:nth-child(20) { transform: rotateY(324deg) translateY(calc(var(--translate-y) * -1)) translateZ(var(--translate-z)) rotateX(calc(var(--angle) * -1)) rotateZ(180deg); }
 
 /* --- LANDING ROTATIONS --- */
 .die-3d[data-face="1"]  { transform: rotateX(-53deg) rotateY(0deg); }
