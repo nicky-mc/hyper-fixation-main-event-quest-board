@@ -50,11 +50,12 @@ export default function InitiativeButton({ onRollComplete, disabled }) {
           className={cn("die-3d z-10", isRolling && "rolling")}
           data-face={dieFace}
         >
-          {[...Array(20)].map((_, i) => (
+          {/* True balanced D20 mapping where opposites sum to 21 */}
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 15, 14, 13, 17, 16, 20, 19, 18].map((num, i) => (
             <figure 
               key={i} 
               className="face-3d" 
-              data-number={i + 1} 
+              data-number={num} 
             />
           ))}
         </div>
