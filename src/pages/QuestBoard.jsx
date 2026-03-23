@@ -306,42 +306,38 @@ export default function QuestBoard() {
 
          {/* Admin Command Deck */}
 {isAdmin && (
-  <motion.div 
-    initial={{ opacity: 0, scale: 0.95 }} 
-    animate={{ opacity: 1, scale: 1 }} 
-    className="flex flex-col items-center justify-center mt-7"
-  >
-    {/* This container puts the Dice/Initiative and RKO side-by-side */}
-    <div className="flex flex-row items-end justify-center gap-6 flex-wrap">
-      
-      {/* The Big D20 Engine */}
-      <div className="flex-shrink-0">
-        <InitiativeButton 
-          disabled={pendingQuests.length === 0}
-          onRollStart={() => setIsRolling(true)}
-          onRollComplete={(result) => {
-            setIsRolling(false);
-            const randomIndex = Math.floor(Math.random() * pendingQuests.length);
-            const selected = pendingQuests[randomIndex];
-            setSelectedQuestId(selected.id);
-            
-            base44.entities.Quest.update(selected.id, { status: 'completed' });
-            
-            base44.entities.NewsPost.create({
-              author_name: 'The Quest Board',
-              author_email: 'questboard@hme.app',
-              content: `⚔️ **NATURAL ${result} INITIATIVE** ⚔️\n\n"${selected.title}" has been selected!\n\n🎯 Segment: ${selected.segment}\n🧙 Submitted by: ${selected.quest_giver}`,
-            }).then(() => loadQuests());
-          }} 
-        />
-      </div>
-
-      {/* The RKO Button (Aligned to the bottom of the Initiative Button) */}
-      <div className="pb-10 sm:pb-12"> 
-        <RKOButton userIsAdmin={true} />
-      </div>
-      
+  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center justify-center mt-12 gap-8" >
+    {/* 1. THE DICE ENGINE (Top of the stack) */}
+    <div className="w-full flex justify-center">
+      <InitiativeButton 
+        disabled={pendingQuests.length === 0}
+        onRollStart={() => setIsRolling(true)}
+        onRollComplete={(result) => {
+          setIsRolling(false);
+          const randomIndex = Math.floor(Math.random() * pendingQuests.length);
+          const selected = pendingQuests[randomIndex];
+          setSelectedQuestId(selected.id);
+          
+          base44.entities.Quest.update(selected.id, { status: 'completed' });
+          
+          base44.entities.NewsPost.create({
+            author_name: 'The Quest Board',
+            author_email: 'questboard@hme.app',
+            content: `⚔️ **NATURAL ${result} INITIATIVE** ⚔️\n\n"${selected.title}" has been selected!\n\n🎯 Segment: ${selected.segment}\n🧙 Submitted by: ${selected.quest_giver}`,
+          }).then(() => loadQuests());
+        }} 
+      />
     </div>
+
+    {/* 2. THE RKO BUTTON (Bottom of the stack) */}
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.3 }}
+      className="pb-6"
+    >
+      <RKOButton userIsAdmin={true} />
+    </motion.div>
   </motion.div>
 )}
 </motion.header>
