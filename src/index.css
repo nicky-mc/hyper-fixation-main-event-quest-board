@@ -224,6 +224,14 @@
   color: var(--bg-primary); 
   text-shadow: 0 0 8px rgba(251, 191, 36, 0.5); 
 }
+I see exactly what's happening. In that last screenshot, the dice didn't just break; it inverted! This usually happens when the pivot point (the top: 50% vs top: 15%) doesn't match the translation math.
+
+We’re going to perform a Full Reconstruction. We are going back to the coordinate system from your very first screenshot (which was almost perfect) but applying the "Sarah-precision" values to close those gaps and kill the ghosting.
+
+── PART 1: The Engine & Skeleton (Lines 227 - 275) ──
+Replace the first half of your Dice CSS with this. I've reset the top to 15% and tightened the variables to close those seams.
+
+CSS
 /* ── 7. THE D20 ARTIFACT ENGINE (RECONSTRUCTED) ── */
 :root {
   --container-size: 160px;
@@ -233,7 +241,7 @@
   --animation-duration: 3s;
   --die-color: var(--accent, #f59e0b); 
   
-  /* RE-CALIBRATED GAP CLOSERS */
+  /* PRECISION GAP CLOSERS */
   --angle: 53deg;
   --ring-angle: -11deg;
   --translate-z: 33.5px;
@@ -267,7 +275,7 @@
 .face-3d {
   position: absolute;
   left: 50%;
-  top: 15%; /* Resetting back to your original top position */
+  top: 15%; /* BACK TO ORIGINAL PIVOT */
   margin: 0 calc(var(--face-width) * -0.5);
   border-left: calc(var(--face-width) * 0.5) solid transparent;
   border-right: calc(var(--face-width) * 0.5) solid transparent;
@@ -275,8 +283,9 @@
   width: 0px;
   height: 0px;
   transform-style: preserve-3d;
-  backface-visibility: hidden; /* NO MORE GHOSTING */
-  opacity: 1; /* SOLID PLASTIC LOOK */
+  /* GHOSTING FIX: Hides numbers from the back of the die */
+  backface-visibility: hidden; 
+  opacity: 1; 
 }
 
 .face-3d::before {
@@ -291,7 +300,7 @@
   width: 80px;
   font-family: var(--font-display);
   font-weight: 900;
-  transform: translateZ(2px); /* Lifts numbers off the surface */
+  transform: translateZ(2px); /* Lifts numbers off surface */
 }
 
 /* --- FULL 20-SIDED GEOMETRY --- */
@@ -316,7 +325,7 @@
 .face-3d:nth-child(14) { transform: rotateY(-252deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
 .face-3d:nth-child(15) { transform: rotateY(-324deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
 
-/* Bottom Pyramid - FIXED OFFSET (76px instead of 85px) */
+/* Bottom Pyramid - FIXED OFFSET (76px) */
 .face-3d:nth-child(16) { transform: rotateY(-36deg) translateZ(var(--translate-z)) translateY(76px) rotateZ(180deg) rotateX(var(--angle)); }
 .face-3d:nth-child(17) { transform: rotateY(-108deg) translateZ(var(--translate-z)) translateY(76px) rotateZ(180deg) rotateX(var(--angle)); }
 .face-3d:nth-child(18) { transform: rotateY(-180deg) translateZ(var(--translate-z)) translateY(76px) rotateZ(180deg) rotateX(var(--angle)); }
