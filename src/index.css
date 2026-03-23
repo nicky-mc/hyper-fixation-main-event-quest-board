@@ -255,10 +255,11 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d; /* CRITICAL: Stops the die from flattening */
+  transform-style: preserve-3d;
   transition: transform var(--transition-duration) cubic-bezier(0.1, 0.9, 0.2, 1.1);
+  /* Fallback transform so it NEVER squashes flat */
+  transform: rotateX(-53deg) rotateY(0deg); 
 }
-
 .die-3d.rolling {
   animation: roll-die var(--animation-duration) linear infinite;
 }
