@@ -224,14 +224,7 @@
   color: var(--bg-primary); 
   text-shadow: 0 0 8px rgba(251, 191, 36, 0.5); 
 }
-I see exactly what's happening. In that last screenshot, the dice didn't just break; it inverted! This usually happens when the pivot point (the top: 50% vs top: 15%) doesn't match the translation math.
 
-We’re going to perform a Full Reconstruction. We are going back to the coordinate system from your very first screenshot (which was almost perfect) but applying the "Sarah-precision" values to close those gaps and kill the ghosting.
-
-── PART 1: The Engine & Skeleton (Lines 227 - 275) ──
-Replace the first half of your Dice CSS with this. I've reset the top to 15% and tightened the variables to close those seams.
-
-CSS
 /* ── 7. THE D20 ARTIFACT ENGINE (RECONSTRUCTED) ── */
 :root {
   --container-size: 160px;
