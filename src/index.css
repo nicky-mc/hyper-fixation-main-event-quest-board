@@ -320,35 +320,35 @@
 
 /* --- FULL 20-SIDED GEOMETRY (Centroid Method) --- */
 
-/* Top Pyramid (Point Up) */
+/* Top Pyramid (Point Up) - Base matches Middle Ring Up */
 .face-3d:nth-child(1) { transform: rotateY(0deg)   rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
 .face-3d:nth-child(2) { transform: rotateY(72deg)  rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
 .face-3d:nth-child(3) { transform: rotateY(144deg) rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
 .face-3d:nth-child(4) { transform: rotateY(216deg) rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
 .face-3d:nth-child(5) { transform: rotateY(288deg) rotateX(var(--tilt-top)) translateZ(var(--inradius)); }
 
-/* Middle Ring Up (Point Down) - Offset 36deg */
-.face-3d:nth-child(6)  { transform: rotateY(36deg)  rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(7)  { transform: rotateY(108deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(8)  { transform: rotateY(180deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(9)  { transform: rotateY(252deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
-.face-3d:nth-child(10) { transform: rotateY(324deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
+/* Middle Ring Up (Point Down) - Base matches Top Pyramid */
+.face-3d:nth-child(6)  { transform: rotateY(0deg)   rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
+.face-3d:nth-child(7)  { transform: rotateY(72deg)  rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
+.face-3d:nth-child(8)  { transform: rotateY(144deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
+.face-3d:nth-child(9)  { transform: rotateY(216deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
+.face-3d:nth-child(10) { transform: rotateY(288deg) rotateX(var(--tilt-mid)) translateZ(var(--inradius)) rotateZ(180deg); }
 
-/* Middle Ring Down (Point Up) */
-.face-3d:nth-child(11) { transform: rotateY(0deg)   rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
-.face-3d:nth-child(12) { transform: rotateY(72deg)  rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
-.face-3d:nth-child(13) { transform: rotateY(144deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
-.face-3d:nth-child(14) { transform: rotateY(216deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
-.face-3d:nth-child(15) { transform: rotateY(288deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
+/* Middle Ring Down (Point Up) - Base matches Bottom Pyramid */
+.face-3d:nth-child(11) { transform: rotateY(36deg)  rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
+.face-3d:nth-child(12) { transform: rotateY(108deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
+.face-3d:nth-child(13) { transform: rotateY(180deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
+.face-3d:nth-child(14) { transform: rotateY(252deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
+.face-3d:nth-child(15) { transform: rotateY(324deg) rotateX(calc(var(--tilt-mid) * -1)) translateZ(var(--inradius)); }
 
-/* Bottom Pyramid (Point Down) - Offset 36deg */
+/* Bottom Pyramid (Point Down) - Base matches Middle Ring Down */
 .face-3d:nth-child(16) { transform: rotateY(36deg)  rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
 .face-3d:nth-child(17) { transform: rotateY(108deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
 .face-3d:nth-child(18) { transform: rotateY(180deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
 .face-3d:nth-child(19) { transform: rotateY(252deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
 .face-3d:nth-child(20) { transform: rotateY(324deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
 
-/* --- LANDING ROTATIONS (Mathematically Inverted) --- */
+/* --- LANDING ROTATIONS (Mapped to True D20 Array) --- */
 
 /* Top Pyramid */
 .die-3d[data-face="1"] { transform: rotateX(-52.62deg) rotateY(0deg); }
@@ -358,27 +358,26 @@
 .die-3d[data-face="5"] { transform: rotateX(-52.62deg) rotateY(-288deg); }
 
 /* Middle Ring Up */
-.die-3d[data-face="6"]  { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(-36deg); }
-.die-3d[data-face="7"]  { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(-108deg); }
-.die-3d[data-face="8"]  { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(-180deg); }
-.die-3d[data-face="9"]  { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(-252deg); }
-.die-3d[data-face="10"] { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(-324deg); }
+.die-3d[data-face="6"]  { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(0deg); }
+.die-3d[data-face="7"]  { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(-72deg); }
+.die-3d[data-face="8"]  { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(-144deg); }
+.die-3d[data-face="9"]  { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(-216deg); }
+.die-3d[data-face="10"] { transform: rotateZ(-180deg) rotateX(-10.81deg) rotateY(-288deg); }
 
 /* Middle Ring Down */
-.die-3d[data-face="11"] { transform: rotateX(10.81deg) rotateY(0deg); }
-.die-3d[data-face="12"] { transform: rotateX(10.81deg) rotateY(-72deg); }
-.die-3d[data-face="13"] { transform: rotateX(10.81deg) rotateY(-144deg); }
-.die-3d[data-face="14"] { transform: rotateX(10.81deg) rotateY(-216deg); }
-.die-3d[data-face="15"] { transform: rotateX(10.81deg) rotateY(-288deg); }
+.die-3d[data-face="12"] { transform: rotateX(10.81deg) rotateY(-36deg); }
+.die-3d[data-face="11"] { transform: rotateX(10.81deg) rotateY(-108deg); }
+.die-3d[data-face="15"] { transform: rotateX(10.81deg) rotateY(-180deg); }
+.die-3d[data-face="14"] { transform: rotateX(10.81deg) rotateY(-252deg); }
+.die-3d[data-face="13"] { transform: rotateX(10.81deg) rotateY(-324deg); }
 
 /* Bottom Pyramid */
-.die-3d[data-face="16"] { transform: rotateZ(-180deg) rotateX(52.62deg) rotateY(-36deg); }
-.die-3d[data-face="17"] { transform: rotateZ(-180deg) rotateX(52.62deg) rotateY(-108deg); }
-.die-3d[data-face="18"] { transform: rotateZ(-180deg) rotateX(52.62deg) rotateY(-180deg); }
+.die-3d[data-face="17"] { transform: rotateZ(-180deg) rotateX(52.62deg) rotateY(-36deg); }
+.die-3d[data-face="16"] { transform: rotateZ(-180deg) rotateX(52.62deg) rotateY(-108deg); }
+.die-3d[data-face="20"] { transform: rotateZ(-180deg) rotateX(52.62deg) rotateY(-180deg); }
 .die-3d[data-face="19"] { transform: rotateZ(-180deg) rotateX(52.62deg) rotateY(-252deg); }
-.die-3d[data-face="20"] { transform: rotateZ(-180deg) rotateX(52.62deg) rotateY(-324deg); }
+.die-3d[data-face="18"] { transform: rotateZ(-180deg) rotateX(52.62deg) rotateY(-324deg); }
 
-/* Underlines to distinguish 6 and 9 */
 .face-3d:nth-child(6)::before, .face-3d:nth-child(9)::before { text-decoration: underline; }
 
 @keyframes roll-die {
