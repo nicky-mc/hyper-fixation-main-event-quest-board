@@ -224,22 +224,22 @@
   color: var(--bg-primary); 
   text-shadow: 0 0 8px rgba(251, 191, 36, 0.5); 
 }
-/* ── 7. THE D20 ARTIFACT ENGINE (COMPLETE) ── */
+/* ── 7. THE D20 ARTIFACT ENGINE (CALIBRATED & STACKED) ── */
 :root {
   --container-size: 160px;
   --face-width: 80px;
-  --face-height: 68px;
-  --transition-duration: 0.8s;
+  --face-height: 69.28px; /* High-precision height for 80px base */
+  --transition-duration: 1.2s; /* Heavier, more realistic settling */
   --animation-duration: 3s;
-  /* Link to your theme accent! */
-  --die-color: var(--accent); 
-  --angle: 53deg;
-  --ring-angle: -11deg;
-  --side-angle: 72deg;
-  --translate-z: 26.8px;
-  --translate-y: -10.2px;
-  --translate-ring-z: 60px;
-  --translate-ring-y: 42.84px;
+  --die-color: var(--accent, #f59e0b); 
+  
+  /* Precision Geometry (Sarah's Math Calibration) */
+  --angle: 52.62deg;
+  --ring-angle: 11deg;
+  --translate-z: 33.5px;
+  --translate-y: -12.5px;
+  --translate-ring-z: 55px;
+  --translate-ring-y: 28.5px;
 }
 
 .die-container {
@@ -249,6 +249,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 25px; /* CRUCIAL: Creates space for the RKO button below */
 }
 
 .die-3d {
@@ -256,7 +257,8 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform var(--transition-duration) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* PHYSICS FIX: Added a custom bezier curve so the die "bounces" slightly when it lands */
+  transition: transform var(--transition-duration) cubic-bezier(0.1, 0.9, 0.2, 1.1);
 }
 
 .die-3d.rolling {
@@ -266,18 +268,18 @@
 .face-3d {
   position: absolute;
   left: 50%;
-  top: 15%;
-  margin: 0 calc(var(--face-width) * -0.5);
+  top: 50%;
+  margin-left: calc(var(--face-width) * -0.5);
+  margin-top: calc(var(--face-height) * -0.5);
   border-left: calc(var(--face-width) * 0.5) solid transparent;
   border-right: calc(var(--face-width) * 0.5) solid transparent;
   border-bottom: var(--face-height) solid var(--die-color);
   width: 0px;
   height: 0px;
   transform-style: preserve-3d;
-  
-  /* --- THE FIXES --- */
-  backface-visibility: hidden; /* Hides the back-side numbers (10, 15) from showing through */
-  opacity: 1;                  /* Changed from 0.9 to 1 to make the die fully solid */
+  /* GHOSTING FIX: This stops back-faces showing through front triangles */
+  backface-visibility: hidden; 
+  opacity: 1; /* Makes the die fully solid */
 }
 
 .face-3d::before {
@@ -286,80 +288,70 @@
   top: 15px;
   left: -40px;
   color: #fff;
-  text-shadow: 1px 1px 3px #000;
-  font-size: 28px;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  font-size: 26px;
   text-align: center;
   width: 80px;
   font-family: var(--font-display);
   font-weight: 900;
-
-  /* --- THE FIXES --- */
-  transform: translateZ(2px);  /* Lifts the number 2px off the face so it doesn't flicker */
-  backface-visibility: hidden; /* Ensures the number doesn't show up on the inside of the die */
+  /* FLICKER FIX: Lifts the number off the surface so it doesn't "fight" with the triangle color */
+  transform: translateZ(1px); 
+  backface-visibility: hidden;
 }
 
-/* --- FULL 20-SIDED GEOMETRY MATH --- */
+/* --- THE SKELETON (Geometry Math) --- */
+/* FIX: Replaced hard-coded "85px" with calculated offsets to close the gaps */
 
-/* Top Faces (1-5) */
 .face-3d:nth-child(1) { transform: rotateY(0deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
-.face-3d:nth-child(2) { transform: rotateY(-72deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
-.face-3d:nth-child(3) { transform: rotateY(-144deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
-.face-3d:nth-child(4) { transform: rotateY(-216deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
-.face-3d:nth-child(5) { transform: rotateY(-288deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
+.face-3d:nth-child(2) { transform: rotateY(72deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
+.face-3d:nth-child(3) { transform: rotateY(144deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
+.face-3d:nth-child(4) { transform: rotateY(216deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
+.face-3d:nth-child(5) { transform: rotateY(288deg) translateZ(var(--translate-z)) translateY(var(--translate-y)) rotateX(var(--angle)); }
 
-/* Middle Ring Up (6-10) */
-.face-3d:nth-child(6) { transform: rotateY(0deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(7) { transform: rotateY(-72deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(8) { transform: rotateY(-144deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(9) { transform: rotateY(-216deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(10) { transform: rotateY(-288deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(6) { transform: rotateY(36deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(7) { transform: rotateY(108deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(8) { transform: rotateY(180deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(9) { transform: rotateY(252deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(10) { transform: rotateY(324deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateZ(180deg) rotateX(var(--ring-angle)); }
 
-/* Middle Ring Down (11-15) */
-.face-3d:nth-child(11) { transform: rotateY(-36deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(12) { transform: rotateY(-108deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(13) { transform: rotateY(-180deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(14) { transform: rotateY(-252deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
-.face-3d:nth-child(15) { transform: rotateY(-324deg) translateZ(var(--translate-ring-z)) translateY(var(--translate-ring-y)) rotateX(var(--ring-angle)); }
+.face-3d:nth-child(11) { transform: rotateY(0deg) translateZ(var(--translate-ring-z)) translateY(calc(var(--translate-ring-y) * -1)) rotateX(calc(var(--ring-angle) * -1)); }
+.face-3d:nth-child(12) { transform: rotateY(72deg) translateZ(var(--translate-ring-z)) translateY(calc(var(--translate-ring-y) * -1)) rotateX(calc(var(--ring-angle) * -1)); }
+.face-3d:nth-child(13) { transform: rotateY(144deg) translateZ(var(--translate-ring-z)) translateY(calc(var(--translate-ring-y) * -1)) rotateX(calc(var(--ring-angle) * -1)); }
+.face-3d:nth-child(14) { transform: rotateY(216deg) translateZ(var(--translate-ring-z)) translateY(calc(var(--translate-ring-y) * -1)) rotateX(calc(var(--ring-angle) * -1)); }
+.face-3d:nth-child(15) { transform: rotateY(288deg) translateZ(var(--translate-ring-z)) translateY(calc(var(--translate-ring-y) * -1)) rotateX(calc(var(--ring-angle) * -1)); }
 
-/* Bottom Faces (16-20) */
-.face-3d:nth-child(16) { transform: rotateY(-36deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
-.face-3d:nth-child(17) { transform: rotateY(-108deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
-.face-3d:nth-child(18) { transform: rotateY(-180deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
-.face-3d:nth-child(19) { transform: rotateY(-252deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
-.face-3d:nth-child(20) { transform: rotateY(-324deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
+.face-3d:nth-child(16) { transform: rotateY(36deg) translateZ(var(--translate-z)) translateY(calc(var(--translate-y) * -1)) rotateZ(180deg) rotateX(var(--angle)); }
+.face-3d:nth-child(17) { transform: rotateY(108deg) translateZ(var(--translate-z)) translateY(calc(var(--translate-y) * -1)) rotateZ(180deg) rotateX(var(--angle)); }
+.face-3d:nth-child(18) { transform: rotateY(180deg) translateZ(var(--translate-z)) translateY(calc(var(--translate-y) * -1)) rotateZ(180deg) rotateX(var(--angle)); }
+.face-3d:nth-child(19) { transform: rotateY(252deg) translateZ(var(--translate-z)) translateY(calc(var(--translate-y) * -1)) rotateZ(180deg) rotateX(var(--angle)); }
+.face-3d:nth-child(20) { transform: rotateY(324deg) translateZ(var(--translate-z)) translateY(calc(var(--translate-y) * -1)) rotateZ(180deg) rotateX(var(--angle)); }
 
-/* --- CALIBRATED LANDING ROTATIONS --- */
-/* Top Pyramid (1-5) */
+/* --- THE STEERING (Calibrated Landing Rotations) --- */
+/* FIX: Adjusted Y-rotations to point the correct faces to the user */
+
 .die-3d[data-face="1"]  { transform: rotateX(-53deg) rotateY(0deg); }
-.die-3d[data-face="2"]  { transform: rotateX(-53deg) rotateY(72deg); }
-.die-3d[data-face="3"]  { transform: rotateX(-53deg) rotateY(144deg); }
-.die-3d[data-face="4"]  { transform: rotateX(-53deg) rotateY(216deg); }
-.die-3d[data-face="5"]  { transform: rotateX(-53deg) rotateY(288deg); }
+.die-3d[data-face="2"]  { transform: rotateX(-53deg) rotateY(-72deg); }
+.die-3d[data-face="3"]  { transform: rotateX(-53deg) rotateY(-144deg); }
+.die-3d[data-face="4"]  { transform: rotateX(-53deg) rotateY(-216deg); }
+.die-3d[data-face="5"]  { transform: rotateX(-53deg) rotateY(-288deg); }
+.die-3d[data-face="6"]  { transform: rotateX(11deg) rotateY(-36deg) rotateZ(180deg); }
+.die-3d[data-face="7"]  { transform: rotateX(11deg) rotateY(-108deg) rotateZ(180deg); }
+.die-3d[data-face="8"]  { transform: rotateX(11deg) rotateY(-180deg) rotateZ(180deg); }
+.die-3d[data-face="9"]  { transform: rotateX(11deg) rotateY(-252deg) rotateZ(180deg); }
+.die-3d[data-face="10"] { transform: rotateX(11deg) rotateY(-324deg) rotateZ(180deg); }
+.die-3d[data-face="11"] { transform: rotateX(11deg) rotateY(0deg); }
+.die-3d[data-face="12"] { transform: rotateX(11deg) rotateY(-72deg); }
+.die-3d[data-face="13"] { transform: rotateX(11deg) rotateY(-144deg); }
+.die-3d[data-face="14"] { transform: rotateX(11deg) rotateY(-216deg); }
+.die-3d[data-face="15"] { transform: rotateX(11deg) rotateY(-288deg); }
+.die-3d[data-face="16"] { transform: rotateX(-127deg) rotateY(-36deg); }
+.die-3d[data-face="17"] { transform: rotateX(-127deg) rotateY(-108deg); }
+.die-3d[data-face="18"] { transform: rotateX(-127deg) rotateY(-180deg); }
+.die-3d[data-face="19"] { transform: rotateX(-127deg) rotateY(-252deg); }
+.die-3d[data-face="20"] { transform: rotateX(-127deg) rotateY(-324deg); }
 
-/* The Bottom Half (16-20) - Calibrated for the "Main Event" */
-.die-3d[data-face="16"] { transform: rotateX(127deg) rotateY(72deg); } 
-.die-3d[data-face="17"] { transform: rotateX(127deg) rotateY(144deg); }
-.die-3d[data-face="18"] { transform: rotateX(127deg) rotateY(216deg); }
-.die-3d[data-face="19"] { transform: rotateX(127deg) rotateY(288deg); }
-.die-3d[data-face="20"] { transform: rotateX(127deg) rotateY(0deg); } /* THE NAT 20 FIX */
-
-/* The Middle Ring Up (6-10) */
-.die-3d[data-face="6"]  { transform: rotateX(11deg) rotateY(0deg) rotateZ(180deg); }
-.die-3d[data-face="7"]  { transform: rotateX(11deg) rotateY(72deg) rotateZ(180deg); }
-.die-3d[data-face="8"]  { transform: rotateX(11deg) rotateY(144deg) rotateZ(180deg); }
-.die-3d[data-face="9"]  { transform: rotateX(11deg) rotateY(216deg) rotateZ(180deg); }
-.die-3d[data-face="10"] { transform: rotateX(11deg) rotateY(288deg) rotateZ(180deg); }
-
-/* The Middle Ring Down (11-15) */
-.die-3d[data-face="11"] { transform: rotateX(-11deg) rotateY(36deg); }
-.die-3d[data-face="12"] { transform: rotateX(-11deg) rotateY(108deg); }
-.die-3d[data-face="13"] { transform: rotateX(-11deg) rotateY(180deg); }
-.die-3d[data-face="14"] { transform: rotateX(-11deg) rotateY(252deg); }
-.die-3d[data-face="15"] { transform: rotateX(-11deg) rotateY(324deg); }
-
-/* Clarity Fix: Underline the 6 and 9 */
-.face-3d:nth-child(6)::before,
-.face-3d:nth-child(9)::before {
+/* --- CLARITY & ANIMATIONS --- */
+.face-3d:nth-child(6)::before, .face-3d:nth-child(9)::before {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
