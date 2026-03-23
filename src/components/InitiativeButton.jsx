@@ -13,10 +13,10 @@ export default function InitiativeButton({ onRollComplete, disabled }) {
 
     setIsRolling(true);
     setIsCritical(false);
-    // Reset face to null during roll to prevent "snapping"
-    setDieFace(null);
+    
+    // We REMOVE setDieFace(null) so the die remembers its last position
+    // while the spin animation takes over.
 
-    // Matches the 3s duration in index.css
     setTimeout(() => {
       const result = Math.floor(Math.random() * 20) + 1;
       
@@ -25,7 +25,6 @@ export default function InitiativeButton({ onRollComplete, disabled }) {
       
       if (result === 20) setIsCritical(true);
 
-      // Tell the QuestBoard what we rolled
       if (onRollComplete) onRollComplete(result);
     }, 3000);
   };
