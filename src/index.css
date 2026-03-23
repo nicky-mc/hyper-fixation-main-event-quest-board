@@ -274,8 +274,10 @@
   width: 0px;
   height: 0px;
   transform-style: preserve-3d;
-  backface-visibility: hidden;
-  opacity: 0.9;
+  
+  /* --- THE FIXES --- */
+  backface-visibility: hidden; /* Hides the back-side numbers (10, 15) from showing through */
+  opacity: 1;                  /* Changed from 0.9 to 1 to make the die fully solid */
 }
 
 .face-3d::before {
@@ -290,6 +292,10 @@
   width: 80px;
   font-family: var(--font-display);
   font-weight: 900;
+
+  /* --- THE FIXES --- */
+  transform: translateZ(2px);  /* Lifts the number 2px off the face so it doesn't flicker */
+  backface-visibility: hidden; /* Ensures the number doesn't show up on the inside of the die */
 }
 
 /* --- FULL 20-SIDED GEOMETRY MATH --- */
