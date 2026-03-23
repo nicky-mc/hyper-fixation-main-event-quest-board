@@ -225,6 +225,7 @@
   text-shadow: 0 0 8px rgba(251, 191, 36, 0.5); 
 }
 
+/* ── 7. THE D20 ARTIFACT ENGINE (RECONSTRUCTED) ── */
 :root {
   --container-size: 160px;
   --face-width: 80px;
@@ -239,12 +240,36 @@
   --tilt-mid: 10.81deg;
 }
 
+/* --- THE MISSING 3D WRAPPERS --- */
+.die-container {
+  width: var(--container-size);
+  height: var(--container-size);
+  perspective: 1500px; /* CRITICAL: Creates the 3D space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.die-3d {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d; /* CRITICAL: Stops the die from flattening */
+  transition: transform var(--transition-duration) cubic-bezier(0.1, 0.9, 0.2, 1.1);
+}
+
+.die-3d.rolling {
+  animation: roll-die var(--animation-duration) linear infinite;
+}
+
+/* --- THE FACES --- */
 .face-3d {
   position: absolute;
   left: 50%;
-  top: 50%; /* Center the pivot point in the container */
+  top: 50%; 
   margin-left: calc(var(--face-width) * -0.5);
-  margin-top: calc(var(--face-height) * -0.5);
+  margin-top: -46.19px; /* Centered precisely on the triangle's centroid */
   border-left: calc(var(--face-width) * 0.5) solid transparent;
   border-right: calc(var(--face-width) * 0.5) solid transparent;
   border-bottom: var(--face-height) solid var(--die-color);
@@ -257,14 +282,12 @@
   /* THE MAGIC PIVOT: 50% horizontal, 46.19px vertical (the triangle centroid) */
   transform-origin: 50% 46.19px; 
 }
+
 .face-3d::before {
   content: attr(data-number);
   position: absolute;
-  
-  /* ADJUSTMENT: 18px - 20px usually looks more "centered" for an 80px triangle */
   top: 18px; 
   left: -40px;
-  
   color: #fff;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
   font-size: 26px;
@@ -272,13 +295,7 @@
   width: 80px;
   font-family: var(--font-display);
   font-weight: 900;
-
-  /* THE HERO: This lifts the number 2px off the orange surface 
-     to prevent "Z-fighting" (flickering colors) */
-  transform: translateZ(2px); 
-
-  /* CRITICAL: Hides the number if it's facing away from you 
-     so it doesn't show through the die */
+  transform: translateZ(2px); /* Lifts numbers to prevent flickering */
   backface-visibility: hidden;
 }
 
@@ -311,6 +328,7 @@
 .face-3d:nth-child(18) { transform: rotateY(180deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
 .face-3d:nth-child(19) { transform: rotateY(252deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
 .face-3d:nth-child(20) { transform: rotateY(324deg) rotateX(calc(var(--tilt-top) * -1)) translateZ(var(--inradius)) rotateZ(180deg); }
+
 /* --- LANDING ROTATIONS --- */
 .die-3d[data-face="1"]  { transform: rotateX(-53deg) rotateY(0deg); }
 .die-3d[data-face="2"]  { transform: rotateX(-53deg) rotateY(72deg); }
