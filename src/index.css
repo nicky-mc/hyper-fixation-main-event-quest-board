@@ -323,27 +323,28 @@
 .face-3d:nth-child(20) { transform: rotateY(-324deg) translateZ(var(--translate-z)) translateY(85px) rotateZ(180deg) rotateX(var(--angle)); }
 
 /* --- CALIBRATED LANDING ROTATIONS --- */
+/* Top Pyramid (1-5) */
 .die-3d[data-face="1"]  { transform: rotateX(-53deg) rotateY(0deg); }
 .die-3d[data-face="2"]  { transform: rotateX(-53deg) rotateY(72deg); }
 .die-3d[data-face="3"]  { transform: rotateX(-53deg) rotateY(144deg); }
 .die-3d[data-face="4"]  { transform: rotateX(-53deg) rotateY(216deg); }
 .die-3d[data-face="5"]  { transform: rotateX(-53deg) rotateY(288deg); }
 
-/* The Bottom Half (Calibrated flipping) */
-.die-3d[data-face="16"] { transform: rotateX(127deg) rotateY(-72deg); } 
-.die-3d[data-face="17"] { transform: rotateX(127deg) rotateY(-144deg); }
-.die-3d[data-face="18"] { transform: rotateX(127deg) rotateY(-216deg); }
-.die-3d[data-face="19"] { transform: rotateX(127deg) rotateY(-288deg); }
-.die-3d[data-face="20"] { transform: rotateX(127deg) rotateY(-360deg); }
+/* The Bottom Half (16-20) - Calibrated for the "Main Event" */
+.die-3d[data-face="16"] { transform: rotateX(127deg) rotateY(72deg); } 
+.die-3d[data-face="17"] { transform: rotateX(127deg) rotateY(144deg); }
+.die-3d[data-face="18"] { transform: rotateX(127deg) rotateY(216deg); }
+.die-3d[data-face="19"] { transform: rotateX(127deg) rotateY(288deg); }
+.die-3d[data-face="20"] { transform: rotateX(127deg) rotateY(0deg); } /* THE NAT 20 FIX */
 
-/* The Middle Ring Up */
+/* The Middle Ring Up (6-10) */
 .die-3d[data-face="6"]  { transform: rotateX(11deg) rotateY(0deg) rotateZ(180deg); }
 .die-3d[data-face="7"]  { transform: rotateX(11deg) rotateY(72deg) rotateZ(180deg); }
 .die-3d[data-face="8"]  { transform: rotateX(11deg) rotateY(144deg) rotateZ(180deg); }
 .die-3d[data-face="9"]  { transform: rotateX(11deg) rotateY(216deg) rotateZ(180deg); }
 .die-3d[data-face="10"] { transform: rotateX(11deg) rotateY(288deg) rotateZ(180deg); }
 
-/* The Middle Ring Down */
+/* The Middle Ring Down (11-15) */
 .die-3d[data-face="11"] { transform: rotateX(-11deg) rotateY(36deg); }
 .die-3d[data-face="12"] { transform: rotateX(-11deg) rotateY(108deg); }
 .die-3d[data-face="13"] { transform: rotateX(-11deg) rotateY(180deg); }
