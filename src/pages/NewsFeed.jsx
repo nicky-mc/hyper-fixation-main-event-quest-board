@@ -1,5 +1,5 @@
 import { Radio } from 'lucide-react';
-import ActivityStream from './ActivityStream'; // Import the high-fidelity logic
+import ActivityStream from '@/components//ActivityStream'; // Import the high-fidelity logic
 import { motion } from 'framer-motion';
 
 export default function NewsFeed() {
