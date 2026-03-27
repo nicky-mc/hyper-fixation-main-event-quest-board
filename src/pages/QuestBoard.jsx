@@ -71,7 +71,7 @@ export default function QuestBoard() {
   const [allVotes, setAllVotes] = useState([]);
   const [currentAdventurerId, setCurrentAdventurerId] = useState(null);
   const [srAnnouncement, setSrAnnouncement] = useState('');
-
+  const [isAdminExpanded, setIsAdminExpanded] = useState(false);
   const { theme } = useTheme();
   const isAdmin = user?.role === 'admin';
   const txt = UI_TEXT[theme] || UI_TEXT['sci-fi'];
@@ -304,41 +304,79 @@ export default function QuestBoard() {
             ))}
           </div>
 
-         {/* Admin Command Deck */}
+        {/* Admin Command Deck: The Collapsible Vault */}
 {isAdmin && (
-  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center justify-center mt-12 gap-8" >
-    {/* 1. THE DICE ENGINE (Top of the stack) */}
-    <div className="w-full flex justify-center">
-      <InitiativeButton 
-        disabled={pendingQuests.length === 0}
-        onRollStart={() => setIsRolling(true)}
-        onRollComplete={(result) => {
-          setIsRolling(false);
-          const randomIndex = Math.floor(Math.random() * pendingQuests.length);
-          const selected = pendingQuests[randomIndex];
-          setSelectedQuestId(selected.id);
-          
-          base44.entities.Quest.update(selected.id, { status: 'completed' });
-          
-          base44.entities.NewsPost.create({
-            author_name: 'The Quest Board',
-            author_email: 'questboard@hme.app',
-            content: `⚔️ **NATURAL ${result} INITIATIVE** ⚔️\n\n"${selected.title}" has been selected!\n\n🎯 Segment: ${selected.segment}\n🧙 Submitted by: ${selected.quest_giver}`,
-          }).then(() => loadQuests());
-        }} 
-      />
-    </div>
-
-    {/* 2. THE RKO BUTTON (Bottom of the stack) */}
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.3 }}
-      className="pb-6"
+  <div className="w-full flex flex-col items-center mt-6 mb-10">
+    
+    {/* THE TOGGLE BUTTON */}
+    <motion.button
+      onClick={() => setIsAdminExpanded(!isAdminExpanded)}
+      className="flex items-center gap-2 px-6 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-xs font-bold tracking-widest text-white/40 hover:text-white uppercase font-mono shadow-inner"
+      whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.08)" }}
+      whileTap={{ scale: 0.95 }}
     >
-      <RKOButton userIsAdmin={true} />
-    </motion.div>
-  </motion.div>
+      <span className="text-sm">{isAdminExpanded ? '🔒' : '🔓'}</span>
+      {isAdminExpanded ? 'Seal Admin Vault' : 'Access Admin Vault'}
+      <motion.span
+        animate={{ rotate: isAdminExpanded ? 180 : 0 }}
+        className="inline-block ml-1"
+      >
+        ▼
+      </motion.span>
+    </motion.button>
+
+    {/* THE COLLAPSIBLE CONTAINER */}
+    <AnimatePresence>
+      {isAdminExpanded && (
+        <motion.div
+          initial={{ height: 0, opacity: 0, y: -20 }}
+          animate={{ height: 'auto', opacity: 1, y: 0 }}
+          exit={{ height: 0, opacity: 0, y: -20 }}
+          transition={{ duration: 0.5, ease: "circOut" }}
+          className="overflow-hidden w-full"
+        >
+          <div className="flex flex-col items-center justify-center pt-12 pb-6 gap-10">
+            
+            {/* 1. THE DICE ENGINE */}
+            <div className="w-full flex justify-center">
+              <InitiativeButton 
+                disabled={pendingQuests.length === 0}
+                onRollStart={() => setIsRolling(true)}
+                onRollComplete={(result) => {
+                  setIsRolling(false);
+                  const randomIndex = Math.floor(Math.random() * pendingQuests.length);
+                  const selected = pendingQuests[randomIndex];
+                  setSelectedQuestId(selected.id);
+                  
+                  base44.entities.Quest.update(selected.id, { status: 'completed' });
+                  
+                  base44.entities.NewsPost.create({
+                    author_name: 'The Quest Board',
+                    author_email: 'questboard@hme.app',
+                    content: `⚔️ **NATURAL ${result} INITIATIVE** ⚔️\n\n"${selected.title}" has been selected!\n\n🎯 Segment: ${selected.segment}\n🧙 Submitted by: ${selected.quest_giver}`,
+                  }).then(() => loadQuests());
+
+                  // This auto-closes the vault 5 seconds after you roll!
+                  setTimeout(() => setIsAdminExpanded(false), 5000);
+                }} 
+              />
+            </div>
+
+            {/* 2. THE RKO BUTTON */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="pt-6 border-t border-white/5 w-full max-w-xs flex justify-center"
+            >
+              <RKOButton userIsAdmin={true} />
+            </motion.div>
+
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
 )}
 </motion.header>
         {/* ── ACTION BAR ── */}
