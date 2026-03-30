@@ -2,7 +2,7 @@
 
 **Repository:** `hyper-fixation-main-event-quest-board`  
 **Deployment Engine:** Powered by [Base44](https://base44.com)
-
+[Check out the Quest Board](https://hme-quest-board.base44.app/QuestBoard)
 Welcome to the central hub for the **Hyper-Fixation Main Event**. This is a specialized social-RPG platform designed with a high-fidelity **LCARS** (Library Computer Access and Retrieval System) aesthetic. It transforms community interaction into a multi-sector questing experience.
 
 ---
